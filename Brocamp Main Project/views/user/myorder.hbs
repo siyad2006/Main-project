@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders</title>
+    <link rel="stylesheet" href="/css/homestyle.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Bootstrap Icons CSS (optional for icons) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Bootstrap Bundle JS (includes Popper.js for proper dropdown and toggler functionality) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .order-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+        }
+
+        .order-status {
+            font-weight: bold;
+        }
+
+        .status-pending {
+            color: orange;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    {{> header}}
+
+    <div class="container content" id="content" style="margin-top: 20px;">
+        <div class="table-container">
+            <h2 class="mb-4" style="text-align: center;">Order Details</h2>
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+
+
+                        <th>Order ID</th>
+
+                        <th>Price</th>
+                        <th>Payment Method</th>
+                        <th>status</th>
+                        <th>action</th>
+                        <th></th>
+
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {{#each orders}}
+
+
+                    <tr>
+                        {{!-- <td id=".orderid">{{this._id}}</td> --}}
+                        <td class="orderid" data-orderid="{{this._id}}">{{this._id}}</td>
+
+                        <input type="hidden" value="{{this._id}}" id="userid">
+                        <td style="color: green;font-weight:bold">RS: {{this.totalprice}}</td>
+                        <td style="font-weight: bold;">{{this.paymentMethods}}</td>
+                        <td class="payment-status" style="font-weight: bold;">{{this.status}}</td>
+                        <td>
+                            <form action="/user/cancelorder/{{this._id}}" id="but" method="post"
+                                onsubmit="return alerts(event)">
+                                <input type="submit" id="b" value="Cancel Order" style="font-weight: bold;"
+                                    class="btn btn-danger cancel-button">
+                            </form>
+                            <form action="" id="repayForm">
+
+                                <input type="submit" id="b" value="rePay"
+                                    style="font-weight: bold; display:none;width:130px"
+                                    class="btn btn-warning repay-button">
+
+                            </form>
+
+                        </td>
+                        <td>
+                            <form action="/user/orderdetails/{{this.id}}" method="get">
+                                <button type="submit" class="btn btn-outline-primary btn-sm ms-3">View Order</button>
+                            </form>
+                        </td>
+                    </tr>
+
+                    {{/each }}
+
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        document.querySelectorAll('.repay-button').forEach(button => {
+            button.addEventListener('click', async (event) => {
+                event.preventDefault();
+                const row = event.target.closest('tr');
+                if (!row) {
+                    console.error('Row not found for the clicked button.');
+                    return;
+                }
+                console.log('Row found:', row);
+
+                const orderidElement = row.querySelector('.orderid');
+                if (!orderidElement) {
+                    console.error('Order ID element not found in the row.');
+                    return;
+                }
+
+                const orderid = orderidElement.dataset.orderid?.trim();
+                if (!orderid) {
+                    console.error('Order ID is null or undefined.');
+                    return;
+                }
+
+                console.log('Initiating repayment for Order ID:', orderid);
+
+                try {
+                    const result = await fetch(`/user/repay`, {
+                        method: 'POST',
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        body: JSON.stringify({ orderid })
+                    });
+
+                    if (result.ok) {
+                        const data = await result.json();
+
+                        console.log('Repayment Response:', data);
+
+                        const options = {
+                            key: "rzp_test_9BMcPF20vveDHZ",
+                            amount: data.amount,
+                            currency: data.currency,
+                            name: 'Time Heaven',
+                            description: 'Order Payment',
+                            order_id: data.order_id,
+                            handler: function (response) {
+                                console.log('Payment Successful:', response);
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: 'Your payment was successful!',
+                                    icon: 'success',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                }).then(() => {
+                                    window.location.href = `/user/success/${data.orderID}`;
+                                });
+                            },
+                            modal: {
+                                ondismiss: function () {
+                                    console.log('Payment cancelled or failed.');
+                                    Swal.fire({
+                                        title: 'Payment Failed!',
+                                        text: 'You cancelled the payment or it failed. Please try again.',
+                                        icon: 'error',
+                                        showConfirmButton: true
+                                    });
+                                    window.location.href = `/user/pendingpayment/${orderid}`;
+                                }
+                            },
+                            prefill: {
+                                name: 'siyad AK',
+                                email: 'siyadz4x@gmail.com',
+                                phone_number: '6238765947'
+                            },
+                            notes: {
+                                address: 'Mannarkkde, Kottoppadam (po)'
+                            }
+                        };
+
+                        const rzp1 = new Razorpay(options);
+                        rzp1.open();
+                    } else {
+                        console.error('Server Error:', result.statusText);
+                    }
+                } catch (error) {
+                    console.error('Error initiating repayment:', error);
+                }
+            });
+        });
+    </script>
+
+    <script>
+        window.onload = function () {
+
+            const rows = document.querySelectorAll('tr');
+
+            rows.forEach(row => {
+                const statusElement = row.querySelector('.payment-status');
+
+                const cancelButton = row.querySelector('.cancel-button');
+                const repay = row.querySelector('.repay-button');
+
+                if (statusElement && cancelButton) {
+
+                    const statusText = statusElement.textContent.trim().toLowerCase();
+
+                    if (statusText === 'return' || statusText === 'shipped' || statusText === 'delevered' || statusText === 'canceled') {
+                        cancelButton.disabled = true;
+                    }
+
+
+                    if (statusText == 'payment-pending') {
+                        cancelButton.style.display = 'none'
+                        repay.style.display = 'inline'
+
+                    }
+                }
+            });
+        };
+    </script>
+
+
+
+
+    <script>
+        let val = document.querySelectorAll('.payment-status')
+
+        val.forEach(item => {
+            { { !--values=this.value-- } }
+            if (item.textContent == 'canceled') {
+                item.style.color = 'red'
+            }
+            if (item.textContent == 'shipped' || item.textContent == 'delevered') {
+                item.style.color = 'green'
+            }
+            if (item.textContent == 'pending') {
+                item.style.color == 'yellow'
+            }
+
+
+        })
+
+    </script>
+    <script>
+        async function alerts(event) {
+            if (event) event.preventDefault();
+
+            const result = await Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: 'Are you sure to perform this action?',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            });
+
+            if (result.isConfirmed) {
+                // Allow form submission by using event.target.submit()
+                event.target.submit();
+            } else {
+                console.log('Action cancelled');
+            }
+        }
+    </script>
+
+
+
+    <nav aria-label="Order Pagination" style="margin-bottom: 10px;">
+        <ul class="pagination justify-content-center">
+            {{#if (gt currentPage 1)}}
+            <li class="page-item">
+                <a class="page-link" href="/user/myorders/{{../userID}}?page={{subtract currentPage 1}}">Previous</a>
+            </li>
+            {{/if}}
+            {{#each (range 1 totalPages)}}
+            <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+                <a class="page-link" href="/user/myorders/{{../userID}}?page={{this}}">{{this}}</a>
+            </li>
+            {{/each}}
+            {{#if (lt currentPage totalPages)}}
+            <li class="page-item">
+                <a class="page-link" href="/user/myorders/{{../userID}}?page={{add currentPage 1}}">Next</a>
+            </li>
+            {{/if}}
+        </ul>
+    </nav>
+
+
+    {{> footer}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function confirmCancelOrder() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, cancel it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Cancelled!',
+                        'Your order has been cancelled.',
+                        'success'
+                    );
+                }
+            });
+        }
+    </script>
+
+
+
+
+</body>
+
+</html>

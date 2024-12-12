@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f9;
+      overflow-x: hidden;
+      /* Prevent horizontal scrolling */
+    }
+
+    .sidebar {
+      background: linear-gradient(180deg, #111, #222);
+      width: 260px;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding-top: 20px;
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+
+    .sidebar.hidden {
+      transform: translateX(-100%);
+    }
+
+    .sidebar .nav-link {
+      color: white;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 5px 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    .sidebar .nav-link:hover {
+      background-color: #ff4444;
+      color: white;
+    }
+
+    .sidebar .nav-link.active {
+      background-color: #ff4444;
+    }
+
+    .sidebar-toggler {
+      background-color: #ff4444;
+      border: none;
+      font-size: 24px;
+      color: white;
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 1050;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      display: none;
+      /* Hidden on larger screens */
+    }
+
+    .content {
+      margin-left: 260px;
+      /* Match this to the sidebar width */
+      padding: 20px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .content.expanded {
+      margin-left: 0;
+    }
+
+    .card {
+      margin-bottom: 20px;
+      /* Space between cards */
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.hidden {
+        transform: translateX(0);
+      }
+
+      .content {
+        margin-left: 0;
+        /* Remove left margin on smaller screens */
+      }
+
+      .sidebar-toggler {
+        display: block;
+        /* Show toggle button on smaller screens */
+      }
+    }
+
+    @media (min-width: 769px) {
+      .sidebar-toggler {
+        display: none;
+        /* Hide toggle button on larger screens */
+      }
+
+      .sidebar {
+        transform: translateX(0);
+      }
+
+      .content {
+        margin-left: 260px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Sidebar -->
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <ul class="navbar-nav w-100">
+      <li class="nav-item">
+        <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie" style="margin-right: 10px;"></i>
+          Statistics</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users" style="margin-right: 10px;"></i> User
+          Management</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/products"><i class="fas fa-box" style="margin-right: 10px;"></i> Product
+          Management</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="/admin/ordermanagement"><i class="fas fa-file-invoice"
+            style="margin-right: 10px;"></i> Order Management</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link " href="/admin/salesreport"><i class="fas fa-chart-line" style="margin-right: 10px;"></i>
+          Sales Report</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/offer"><i class="fas fa-gift" style="margin-right: 10px;"></i> Offer</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt" style="margin-right: 10px;"></i>
+          Coupon</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link " href="/admin/category"><i class="fas fa-tags" style="margin-right: 10px;"></i> Category</a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/logout"><i class="fas fa-cog" style="margin-right: 10px;"></i> Logout</a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Sidebar toggle button -->
+  <button class="sidebar-toggler" id="sidebar-toggler">
+    &#x22EE;
+  </button>
+
+  <!-- Main content -->
+  <div class="content" id="content">
+    <h1>Dashboard</h1>
+    <div class="container mt-5">
+      <!-- Page Header -->
+      <div class="container my-5">
+        <!-- Order Header -->
+        <div class="order-header d-flex align-items-center justify-content-between mb-4">
+          <h4 class="mb-0 fw-bold">Order: {{order.id}}</h4>
+          <input type="hidden" id="ID" value="{{order.id}}">
+          <button class="btn btn-outline-primary btn-sm">
+            <i class="fa-solid fa-file-download me-2"></i>Download Summary
+          </button>
+        </div>
+
+        <!-- User Information Section -->
+        <div class="card order-card mb-4 shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">User Information</h5>
+          </div>
+          <div class="card-body">
+            <p><i class="fa-solid fa-user me-2"></i><strong>Name:</strong> {{order.address.name}}</p>
+            {{!-- <p><i class="fa-solid fa-envelope me-2"></i><strong>Email:</strong> {{john@example.com}}</p> --}}
+            <p><i class="fa-solid fa-phone me-2"></i><strong>Phone:</strong> {{order.address.phone}}</p>
+            <p>
+              <i class="fa-solid fa-location-dot me-2"></i><strong>Shipping Address:</strong>
+              {{order.address.houseAddress}}
+            </p>
+          </div>
+        </div>
+
+        <!-- Order Summary Section -->
+        <div class="card order-card mb-4 shadow-sm">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Order Summary</h5>
+          </div>
+          <div class="card-body">
+            <p><i class="fa-solid fa-calendar-alt me-2"></i><strong>Order Date:</strong> {{date}}</p>
+            <td><select id="forms" class="order-status" data-id="{{this._id}}">
+                <option value="pending">pending</option>
+                <option value="shipped">
+                  shipped
+                </option>
+                <option value="delevered">
+                  deleverd
+                </option>
+                <option value="canceled">
+                  canceled
+                </option>
+
+              </select>
+            </td>
+
+            <script>
+              document.addEventListener('DOMContentLoaded', function (event) {
+                const status = document.getElementById('status').textContent.trim()
+                const values = document.getElementById('forms')
+
+                values.value = status
+
+                console.log(status)
+                event.preventDefault()
+
+                if (status == 'pending') {
+
+                  Array.from(values.options).forEach((option) => {
+                    if (option.value == 'delevered') {
+                      option.disabled = true
+                    }
+
+                  })
+
+
+                }
+
+                if (status == 'shipped') {
+
+                  Array.from(values.options).forEach((option) => {
+                    if (option.value == 'pending') {
+                      option.disabled = true
+                    }
+                    
+                  })
+
+                }
+
+                if (status == 'delevered') {
+
+                  Array.from(values.options).forEach((option) => {
+                    if (option.value == 'pending') {
+                      option.disabled = true
+                    }
+
+                    if (option.value == 'canceled') {
+                      option.disabled = true
+                    }
+
+                    if (option.value == 'shipped') {
+                      option.disabled = true
+                    }
+                  })
+
+                }
+
+                if (status == 'return' || status == 'payment-pending' || status=='canceled') {
+                  Array.from(values.options).forEach((option) => {
+                    if (option.value == 'pending') {
+                      option.disabled = true
+                    }
+
+                    if (option.value == 'canceled') {
+                      option.disabled = true
+                    }
+
+                    if (option.value == 'shipped') {
+                      option.disabled = true
+                    }
+
+                    if (option.value == 'delevered') {
+                      option.disabled = true
+                    }
+  
+                  })
+                }
+              })
+            </script>
+
+            <p>
+              <i class="fa-solid fa-circle-check me-2"></i>
+              <strong id="stat">Status:</strong>
+              <span id="status" class="badge 
+                            {{#if (eq order.status 'delivered')}} bg-success
+                            {{else if (eq order.status 'canceled')}} bg-danger
+                            {{else if (eq order.status 'pending')}} bg-warning
+                            {{else if (eq order.status 'shipped')}} bg-primary
+                            {{else}} bg-secondary
+                        {{/if}}">
+                {{order.status}}
+              </span>
+            </p>
+            <p><i class="fa-solid fa-credit-card me-2"></i><strong>Payment Method:</strong> {{order.paymentMethods}}</p>
+            <p>
+              <i class="fa-solid fa-dollar-sign me-2"></i>
+              <strong>Real Amount:</strong> <span class="text-success fw-bold">Rs: {{realprice}}</span>
+            </p>
+            <p>
+              <i class="fa-solid fa-dollar-sign me-2"></i>
+              <strong>Offer Amount:</strong> <span class="text-success fw-bold">Rs:-{{discount}}</span>
+            </p>
+            <p>
+              <i class="fa-solid fa-dollar-sign me-2"></i>
+              <strong>coupun Amount:</strong> <span class="text-success fw-bold">Rs:-{{order.applayedcoupun}}</span>
+            </p>
+
+            <p>
+              <i class="fa-solid fa-money-check-alt me-2"></i>
+              <strong>Grand Total:</strong> <span class="text-danger fw-bold">Rs: {{order.totalprice}}</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Product Details Section -->
+        <div class="card order-card mb-4 shadow-sm">
+          <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Products</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead class="table-light text-center">
+                  <tr>
+                    <th>Image</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price per Unit</th>
+                    <th>Final Price</th>
+                  </tr>
+                </thead>
+                <tbody class="text-center">
+                  {{#each order.products}}
+                  <tr>
+                    <td>
+                      <img src="/{{this.productId.image.[0]}}" alt="Product Image" class="img-thumbnail"
+                        style="height: 50px; width: 100px;">
+                    </td>
+                    <td>{{this.productId.name}}</td>
+                    <td class="qty">{{this.qty}}</td>
+                    <td class="sold">{{this.soldprice}}</td>
+                    <td class="text-end final"></td>
+                  </tr>
+                  {{/each}}
+
+                  <tr>
+                    <td colspan="4" class="text-end fw-bold text-danger">Total: Rs: {{order.totalprice}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{!--
+      <script>
+        window.onload = function () {
+          const sold = Number(document.getElementById('sold').textContent)
+          const qty = Number(document.getElementById('qty').textContent)
+          console.log(sold)
+          console.log(qty)
+          const Netfinal = sold * qty
+
+
+          document.getElementById('final').textContent = Netfinal
+
+
+        }
+
+      </script> --}}
+
+      <script>
+        window.onload = function () {
+          // Select all rows and calculate the final price for each product
+          const rows = document.querySelectorAll('tr'); // Select all table rows
+
+          rows.forEach(row => {
+            const qtyElement = row.querySelector('.qty'); // Find the quantity element in the row
+            const soldElement = row.querySelector('.sold'); // Find the sold price element in the row
+            const finalElement = row.querySelector('.final'); // Find the final price element in the row
+
+            if (qtyElement && soldElement && finalElement) {
+              // Parse the numeric values from the text content
+              const qty = Number(qtyElement.textContent);
+              const sold = Number(soldElement.textContent);
+
+              // Calculate the net final price
+              const Netfinal = sold * qty;
+
+              finalElement.textContent = Netfinal.toFixed(2); // Format to 2 decimal places if needed
+            }
+          });
+        };
+      </script>
+
+      <script>
+
+
+        document.getElementById('forms').addEventListener('change', function (event) {
+
+          const selectedValue = this.value
+          const orderid = document.getElementById('ID').value;
+          console.log(orderid)
+          fetch('/admin/update-order-status', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ orderid, status: selectedValue })
+          })
+            .then(response => {
+              if (response.ok) {
+                return response.json();
+              } else {
+                return response.text();
+              }
+            })
+            .then(data => {
+              console.log('Response from server:', data);
+              if (data.success) {
+                window.location.reload()
+              }
+            })
+            .catch((err) => console.error('Error:', err));
+        })
+
+
+      </script>
+
+      <script>
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggler = document.getElementById('sidebar-toggler');
+        const content = document.getElementById('content');
+
+        sidebarToggler.addEventListener('click', () => {
+          sidebar.classList.toggle('hidden');
+          content.classList.toggle('expanded');
+        });
+      </script>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

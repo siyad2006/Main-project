@@ -1,0 +1,33 @@
+.na {
+    background: black;
+    /* position: fixed; */
+}
+.main-body {
+    background-image: url('/img/wp7381941.jpg');
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #212529;
+}
+.navbar .nav-link {
+    color: white !important; /* Ensures links are white */
+}
+.navbar-toggler-icon {
+    background-color: white; /* Makes the toggle button icon white */
+}
+.custom-form {
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background for the form */
+    padding: 20px;
+    border-radius: 10px; /* Rounded corners */
+}
+@media (max-width: 576px) { /* For small screens */
+    .custom-form {
+        width: 90%; /* Adjust width as needed */
+        min-height: 400px; /* Set a minimum height if necessary */
+    }
+}
+.text{
+    color: white;
+    font-weight:bolder;
+}

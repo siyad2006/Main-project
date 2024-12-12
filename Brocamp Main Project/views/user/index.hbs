@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Ministore</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="author" content="">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <script src="js/jquery-1.11.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="/js/plugins.js"></script>
+    <script type="text/javascript" src="/js/script.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Lato:wght@300;400;700&display=swap"
+        rel="stylesheet">
+
+
+    {{> header}}
+
+<input type="hidden" value="{{cartCount}}" id="cartCount">
+
+    <script>
+        console.log('console is working for this page ')
+    </script>
+
+    <script>
+       
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const count = document.getElementById('cart-count')?.textContent || '0';
+            const cart=document.getElementById('cartCount').value
+            console.log('this is the value from backend',cart)
+            console.log('This is the value from the header:', count);
+            document.getElementById('cart-count').textContent=cart
+        });
+
+    </script>
+
+    <section id="billboard" class="position-relative overflow-hidden bg-light-blue">
+
+
+        <div class="swiper main-swiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="container">
+                        <div class="row d-flex align-items-center">
+                            <div class="col-md-6">
+                                <div class="banner-content">
+                                    <h1 class="display-2 text-uppercase text-dark pb-5">Your Products Are Great.</h1>
+                                    <a href="/user/shop"
+                                        class="btn btn-medium btn-dark text-uppercase btn-rounded-none">Shop Product</a>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="image-holder">
+                                    <img src="/images/banner-image.png" alt="banner">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="container">
+                        <div class="row d-flex flex-wrap align-items-center">
+                            <div class="col-md-6">
+                                <div class="banner-content">
+                                    <h1 class="display-2 text-uppercase text-dark pb-5">Technology Hack You Won't Get
+                                    </h1>
+                                    <a href="shop.html"
+                                        class="btn btn-medium btn-dark text-uppercase btn-rounded-none">Shop Product</a>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="image-holder">
+                                    <img src="/images/banner-image.png" alt="banner">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </section>
+
+    <div class="container text-center my-5">
+        <h1 class="new-products-heading">New Products</h1>
+    </div>
+    <style>
+        .new-products-heading {
+            font-family: 'Poppins', sans-serif;
+            /* Use a modern and clean font */
+            font-size: 3rem;
+            /* Adjust the size as per your preference */
+            font-weight: 700;
+            /* Bold for emphasis */
+            color: #222C74;
+            /* Dark Blue Color */
+            text-transform: uppercase;
+            /* Converts text to uppercase */
+            letter-spacing: 2px;
+            /* Adds space between letters for a modern look */
+            margin: 0;
+            /* Removes any unwanted margin */
+            border-bottom: 3px solid #d9534f;
+            /* Adds an underline */
+            display: inline-block;
+            /* Keeps the underline only as wide as the text */
+            padding-bottom: 0.5rem;
+            /* Adds space between text and underline */
+        }
+    </style>
+
+    <section>
+        <div class="container mb-2">
+            <div class="row g-4">
+                <!-- Product 1 -->
+                {{#each products}}
+                <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
+                    <div class="card product-card shadow-sm border-0">
+                        <div style="position: relative; display: inline-block;">
+                            {{#if (gt this.offerPersent 0)}}
+                            <span
+                                style="position: absolute; top: 10px; right: 10px; background: #1ad633; color: #fff; font-size: 14px; font-weight: bold; padding: 3px 8px; border-radius: 5px;">
+                                {{this.offerPersent}}% OFF
+                            </span>
+                            {{/if}}
+                            <!-- Heart Icon for Wishlist -->
+                            <form id="addtowishlist" style="position: absolute; top: 10px; left: 10px;">
+
+                                <input type="hidden" value="{{this.id}}" id="productId">
+                                <button type="submit" style="background: none; border: none; cursor: pointer;">
+                                    <i class="fas fa-heart" style="color: #ff4d4d; font-size: 20px;"></i>
+                                </button>
+                            </form>
+                            <img src="/{{this.image.[0]}}" height="170px" alt="Product 1"
+                                class="card-img-top product-image">
+                        </div>
+
+                        <div class="card-body text-center">
+                            <h6 class="card-title mb-2" style="font-weight: 600; color: #333;">{{this.name}}</h6>
+                            {{#if (gt this.offerprice 0)}}
+                            <p>
+                                <span class="price"
+                                    style="text-decoration: line-through; color: #d9534f;">₹{{this.realprice}}</span>
+                                <span class="offer-price"
+                                    style="color: #5cb85c; font-weight: bold;">₹{{this.offerprice}}</span>
+                            </p>
+                            {{else}}
+                            <p>
+                                <span class="price"
+                                    style="color: #5cb85c; font-weight: bold;">₹{{this.realprice}}</span>
+                            </p>
+                            {{/if}}
+                            <p style="font-size: small;margin:0%;color:#1ad633">{{this.quantity}} In Stock</p>
+                            <form action="/user/details/{{this.id}}" method="get">
+                                <button class="btn btn-primary btn-sm" type="submit"
+                                    style="width: 100%; font-weight: 500;">
+                                    View Details
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+
+            </div>
+        </div>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+
+    </section>
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+
+    <script>
+        document.querySelectorAll('#addtowishlist').forEach(form => {
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+                const product = this.querySelector('#productId').value;
+
+                try {
+                    const response = await fetch('/user/addtowishlist', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ productId: product }),
+                    });
+
+                    if (response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Successfully added to the wishlist',
+                            showConfirmButton: false,
+                            timer: 1500,
+                        });
+                    } else {
+                        const res = await response.text();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning',
+                            text: res,
+                        });
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while adding to the wishlist.',
+                    });
+                }
+            });
+        });
+    </script>
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    {{> footer}}
+
+    </body>
+
+</html>

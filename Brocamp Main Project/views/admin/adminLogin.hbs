@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+
+            background-image: url('/img/pexels-ferarcosn-190819.jpg');
+            background-size: cover;
+
+            background-position: center;
+
+            height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+
+            justify-content: center;
+
+            align-items: center;
+
+        }
+
+        .navbar {
+            background-color: black;
+
+            width: 100%;
+
+            position: fixed;
+
+            top: 0;
+
+            left: 0;
+
+            z-index: 1000;
+
+        }
+
+        .navbar-brand {
+            display: flex;
+            justify-content: center;
+            /* Center the logo and brand name */
+            align-items: center;
+            /* Center vertically */
+            color: white;
+            /* White text color for the brand name */
+            margin: auto;
+            /* Center brand name */
+        }
+
+        .login-container {
+            max-width: 400px;
+            padding: 40px;
+            background-color: rgba(255, 255, 255, 0.9);
+            /* White background with slight transparency */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 100px;
+            /* Add margin to the top to avoid overlap with the navbar */
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="/img/download.png" alt="Logo" width="40" height="40" class="d-inline-block align-text-top">
+                <span class="ml-2">Male Fashion</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Login Container -->
+    <div class="login-container">
+        <h2 class="text-center">Admin Login</h2>
+        <form action="/admin/login" method="POST">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="adminname" name="adminname" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <p>{{mess}}</p>
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        {{#if err}}
+        <div style="color: green;">{{err}}</div> <!-- Display success message -->
+
+
+        {{/if}}
+
+    </div>
+
+    <script>
+
+    </script>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

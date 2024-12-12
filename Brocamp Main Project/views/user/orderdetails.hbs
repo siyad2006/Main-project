@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order View</title>
+    <link rel="stylesheet" href="/css/homestyle.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Font Awesome for icons -->
+    <style>
+        .order-header {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .order-card {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .order-card-header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+        }
+
+        .table thead {
+            background-color: #f1f1f1;
+        }
+
+        .btn-custom {
+            margin-right: 5px;
+            border-radius: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    {{> header}}
+    <div class="container mt-5">
+        <!-- Page Header -->
+        <div class="order-header d-flex align-items-center justify-content-between">
+            <h4 class="mb-0">Order : {{order.id}}</h4>
+            <input type="hidden" id="orderid" value="{{order.id}}">
+            <button class="btn btn-outline-primary" id="summary"><i class="fa-solid fa-file-download me-2"></i>Download
+                Summary</button>
+        </div>
+        <!-- SweetAlert2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.min.css" rel="stylesheet">
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
+ 
+ {{#if expire}}
+<script>
+    Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: '{{expire}}'   
+    });
+</script>
+{{/if}}
+
+        <!-- User Information Section -->
+        <div class="card order-card mb-4">
+            <div class="order-card-header">
+                <h4 class="mb-0">User Information</h4>
+            </div>
+            <div class="card-body">
+                <p><i class="fa-solid fa-user me-2"></i><strong>Name:</strong> {{order.address.name}}</p>
+                <p><i class="fa-solid fa-envelope me-2"></i><strong>Email:</strong> john@example.com</p>
+                <p><i class="fa-solid fa-phone me-2"></i><strong>Phone:</strong> {{order.address.phone}}</p>
+                <p><i class="fa-solid fa-location-dot me-2"></i><strong>Shipping Address:</strong>
+                    {{order.address.houseAddress}}</p>
+            </div>
+        </div>
+
+        <!-- Order Summary Section -->
+        <div class="card order-card mb-4">
+            <div class="order-card-header">
+                <h4 class="mb-0">Order Summary</h4>
+            </div>
+            <div class="card-body">
+                {{!-- <p><i class="fa-solid fa-calendar-alt me-2" id="date"></i><strong>Order Date:</strong>
+                <p style="display: flex;">{{date}}</p>
+                </p> --}}
+                <p style="display: flex; align-items: center;">
+                    <i class="fa-solid fa-calendar-alt me-2" id="date"></i>
+                    <strong>Order Date:</strong>
+                    <span style="margin-left: 5px;" id="date">{{date}}</span>
+                </p>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const dateElement = document.getElementById('date');
+                        console.log('Date element:', dateElement);
+                        console.log('This is the form:', dateElement ? dateElement.textContent : 'Element not found');
+                    });
+
+                </script>
+
+                {{!-- <p><i class="fa-solid fa-circle-check me-2"></i><strong>Status:</strong> <span
+                        class="badge  bg-success">{{order.status}}</span></p> --}}
+                <p>
+                    <i class="fa-solid fa-circle-check me-2"></i>
+                    <strong>Status:</strong>
+                    <span id="status" class="badge 
+        {{#if (eq order.status 'delivered')}}
+            bg-success
+        {{else if (eq order.status 'canceled')}}
+            bg-danger
+        {{else if (eq order.status 'pending')}}
+            bg-warning
+        {{else if (eq order.status 'shipped')}}
+            bg-primary
+        {{else}}
+            bg-secondary
+        {{/if}}">
+                        {{order.status}}
+                    </span>
+                </p>
+                <p style="font-weight: 700;"><i class="fa-solid fa-credit-card me-2"></i><strong>Payment
+                        Method:</strong> {{order.paymentMethods}}</p>
+                <p style="display: inline;"><i class="fa-solid fa-dollar-sign me-2"></i><strong>subtotal
+                        Amount:</strong>
+                <p style="color: green;display:inline">{{realprice}}</p>
+
+                </p>
+
+                <p style="display: inline;"><i class="fa-solid fa-dollar-sign me-2"></i><strong>Offer Amount:</strong>
+                <p style="color: green;display:inline">{{offer}}</p>
+
+                </p>
+
+                <p style="display: inline;"><i class="fa-solid fa-dollar-sign me-2"></i><strong>coupun Amount:</strong>
+                <p style="color: green;display:inline">{{coupun}}</p>
+
+                </p>
+
+
+
+                {{!-- <p><i class="fa-solid fa-tags me-2"></i><strong>Coupon Discount:</strong> -$20.00 (Code: SAVE20)
+                </p> --}}
+                <p style="display: inline;"><i class="fa-solid fa-money-check-alt me-2"></i><strong>Grand Total :
+                    </strong>
+                <p style="font-weight: 800; color:red;display:inline">{{order.totalprice}}</p>
+                </p>
+            </div>
+        </div>
+
+        <!-- Product Details Table -->
+        <div class="card order-card mb-4">
+            <div class="order-card-header">
+                <h4 class="mb-0">Products</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="text-center">
+                            <tr>
+                                <th>Image</th>
+                                <th>Product Name</th>
+                                {{!-- <th>Product ID</th> --}}
+                                <th>Quantity</th>
+                                <th>Price per Unit</th>
+                                {{!-- <th>Total Price</th> --}}
+                            </tr>
+                        </thead>
+                        <tbody class="text-center">
+                            {{#each products}}
+                            <tr>
+                                <td><img src="/{{this.image.[0]}}" alt="Product Image" height="50px" width="100px"
+                                        class="img-thumbnail">
+                                </td>
+                                <td>{{this.name}}</td>
+
+                                <td>{{this.qty}}</td>
+                                <td class="price">{{this.solds}}</td>
+
+
+                            </tr>
+                            {{/each}}
+                            <td class="totalprice" style="text-align: right;" colspan="4">
+                                <p style="margin-right: 70px; color:red; font-weight:bold">total: {{order.totalprice}}
+                                </p>
+                            </td>
+                            <!-- Repeat for other products -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Actions Section -->
+        <div class="card order-card mb-4">
+            <div class="order-card-header">
+                <h4 class="mb-0">Actions</h4>
+            </div>
+            <div class="card-body" style="display:flex;">
+                <form id="but" action="/user/cancelorder/{{order.id}}" onsubmit="return alerts(event)" method="post">
+                    <button type="submit"
+                        class="btn btn-danger btn-custom  {{#if (or (eq order.status 'canceled') (eq order.status 'shipped') (eq order.status 'return') (eq order.status 'delevered'))}}disabled{{/if}}"
+                        style="display: inline;"><i class="fa-solid fa-times-circle me-2"></i>Cancel
+                        Order</button>
+
+
+                </form>
+
+                {{!-- <button class="btn btn-warning btn-custom {{#if (eq order.status 'delevered')}}disabled{{/if}}"
+                    style="display: inline;"><i class="fa-solid fa-exchange-alt me-2  "></i>Return/Replace</button> --}}
+                <form action="/user/return/{{order.id}}" method="post" onsubmit="return alerts(event)">
+                    <button id="b"
+                        class="btn btn-warning btn-custom   {{#if (or (eq order.status 'canceled') (eq order.status 'pending') )}}disabled{{/if}}"
+                        style="display: inline;">
+                        <i class="fa-solid fa-exchange-alt me-2"></i>Return/Replace
+                    </button>
+                </form>
+
+                <form id="repayForm">
+                    <button id="repay" type="submit" class="btn btn-warning btn-custom " style="display: none;">
+                        <i class="fa-solid fa-exchange-alt me-2"></i>repay
+                    </button>
+                </form>
+
+
+                <button class="btn btn-primary btn-custom"><i class="fa-solid fa-download me-2"></i>Download
+                    Invoice</button>
+            </div>
+        </div>
+    </div>
+
+    {{!--
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+        document.getElementById('repayForm').addEventListener('submit', async (event) => {
+            event.preventDefault()
+            const orderid = document.getElementById('orderid').value
+            console.log('this is the id of this order', orderid)
+
+            const result = await fetch(`/user/repay`, {
+                method: 'post',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify({ orderid: orderid })
+            })
+
+            if (result.ok) {
+                const data = await result.json()
+                console.log(data)
+
+                console.log('response is success')
+
+
+
+                const options = {
+                    key: "rzp_test_9BMcPF20vveDHZ",
+                    amount: data.amount,
+                    currency: data.currency,
+                    name: 'Time Heaven',
+                    description: 'Order Payment',
+                    image: 'https://yourlogo.com/logo.png',
+                    order_id: data.order_id,
+                    handler: function (response) {
+                        console.log('this is the id of saved order document ', data.orderID)
+
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Your payment was successful!',
+                            icon: 'success',
+                            showConfirmButton: false,
+                            timer: 1500
+
+                        }).then(() => window.location.href = `/user/success/${data.orderID}`);
+
+                    },
+
+
+                    "modal": {
+                        "ondismiss": function () {
+                            console.log('Payment failed or cancelled by the user.');
+
+
+
+                            Swal.fire({
+                                title: 'Payment Failed!',
+                                text: 'You cancelled the payment or it failed. Please try again.',
+                                icon: 'error',
+                                showConfirmButton: true
+                            });
+
+                            window.location.href = `/user/pendingpayment/${user}`
+                        }
+                    },
+
+                    prefill: {
+                        name: name,
+                        email: 'siyadz4x@gmail.com',
+                        phone_number: phone
+                    },
+                    notes: {
+                        address: formData.street
+                    }
+                };
+
+                const rzp1 = new Razorpay(options);
+                rzp1.open();
+
+            }
+        })
+    </script> --}}
+
+
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+        document.getElementById('repayForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const orderid = document.getElementById('orderid').value;
+            console.log('This is the ID of this order:', orderid);
+
+            try {
+                const result = await fetch(`/user/repay`, {
+                    method: 'post',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify({ orderid: orderid })
+                });
+
+                if (result.ok) {
+                    const data = await result.json();
+
+                    console.log('Response is success:', data);
+
+                    const options = {
+                        key: "rzp_test_9BMcPF20vveDHZ",
+                        amount: data.amount,
+                        currency: data.currency,
+                        name: 'Time Heaven',
+                        description: 'Order Payment',
+                        image: 'https://yourlogo.com/logo.png',
+                        order_id: data.order_id,
+                        handler: function (response) {
+                            console.log('Payment Successful, Order ID:', data.orderID);
+
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'Your payment was successful!',
+                                icon: 'success',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => window.location.href = `/user/success/${data.orderID}`);
+                        },
+                        modal: {
+                            ondismiss: function () {
+                                console.log('Payment failed or cancelled by the user.');
+
+                                Swal.fire({
+                                    title: 'Payment Failed!',
+                                    text: 'You cancelled the payment or it failed. Please try again.',
+                                    icon: 'error',
+                                    showConfirmButton: true
+                                });
+
+                                window.location.href = `/user/pendingpayment/${orderid}`;
+                            }
+                        },
+                        prefill: {
+                            name: 'siyad AK',
+                            email: 'siyadz4x@gmail.com',
+                            phone_number: '6238765947'
+                        },
+                        notes: {
+                            address: 'Mannarkkde, Kottoppadam (po)'
+                        }
+                    };
+
+                    const rzp1 = new Razorpay(options);
+                    rzp1.open();
+                } else {
+                    console.error('Server responded with error:', result.statusText);
+                }
+            } catch (error) {
+                console.error('Error fetching repay API:', error);
+            }
+        });
+    </script>
+
+
+    <script>
+        window.onload = function () {
+            const x = document.getElementById('status').textContent.trim();
+            const b = document.getElementById('b');
+            const but = document.getElementById('but')
+            const repay = document.getElementById('repay')
+            if (x === 'return') {
+                console.log('entered to the main code ')
+                b.style.display = 'none';
+                but.style.display = 'none'
+            }
+            if (x === 'canceled') {
+                but.style.display = 'none'
+            }
+            if (x === 'shipped') {
+                b.style.display = 'none';
+            }
+            if (x === 'delevered') {
+                but.style.display = 'none'
+            }
+
+            if (x == 'payment-pending') {
+                b.style.display = 'none';
+                but.style.display = 'none';
+                repay.style.display = 'inline'
+
+            }
+
+            console.log(x);
+            console.log(b);
+        };
+    </script>
+
+
+    <script>
+        async function alerts(event) {
+            if (event) event.preventDefault();
+
+            const result = await Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: 'Are you sure to perform this action?',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            });
+
+            if (result.isConfirmed) {
+                // Allow form submission by using event.target.submit()
+                event.target.submit();
+            } else {
+                console.log('Action cancelled');
+            }
+        }
+    </script>
+
+    <script>
+        document.getElementById('summary').addEventListener('click', async (event) => {
+            event.preventDefault()
+            const order = document.getElementById('orderid').value;
+
+            console.log('this is from invoice download ')
+            const datas = {
+                orderid: order
+            }
+            const result = await fetch('/user/ordersummary', {
+                method: 'post',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(datas)
+            })
+
+            const response = await result.json()
+
+            if (response.success) {
+                console.log('the response is ok')
+                window.location.href = response.redirect
+            } else {
+                console.log('the reponse is failiur ')
+            }
+
+        })
+    </script>
+
+    {{> footer}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <!-- Font Awesome JS -->
+</body>
+
+</html>

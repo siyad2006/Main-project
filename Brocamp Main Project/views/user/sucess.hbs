@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/homestyle.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <title>sucess</title>
+</head>
+
+<body>
+   {{> header}}
+
+    <div id="twisted-paper-container"></div>
+
+    <style>
+        #twisted-paper-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            /* Disable user interaction */
+            overflow: hidden;
+        }
+
+        .twisted-paper {
+            position: absolute;
+            top: -10%;
+            width: 20px;
+            height: 50px;
+            font-size: 25px;
+            text-align: center;
+            transform-origin: center center;
+            animation: fallDown 4s linear infinite;
+        }
+
+        @keyframes fallDown {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                /* Rotate as it falls */
+                opacity: 0;
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const paperContainer = document.getElementById('twisted-paper-container');
+
+            function createTwistedPaper() {
+                const paper = document.createElement('div');
+                paper.classList.add('twisted-paper');
+
+                // Use text or symbols for the twisted paper. You can also use image URLs
+                paper.textContent = '🎉';  // Using celebration emoji as a placeholder for twisted paper
+
+                // Randomize the horizontal starting position
+                paper.style.left = Math.random() * 100 + 'vw'; // Random horizontal position
+
+                // Randomize animation duration for variety
+                paper.style.animationDuration = (Math.random() * 2 + 3) + 's'; // Random duration between 3 and 5 seconds
+
+                // Randomize size of the paper
+                paper.style.fontSize = Math.random() * 10 + 20 + 'px'; // Random size between 20px and 30px
+
+                paperContainer.appendChild(paper);
+
+                // Remove the paper after animation ends to prevent DOM buildup
+                setTimeout(() => {
+                    paper.remove();
+                }, 5000); // Paper disappears after 5 seconds
+            }
+
+
+            const interval = setInterval(createTwistedPaper, 250); // Adjust interval for more or fewer papers
+
+
+            setTimeout(() => {
+                clearInterval(interval);
+            }, 5000);
+        });
+
+    </script>
+
+    <div class="container d-flex justify-content-center align-items-center " style="margin-top: 30px;margin-bottom:30px">
+        <div class="card shadow-lg text-center p-4" style="max-width: 500px;">
+            <div class="card-body">
+                <div class="text-success mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor"
+                        class="bi bi-check-circle" viewBox="0 0 16 16">
+                        <path
+                            d="M10.97 4.97a.75.75 0 011.07 1.05l-4.5 5a.75.75 0 01-1.08.02L4.324 9.384a.75.75 0 111.04-1.08l1.596 1.36 3.974-4.53z" />
+                        <path
+                            d="M16 8A8 8 0 11.873 5.64a.5.5 0 01.858.515 7 7 0 1012.154.01.5.5 0 01.857-.515A8 8 0 0116 8z" />
+                    </svg>
+                </div>
+                <h1 class="h3 mb-3 font-weight-normal">Success!</h1>
+                <p class="lead">Your order is sucessfull, Thank you for ordering</p>
+                <a href="/user/home" class="btn btn-success mt-3">Go Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+{{> footer}}
+ 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Home Page</title>
+        <link rel="stylesheet" href="/css/homestyle.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+            integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/elevatezoom.css">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script type="text/javascript"
+            src="https://cdn.rawgit.com/igorlino/elevatezoom-plus/1.1.6/src/jquery.ez-plus.js"></script>
+
+        <style>
+            .na {
+                background: black;
+                /* position: fixed; */
+            }
+
+            .main-body {
+                background-image: url('/img/wp7381941.jpg');
+                min-height: 100vh;
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-color: #212529;
+            }
+
+            .navbar .nav-link {
+                color: white !important;
+                /* Ensures links are white */
+            }
+
+            .navbar-toggler-icon {
+                background-color: white;
+                /* Makes the toggle button icon white */
+            }
+
+            .custom-form {
+                background-color: rgba(0, 0, 0, 0.8);
+                /* Semi-transparent background for the form */
+                padding: 20px;
+                border-radius: 10px;
+                /* Rounded corners */
+            }
+
+            @media (max-width: 576px) {
+
+                /* For small screens */
+                .custom-form {
+                    width: 90%;
+                    /* Adjust width as needed */
+                    min-height: 400px;
+                    /* Set a minimum height if necessary */
+                }
+            }
+
+            .text {
+                color: white;
+                font-weight: bolder;
+            }
+
+            .filter-button {
+                background: linear-gradient(45deg, #ff416c, #ff4b2b);
+                /* Gradient background */
+                border: none;
+                /* Remove default border */
+                color: white;
+                /* White text color */
+                padding: 10px 20px;
+                /* Padding for better size */
+                border-radius: 25px;
+                /* Rounded corners */
+                font-size: 1.1rem;
+                /* Larger font size */
+                font-weight: bold;
+                /* Bold text */
+                transition: background 0.3s, transform 0.3s;
+                /* Smooth transition for hover effects */
+            }
+
+            .filter-button:hover {
+                transform: scale(1.05);
+                /* Slightly enlarge on hover */
+                background: linear-gradient(45deg, #ff4b2b, #ff416c);
+                /* Reverse gradient on hover */
+            }
+
+            .filter-button:focus {
+                outline: none;
+                /* Remove default outline */
+            }
+        </style>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+        <script type="text/javascript"
+            src="https://cdn.rawgit.com/igorlino/elevatezoom-plus/1.1.6/src/jquery.ez-plus.js"></script>
+
+    </head>
+</head>
+
+<body>
+    {{> header}}
+
+
+    <input type="hidden" value="{{cartCount}}" id="cartCount">
+
+    <script>
+        console.log('console is working for this page ')
+    </script>
+
+    <script>
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const count = document.getElementById('cart-count')?.textContent || '0';
+            const cart = document.getElementById('cartCount').value || 0
+            console.log('this is the value from backend', cart)
+            console.log('This is the value from the header:', count);
+            document.getElementById('cart-count').textContent = cart
+        });
+
+    </script>
+
+
+    <section class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__text">
+                        <h4>Shop</h4>
+                        <div class="breadcrumb__links">
+                            <a href="/user/home">Home</a>
+                            <span>Shop</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        #search-bar {
+            height: 40px;
+            /* Adjust height for a better look */
+            padding-left: 35px;
+            /* To make space for the search icon inside */
+        }
+
+        #search-bar:focus {
+            box-shadow: none;
+            /* Remove the default focus box shadow */
+            border-color: #6c757d;
+            /* Add a subtle border color on focus */
+        }
+
+        a:hover {
+            color: #ff6347;
+            /* Change icon color on hover */
+        }
+
+        #search-bar {
+            height: 40px;
+            /* Adjust input height */
+            padding-left: 35px;
+            /* Ensure space for the icon inside input */
+        }
+
+        button i {
+            font-size: 16px;
+            /* Adjust icon size in button */
+        }
+    </style>
+
+
+    <button class="btn filter-button" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling"
+        aria-controls="offcanvasScrolling" style="margin-top: 10px; margin-left: 70px;margin-bottom:10px">
+        Filter
+    </button>
+
+    <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1"
+        id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Select Category and Color</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+
+            <form id="search-form" class="search-container">
+                <div class="d-flex align-items-center position-relative" style="max-width: 500px; margin: auto;">
+                    <!-- Search Input -->
+                    <input type="text" id="search-bar" class="form-control ps-4 py-3" placeholder="Type to search..."
+                        aria-label="Search" name="search"
+                        style="border: 2px solid #ddd;   background-color: #f9f9f9; box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1); font-size: 16px; color: #333;">
+
+
+                    <button type="submit"
+                        class="btn btn-gradient px-4 py-2 position-absolute end-0 top-50 translate-middle-y me-2"
+                        style="  font-weight: 600; color: white; font-size: 16px;">
+                        <i class="bi bi-search me-1"></i> Go
+                    </button>
+                </div>
+            </form>
+
+
+            <style>
+                /* Gradient Button Style */
+                .btn-gradient {
+                    background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                    transition: all 0.3s ease;
+                }
+
+                .btn-gradient:hover {
+                    background: linear-gradient(90deg, #2575fc 0%, #6a11cb 100%);
+                    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+                }
+
+                /* Input Focus State */
+                #search-bar:focus {
+                    border-color: #6a11cb;
+                    background-color: #fff;
+                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                    outline: none;
+                }
+            </style>
+
+
+
+            <form id="categoryfilter" onchange="sortProducts()">
+                <div class="mb-3">
+                    <label for="categorySelect" class="form-label">Select Category</label>
+                    <select class="form-select" id="categorySelect">
+                        <option value="" disabled selected>Select a category</option>
+                        {{#each categories}}
+
+                        <option value="{{this.id}}">{{this.categoryname}}</option>
+                        {{/each}}
+
+                    </select>
+                </div>
+
+            </form>
+            <select id="sortOptions" onchange="sortProducts()">
+                <option value="default">Sort By</option>
+                <option value="lowToHigh">Price: Low to High</option>
+                <option value="highToLow">Price: High to Low</option>
+                <option value="aA-zZ">aA-zZ</option>
+                <option value="zZ-aA ">zZ-aA</option>
+                <option value="New arrivals">New arrivals</option>
+            </select>
+
+
+
+            <p>Try scrolling the rest of the page to see this option in action.</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('search-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const search = document.getElementById('search-bar').value;
+            const url = window.location.href;
+
+            const parsedUrl = new URL(url);
+
+            if (search) {
+                parsedUrl.searchParams.set('search', search);
+            }
+            window.location.href = parsedUrl.toString();
+        });
+    </script>
+
+
+    <script>
+        let currentPage = 1;
+
+        function sortProducts() {
+            // Get values for category, sort option, and search input
+            const category = document.getElementById('categorySelect').value;
+            const sortOption = document.getElementById('sortOptions').value;
+            const searchInput = document.getElementById('search-bar').value;
+
+            console.log('Current Page:', currentPage);
+            console.log('Sort Option:', sortOption);
+            console.log('Search Input:', searchInput);
+            console.log('Category:', category);
+
+            const currentUrl = new URL(window.location.href);
+            const params = currentUrl.searchParams;
+
+            params.set("page", currentPage);
+
+            if (sortOption !== "default") {
+                params.set("sort", sortOption);
+            } else {
+                params.delete("sort");
+            }
+
+            if (category) {
+                params.set("category", category);
+            } else {
+                params.delete("category");
+            }
+
+            if (searchInput.trim() !== "") {
+                params.set("search", searchInput.trim());
+            } else {
+                params.delete("search");
+            }
+
+            window.location.href = `/user/shop?${params.toString()}`;
+        }
+
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            currentPage = urlParams.get('page') || 1;
+
+
+            document.getElementById('categorySelect').value = urlParams.get('category') || "";
+            document.getElementById('sortOptions').value = urlParams.get('sort') || "default";
+            document.getElementById('search-bar').value = urlParams.get('search') || "";
+        };
+    </script>
+
+    <style>
+        #sortOptions {
+            padding: 10px 15px;
+            /* Add padding for better spacing */
+            border: 1px solid #ccc;
+            /* Light border */
+            border-radius: 5px;
+            /* Rounded corners */
+            background-color: #f8f8f8;
+            /* Light background color */
+            font-size: 16px;
+            /* Increase font size for readability */
+            color: #333;
+            /* Text color */
+            cursor: pointer;
+            /* Change cursor to pointer */
+            transition: background-color 0.3s, border-color 0.3s;
+            /* Smooth transition */
+        }
+
+        /* Change background color and border on hover */
+        #sortOptions:hover {
+            background-color: #eaeaea;
+            /* Slightly darker on hover */
+            border-color: #999;
+            /* Darker border on hover */
+        }
+
+        /* Change background color when the select is focused */
+        #sortOptions:focus {
+            outline: none;
+            /* Remove default outline */
+            border-color: #007bff;
+            /* Change border color on focus */
+            background-color: #fff;
+            /* Change background color on focus */
+        }
+    </style>
+
+    <style>
+        /* Custom styles for the offcanvas */
+        .offcanvas {
+            background-color: black;
+            color: white;
+            transition: all 0.3s ease;
+            /* Smooth transition for offcanvas */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            /* Soft shadow effect */
+        }
+
+        .offcanvas-header {
+            border-bottom: 2px solid red;
+            /* Thicker red border for the header */
+            padding: 1rem;
+            /* More padding for header */
+            background: linear-gradient(90deg, rgba(255, 0, 0, 0.1), rgba(0, 0, 0, 0.7));
+            /* Gradient background */
+        }
+
+        .offcanvas-title {
+            font-size: 1.5rem;
+            /* Increase font size for title */
+            font-weight: bold;
+            /* Bold title */
+        }
+
+        .form-label {
+            color: white;
+            /* White label color */
+            font-weight: 500;
+            /* Medium font weight for labels */
+        }
+
+        .form-select {
+            background-color: #222;
+            /* Darker background for select */
+            color: white;
+            /* White text for select */
+            border: 2px solid red;
+            /* Thicker red border for select */
+            border-radius: 0.25rem;
+            /* Rounded corners for select */
+            transition: border-color 0.3s ease;
+            /* Smooth border transition */
+        }
+
+        .form-select:focus {
+            background-color: #333;
+            /* Slightly darker background on focus */
+            color: white;
+            /* Maintain white text on focus */
+            border-color: #ff6666;
+            /* Lighter red border on focus */
+            outline: none;
+            /* Remove default outline */
+        }
+
+        .form-select:hover {
+            border-color: #ff6666;
+            /* Change border color on hover */
+        }
+
+        .btn-close {
+            filter: invert(1);
+            /* Make close button icon white */
+            transition: transform 0.3s ease;
+            /* Smooth transition for hover effect */
+        }
+
+        .btn-close:hover {
+            transform: scale(1.1);
+
+        }
+
+
+        body {
+            background-color: #f8f9fa;
+
+            font-family: 'Arial', sans-serif;
+
+            line-height: 1.5;
+
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .offcanvas-title {
+                font-size: 1.25rem;
+                /* Adjust title size for smaller screens */
+            }
+
+            .form-label {
+                font-size: 0.9rem;
+                /* Smaller font size for labels on mobile */
+            }
+        }
+    </style>
+
+
+
+
+    <style>
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            /* Smooth transition for hover effects */
+        }
+
+        .product-card:hover {
+            transform: scale(1.05);
+            /* Scale up on hover */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            /* Shadow on hover */
+        }
+
+        .product-image {
+            height: 200px;
+            /* Fixed height for image */
+            object-fit: cover;
+            /* Cover to maintain aspect ratio */
+        }
+
+        .product-title {
+            font-weight: bold;
+            /* Bold title */
+            color: #333;
+            /* Dark color for title */
+        }
+
+        .product-price {
+            color: #ff6666;
+            /* Red color for price */
+            font-size: 1.25rem;
+            /* Larger font size for price */
+        }
+
+        /* card part */
+
+        body {
+            background-color: #dbe2e7;
+            /* Light background for body */
+        }
+
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            /* Smooth transition for hover effects */
+            border: none;
+            /* Remove default border */
+            border-radius: 10px;
+            /* Rounded corners */
+        }
+
+        .product-card:hover {
+            transform: scale(1.05);
+            /* Scale up on hover */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            /* Shadow on hover */
+        }
+
+        .product-image {
+            height: 200px;
+            /* Fixed height for image */
+            object-fit: cover;
+            /* Cover to maintain aspect ratio */
+
+            /* Rounded top corners */
+        }
+
+        .product-title {
+            font-family: 'Lora', serif;
+            /* Elegant font for title */
+            font-weight: 700;
+            /* Bold title */
+            color: #333;
+            /* Dark color for title */
+        }
+
+        .product-text {
+            font-family: 'Roboto', sans-serif;
+            /* Clean font for text */
+            color: #555;
+            /* Darker grey for description text */
+        }
+
+        .product-price {
+            color: #ff6666;
+            /* Red color for price */
+            font-size: 1.25rem;
+            /* Larger font size for price */
+            font-weight: bold;
+            /* Bold price */
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+
+            border: none;
+            /* Remove border */
+            transition: background-color 0.3s;
+            /* Smooth background transition */
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            /* Darker red on hover */
+        }
+    </style>
+    </head>
+
+
+    <section>
+        <div class="container mb-2">
+            <div class="row g-4">
+                <!-- Product 1 -->
+                {{#each products}}
+                <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
+                    <div class="card product-card shadow-sm border-0">
+                        <div style="position: relative; display: inline-block;">
+                            {{#if (gt this.offerPersent 0)}}
+                            <span
+                                style="position: absolute; top: 10px; right: 10px; background: #1ad633; color: #fff; font-size: 14px; font-weight: bold; padding: 3px 8px; border-radius: 5px;">
+                                {{this.offerPersent}}% OFF
+                            </span>
+                            {{/if}}
+                            <!-- Heart Icon for Wishlist -->
+                            <form id="addtowishlist" style="position: absolute; top: 10px; left: 10px;">
+
+                                <input type="hidden" value="{{this.id}}" id="productId">
+                                <button type="submit" style="background: none; border: none; cursor: pointer;">
+                                    <i class="fas fa-heart" style="color: #ff4d4d; font-size: 20px;"></i>
+                                </button>
+                            </form>
+                            <img src="/{{this.image.[0]}}" height="170px" alt="Product 1"
+                                class="card-img-top product-image">
+                        </div>
+
+                        <div class="card-body text-center">
+                            <h6 class="card-title mb-2" style="font-weight: 600; color: #333;">{{this.name}}</h6>
+                            {{#if (gt this.offerprice 0)}}
+                            <p>
+                                <span class="price"
+                                    style="text-decoration: line-through; color: #d9534f;">₹{{this.realprice}}</span>
+                                <span class="offer-price"
+                                    style="color: #5cb85c; font-weight: bold;">₹{{this.offerprice}}</span>
+                            </p>
+                            {{else}}
+                            <p>
+                                <span class="price"
+                                    style="color: #5cb85c; font-weight: bold;">₹{{this.realprice}}</span>
+                            </p>
+                            {{/if}}
+                            <p style="font-size: small;margin:0%;color:#1ad633">{{this.quantity}} In Stock</p>
+                            <form action="/user/details/{{this.id}}" method="get">
+                                <button class="btn btn-primary btn-sm" type="submit"
+                                    style="width: 100%; font-weight: 500;">
+                                    View Details
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+        <!-- SweetAlert2 CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+        <!-- SweetAlert2 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+
+        <script>
+            document.querySelectorAll('#addtowishlist').forEach(form => {
+                form.addEventListener('submit', async function (event) {
+                    event.preventDefault();
+                    const product = this.querySelector('#productId').value;
+
+                    try {
+                        const response = await fetch('/user/addtowishlist', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ productId: product }),
+                        });
+
+                        if (response.ok) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: 'Successfully added to the wishlist',
+                                showConfirmButton: false,
+                                timer: 1500,
+                            });
+                        } else {
+                            const res = await response.text();
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning',
+                                text: res,
+                            });
+                        }
+                    } catch (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while adding to the wishlist.',
+                        });
+                    }
+                });
+            });
+        </script>
+
+
+    </section>
+
+    <nav aria-label="Page navigation" style="margin-bottom: 10px;">
+        <ul class="pagination justify-content-center">
+            {{#if (gt currentPage 1)}}
+            <li class="page-item">
+                <a class="page-link" href="/user/shop?page={{subtract currentPage 1}}&sort={{sortOption}}">Previous</a>
+            </li>
+            {{/if}}
+            {{#each (range 1 totalPages)}}
+            <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+                <a class="page-link" href="/user/shop?page={{this}}&sort={{sortOption}}">{{this}}</a>
+            </li>
+            {{/each}}
+            {{#if (lt currentPage totalPages)}}
+            <li class="page-item">
+                <a class="page-link" href="/user/shop?page={{add currentPage 1}}&sort={{sortOption}}">Next</a>
+            </li>
+            {{/if}}
+        </ul>
+    </nav>
+
+
+    </div>
+
+
+    <style>
+        .product-card {
+            margin-bottom: 20px;
+            /* Space between cards */
+            transition: transform 0.3s;
+            /* Smooth transform on hover */
+        }
+
+        .product-card:hover {
+            transform: scale(1.05);
+            /* Slightly enlarge the card on hover */
+        }
+
+        .product-price {
+            font-weight: bold;
+            /* Bold font for price */
+            font-size: 1.2rem;
+            /* Larger font size for price */
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            /* Bootstrap danger color */
+            border-color: #dc3545;
+            /* Match border with background */
+        }
+    </style>
+
+
+    <footer class="bg-dark text-white ">
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>About Us</h5>
+                    <p>TimeHaven is your go-to destination for stylish and affordable watches. We believe in offering
+                        quality products with exceptional service.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Customer Service</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">Contact Us</a></li>
+                        <li><a href="#" class="text-white">Returns</a></li>
+                        <li><a href="#" class="text-white">Shipping Information</a></li>
+                        <li><a href="#" class="text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Follow Us</h5>
+                    <ul class="list-unstyled d-flex">
+                        <li class="me-3">
+                            <a href="#" class="text-white">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                        </li>
+                        <li class="me-3">
+                            <a href="#" class="text-white">
+                                <i class="bi bi-twitter"></i>
+                            </a>
+                        </li>
+                        <li class="me-3">
+                            <a href="#" class="text-white">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-white">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4 bg-white">
+            <div class="text-center">
+                <p>&copy; 2024 TimeHaven. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- Bootstrap Icons CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+</body>
+
+</html>

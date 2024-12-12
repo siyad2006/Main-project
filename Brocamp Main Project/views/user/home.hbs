@@ -1,0 +1,294 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="/css/homestyle.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<style>
+    @media only screen and (max-width: 768px) {
+        .mar {
+            margin-top: 55px;
+        }
+    }
+</style>
+
+<body>
+    <nav class="navbar na navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white ms-2 head-logo" href="#">
+                <img src="/img/download copy.png" alt="Logo" width="40" height="34"
+                    class="d-inline-block align-text-top"> TimeHaven
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/user/home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/user/shop">Shopping</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Contact Us</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    <a href="#" class="text-white ms-3">
+                        <i class="bi bi-search"></i>
+                    </a>
+                    <a href="/user/wishlist" class="text-white ms-3">
+                        <i class="bi bi-heart"></i>
+                    </a>
+                    <a href="/user/cart/{{userid}}" class="text-white ms-3">
+                        <i class="bi bi-cart"></i>
+                    </a>
+                    <a href="/user/profile" class="text-white ms-3">
+                        <i class="bi bi-person"></i>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="carouselExampleDark" class="carousel carousel-dark slide">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active"
+                aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1"
+                aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2"
+                aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner mar">
+            <div class="carousel-item active" data-bs-interval="10000">
+                <img src="/img/banner1.jpg" class="d-block w-100" alt="...">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>First slide label</h5>
+                    <p>Some representative placeholder content for the first slide.</p>
+                </div>
+            </div>
+            <div class="carousel-item" data-bs-interval="2000">
+                <img src="/img/18899295.jpg" class="d-block w-100" alt="...">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Second slide label</h5>
+                    <p>Some representative placeholder content for the second slide.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="/img/4549459121.jpg" class="d-block w-100" alt="...">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Third slide label</h5>
+                    <p>Some representative placeholder content for the third slide.</p>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        .card {
+            width: 100%;
+            /* Ensure card takes full width */
+            overflow: hidden;
+            /* Hide any overflow from the image */
+            margin: 0;
+            /* Remove any default margin */
+        }
+
+        .card img {
+            width: 100%;
+            /* Full width image */
+            height: auto;
+            /* Maintain aspect ratio */
+            max-height: 200px;
+            /* Set a max height for images */
+            object-fit: cover;
+            /* Crop the image to cover the card */
+        }
+
+        .price-tag {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            /* Adjust size as needed */
+            font-weight: 700;
+            /* Bold */
+            color: #1a0b0b;
+            /* Dark color for visibility */
+        }
+
+        .price-tag2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            /* Adjust size as needed */
+            font-weight: 700;
+            /* Bold */
+            color: #333;
+            /* Dark color for visibility */
+        }
+
+        .card {
+            transition: box-shadow 0.3s ease;
+            /* Smooth transition for the shadow */
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            /* Shadow effect on hover */
+        }
+
+        .btn-shadow {
+            transition: box-shadow 0.3s ease;
+            /* Smooth transition for the shadow */
+        }
+
+        .btn-shadow:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            /* Shadow effect on hover */
+        }
+
+        /* Responsive layout */
+        @media (max-width: 576px) {
+            .card {
+                height: auto;
+                /* Allow card height to adjust based on content */
+            }
+        }
+    </style>
+
+
+
+
+    <div class="container mt-5 mb-3">
+        <div class="row">
+            {{#each products}}
+            <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
+                <!-- Card container -->
+                <div class="card h-100">
+                    <!-- Product image -->
+                    <img src="/{{this.image.[0]}}" class="card-img-top" alt="{{this.title}}">
+
+                    <!-- Card body -->
+                    <div class="card-body p-2">
+                        <!-- Product title -->
+                        <h6 class="card-title text-center mb-1" style="font-size: 0.9em;">
+                            {{this.name}}
+                        </h6>
+
+                        <!-- Price display -->
+                        <p class="card-text price-tag text-center mb-2" style="min-height: 45px; font-size: 0.8em;">
+                            {{#if this.offerprice}}
+                            <!-- Price with offer -->
+                            <span style="text-decoration: line-through; color: grey; font-size: 0.75em;">
+                                RS: {{this.realprice}}
+                            </span><br>
+                            <span style="font-weight: bold; color: #d9534f; font-size: 0.85em;">
+                                Offer Price: RS: {{this.offerprice}}
+                            </span><br>
+                            {{#if this.offerPersent}}
+                            <span class="text-success" style="font-size: 0.7em;">
+                                Save {{this.offerPersent}}%
+                            </span>
+                            {{/if}}
+                            {{else}}
+                            <!-- Regular price -->
+                            <span style="font-weight: bold; color: #000; font-size: 0.85em;">
+                                RS: {{this.realprice}}
+                            </span>
+                            {{/if}}
+                        </p>
+
+                        <!-- Stock display -->
+                        <p class="text-center mb-2" style="font-size: 0.8rem; color: green;">
+                            {{this.quantity}} stocks left
+                        </p>
+
+                        <!-- Action button -->
+                        <div class="d-flex justify-content-center">
+                            <a href="/user/details/{{this.id}}" class="btn btn-shadow btn-sm px-2"
+                                style="background-color: #222C74; color: white; font-size: 0.8em;">
+                                Show
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+
+
+    <footer class="bg-dark text-white ">
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>About Us</h5>
+                    <p>TimeHaven is your go-to destination for stylish and affordable watches. We believe in offering
+                        quality products with exceptional service.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Customer Service</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">Contact Us</a></li>
+                        <li><a href="#" class="text-white">Returns</a></li>
+                        <li><a href="#" class="text-white">Shipping Information</a></li>
+                        <li><a href="#" class="text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Follow Us</h5>
+                    <ul class="list-unstyled d-flex">
+                        <li class="me-3">
+                            <a href="#" class="text-white">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                        </li>
+                        <li class="me-3">
+                            <a href="#" class="text-white">
+                                <i class="bi bi-twitter"></i>
+                            </a>
+                        </li>
+                        <li class="me-3">
+                            <a href="#" class="text-white">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-white">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4 bg-white">
+            <div class="text-center">
+                <p>&copy; 2024 TimeHaven. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</body>
