@@ -207,13 +207,13 @@
           <td>{{this.isblocked}}</td>
           {{!-- <form action="/admin/block" method="post"></form> --}}
           <td>
-            <form action="/admin/blockcategory/{{this.id}}" onsubmit=" alerts(event)" method="POST">
+            <form  onsubmit=" return block('{{this.id}}')" method="POST">
               <input type="submit" value="Unlist" style="background-color: red; color:white">
 
             </form>
           </td>
           <td>
-            <form action="/admin/unblockcategory/{{this.id}}" onsubmit=" alerts(event)" method="POST">
+            <form  onsubmit=" return unblock('{{this.id}}')" method="POST">
               <input type="submit" value="List" style="background: green; color:white">
             </form>
           </td>
@@ -228,6 +228,88 @@
 
       </tbody>
     </table>
+
+    <script>
+       function block(category) {
+        event.preventDefault()
+
+        Swal.fire({
+          title: 'Are you sure?',
+          text: 'Do you want to block this category?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#28a745',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Yes, block!',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            fetch(`/admin/blockcategory/${category}`, {
+              method: 'PATCH',
+              headers: {
+                'content-type': 'application/json'
+              },
+              body: JSON.stringify({ category: category })
+            }).then((response) => {
+              if (response.ok) {
+                return response.json().then(() => {
+
+                  window.location.reload()
+
+                })
+
+              } else {
+                Swal.fire({
+                  icon: 'warning',
+                  title: 'warnig',
+                  text: 'an error occured'
+                })
+              }
+            })
+          }
+        })
+      }
+
+      
+       function unblock(category) {
+        event.preventDefault()
+
+        Swal.fire({
+          title: 'Are you sure?',
+          text: 'Do you want to block this category?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#28a745',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Yes, block!',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            fetch(`/admin/unblockcategory/${category}`, {
+              method: 'PATCH',
+              headers: {
+                'content-type': 'application/json'
+              },
+              body: JSON.stringify({ category: category })
+            }).then((response) => {
+              if (response.ok) {
+                return response.json().then(() => {
+
+                  window.location.reload()
+
+                })
+
+              } else {
+                Swal.fire({
+                  icon: 'warning',
+                  title: 'warnig',
+                  text: 'an error occured'
+                })
+              }
+            })
+          }
+        })
+      }
+
+    </script>
 
     <div class="pagination">
       {{#if (gt totalPages 1)}}

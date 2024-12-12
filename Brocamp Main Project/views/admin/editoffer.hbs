@@ -140,40 +140,49 @@
 
 <body>
 
-   
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <ul class="navbar-nav w-100">
-      <li class="nav-item">
-        <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie" style="margin-right: 10px;"></i> Statistics</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users" style="margin-right: 10px;"></i> User Management</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/admin/products"><i class="fas fa-box" style="margin-right: 10px;"></i> Product Management</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice" style="margin-right: 10px;"></i> Order Management</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link " href="/admin/salesreport"><i class="fas fa-chart-line" style="margin-right: 10px;"></i> Sales Report</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link active" href="/admin/offer"><i class="fas fa-gift" style="margin-right: 10px;"></i> Offer</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt" style="margin-right: 10px;"></i> Coupon</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link " href="/admin/category"><i class="fas fa-tags" style="margin-right: 10px;"></i> Category</a>
-      </li>
 
-      <li class="nav-item">
-        <a class="nav-link" href="/admin/logout"><i class="fas fa-cog" style="margin-right: 10px;"></i> Logout</a>
-      </li>
-    </ul>
-  </div>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <ul class="navbar-nav w-100">
+            <li class="nav-item">
+                <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie"
+                        style="margin-right: 10px;"></i> Statistics</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users" style="margin-right: 10px;"></i>
+                    User Management</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/products"><i class="fas fa-box" style="margin-right: 10px;"></i>
+                    Product Management</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice"
+                        style="margin-right: 10px;"></i> Order Management</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " href="/admin/salesreport"><i class="fas fa-chart-line"
+                        style="margin-right: 10px;"></i> Sales Report</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/admin/offer"><i class="fas fa-gift" style="margin-right: 10px;"></i>
+                    Offer</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt" style="margin-right: 10px;"></i>
+                    Coupon</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " href="/admin/category"><i class="fas fa-tags" style="margin-right: 10px;"></i>
+                    Category</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/logout"><i class="fas fa-cog" style="margin-right: 10px;"></i>
+                    Logout</a>
+            </li>
+        </ul>
+    </div>
 
     <!-- Sidebar toggle button -->
     <button class="sidebar-toggler" id="sidebar-toggler">
@@ -182,80 +191,115 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
- 
-{{#if va}}
-<script>
-Swal.fire({
-    icon: 'warning',
-    title: 'warning',
-    text: '{{va}}' // Wrap va in quotes to ensure it is treated as a string
-})
-</script>
-{{/if}}
+
+    {{#if va}}
+    <script>
+        Swal.fire({
+            icon: 'warning',
+            title: 'warning',
+            text: '{{va}}' // Wrap va in quotes to ensure it is treated as a string
+        })
+    </script>
+    {{/if}}
 
     <!-- Main content -->
     <div class="content" id="content">
         <div class="offer-form" style="margin-top: 70px;">
-            <h4>Edit  Offer</h4>
-            <form id="offerForm" action="/admin/posteditoffer/{{offer.id}}"  method="post">
-                <div class="form-group">
-                    <label for="offerName">Offer Name</label>
-                    <input name="name" value="{{offer.name}}" type="text" class="form-control" id="offerName"
-                        placeholder="Enter offer name" required>
-                </div>
-                {{!-- <div class="form-group">
-                    <label for="offerDescription">Description</label>
-                    <textarea name="discription" class="form-control" id="offerDescription"
-                        placeholder="Enter offer description" rows="3"></textarea>
-                </div> --}}
+            <h4>Edit Offer</h4>
+            {{!-- <form id="offerForm" action="/admin/posteditoffer/{{offer.id}}" method="post"> --}}
+                <input type="hidden" value="{{offer.id}}" id="offerid">
+                <form id="formdata">
 
-                <div class="form-group" style="font-weight: 700;">
+                    <div class="form-group">
+                        <label for="offerName">Offer Name</label>
+                        <input name="name" value="{{offer.name}}" type="text" class="form-control" id="offerName"
+                            placeholder="Enter offer name" required>
+                    </div>
+                    {{!-- <div class="form-group">
+                        <label for="offerDescription">Description</label>
+                        <textarea name="discription" class="form-control" id="offerDescription"
+                            placeholder="Enter offer description" rows="3"></textarea>
+                    </div> --}}
 
-                    selected category : {{category.categoryname}}
-                </div>
+                    <div class="form-group" style="font-weight: 700;">
+
+                        selected category : {{category.categoryname}}
+                    </div>
 
 
-                {{!-- <select name="category" id="category" class="custom-select" name="category">
-                    <option value="default" disabled selected>Select a Category</option>
-                    {{#each category}}
-                    <option value="{{this.id}}">{{categoryname}}</option>
-                    {{/each}}
-                </select> --}}
-                <input type="hidden" value="{{category._id}}" name="category">
-                <div class="form-group">
-                    <label for="discount">Discount Percentage</label>
-                    <input type="number" value="{{offer.discountValue}}" name="persent" class="form-control"
-                        id="discount" placeholder="Enter discount percentage" min="0" max="100" required>
-                </div>
 
-<input type="hidden" id="startDate" value="{{start}}">
+                    <input type="hidden" value="{{category._id}}" name="category">
+                    <div class="form-group">
+                        <label for="discount">Discount Percentage</label>
+                        <input type="number" value="{{offer.discountValue}}" name="persent" class="form-control"
+                            id="discount" placeholder="Enter discount percentage" min="0" max="100" required>
+                    </div>
 
-                <div class="form-group" >
-                    <label for="discount">Start Date</label>
-                    <input type="date" id="start" name="startdate" value="{{offer.start}}" class="form-control"
-                        required>
-                </div>
+                    <input type="hidden" id="startDate" value="{{start}}">
 
-                <div class="form-group">
-                    <label for="discount">Expire Date</label>
-                    <input type="date" id="expire" name="date" class="form-control" required>
-                </div>
+                    <div class="form-group">
+                        <label for="discount">Start Date</label>
+                        <input type="date" id="start" name="startdate" value="{{offer.start}}" class="form-control"
+                            required>
+                    </div>
 
-                <button type="submit" class="btn btn-custom mt-2">Save Offer</button>
-            </form>
+                    <div class="form-group">
+                        <label for="discount">Expire Date</label>
+                        <input type="date" id="expire" name="date" class="form-control" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-custom mt-2">Save Offer</button>
+                </form>
         </div>
     </div>
 
+ <script>
+     
+    document.getElementById('formdata').addEventListener('submit', async (event) => {
+         
+        event.preventDefault();
 
-    {{!-- <script>
-        function validation(event){
-            eve.preventDefault()
-            return false
+        console.log('Entered the submit function');
+
+        
+        const name = document.getElementById('offerName').value;
+        const startDate = document.getElementById('start').value;
+        const end = document.getElementById('expire').value;
+        const persent = document.getElementById('discount').value;
+
+        console.log({ name, startDate, end, persent });
+ 
+        const data = { name, startdate: startDate, date: end, persent };
+        const offerid = document.getElementById('offerid').value;
+
+        console.log('Offer ID:', offerid);
+
+        try { 
+            const result = await fetch(`/admin/posteditoffer/${offerid}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+
+            console.log('Fetch request sent');
+            const response = await result.json();
+            console.log('Response from server:', response);
+ 
+            if (response.success) {
+                // Handle success (e.g., show a success message or redirect)
+                window.location.href='/admin/offer'
+                console.log('Offer updated successfully');
+            } else {
+                alert('An error occurred when updating from the backend');
+            }
+        } catch (error) {
+            console.error('Error during fetch:', error);
         }
-    </script> --}}
+    });
+</script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-   
+
 
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

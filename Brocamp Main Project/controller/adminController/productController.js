@@ -210,7 +210,8 @@ const blockproduct = async (req, res) => {
 
         
         await productDB.findByIdAndUpdate({ _id: ID }, { isblocked: true })
-        res.redirect('/admin/products')
+        // res.redirect('/admin/products')
+        res.json({success:true})
     } catch (err) {
         console.log(err)
     }
@@ -228,7 +229,8 @@ const unblockproduct = async (req, res) => {
         }
 
         await productDB.findByIdAndUpdate({ _id: ID }, { isblocked: false })
-        res.redirect('/admin/products')
+        // res.redirect('/admin/products')
+        return res.json({success:true})
 
     } catch (error) {
         console.log(error);
@@ -236,18 +238,33 @@ const unblockproduct = async (req, res) => {
     }
 }
 
+// const deleteproduct = async (req, res) => {
+//     try {
+
+//         const ID = req.params.id
+//         await productDB.findByIdAndDelete(ID)
+//         console.log('deleted ')
+//         // res.redirect('/admin/products')
+//         return res.status(200)
+
+//     } catch {
+//         console.log('an error occured wilte delete product ');
+
+//     }
+// }
+
 const deleteproduct = async (req, res) => {
     try {
-
-        const ID = req.params.id
-        await productDB.findByIdAndDelete(ID)
-        res.redirect('/admin/products')
-
-    } catch {
-        console.log('an error occured wilte delete product ');
-
+      const ID = req.params.id;
+      await productDB.findByIdAndDelete(ID);
+      console.log('Deleted');
+      return res.status(200).json({ message: 'Product deleted successfully' });
+    } catch (error) {
+      console.error('An error occurred while deleting the product:', error);
+      return res.status(500).json({ message: 'An error occurred while deleting the product' });
     }
-}
+  };
+  
 
 
 

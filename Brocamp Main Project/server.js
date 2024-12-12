@@ -112,6 +112,14 @@ try {
 
 }
 
+// mongoose.connect(mongoConnect, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+// })
+// .then(() => console.log('MongoDB connected successfully'))
+// .catch(err => console.error('Connection error:', err));
+
+
 
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/user/register' }), (req, res) => {

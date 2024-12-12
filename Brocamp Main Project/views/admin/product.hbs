@@ -125,30 +125,36 @@
 
 <body>
 
- 
+
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <ul class="navbar-nav w-100">
       <li class="nav-item">
-        <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie" style="margin-right: 10px;"></i> Statistics</a>
+        <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie" style="margin-right: 10px;"></i>
+          Statistics</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users" style="margin-right: 10px;"></i> User Management</a>
+        <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users" style="margin-right: 10px;"></i> User
+          Management</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" href="/admin/products"><i class="fas fa-box" style="margin-right: 10px;"></i> Product Management</a>
+        <a class="nav-link active" href="/admin/products"><i class="fas fa-box" style="margin-right: 10px;"></i> Product
+          Management</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice" style="margin-right: 10px;"></i> Order Management</a>
+        <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice"
+            style="margin-right: 10px;"></i> Order Management</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link " href="/admin/salesreport"><i class="fas fa-chart-line" style="margin-right: 10px;"></i> Sales Report</a>
+        <a class="nav-link " href="/admin/salesreport"><i class="fas fa-chart-line" style="margin-right: 10px;"></i>
+          Sales Report</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/admin/offer"><i class="fas fa-gift" style="margin-right: 10px;"></i> Offer</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt" style="margin-right: 10px;"></i> Coupon</a>
+        <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt" style="margin-right: 10px;"></i>
+          Coupon</a>
       </li>
       <li class="nav-item">
         <a class="nav-link " href="/admin/category"><i class="fas fa-tags" style="margin-right: 10px;"></i> Category</a>
@@ -208,15 +214,19 @@
           <td>
             <div class="d-flex flex-column">
               <div class="d-flex justify-content-between mb-2">
-                <form action="/admin/block/{{this.id}}" onsubmit="return alerts(event)" method="post" class="me-1">
+                <form onsubmit="return block('{{this.id}}')" method="post" class="me-1">
                   <input type="submit" value="Block" class="btn btn-danger">
                 </form>
-                <form action="/admin/unblock/{{this.id}}" onsubmit="return alerts(event)" method="post" class="me-1">
+                <form onsubmit="return unblock('{{this.id}}')" class="me-1">
                   <input type="submit" value="Unblock" class="btn btn-primary">
                 </form>
-                <form action="/admin/deleteproduct/{{this.id}}" onsubmit="return alerts(event)"  method="post">
+                {{!-- <form onsubmit="deleteproduct('{{this.id}}')" method="post">
+                  <input type="submit" value="Delete" class="btn btn-warning">
+                </form> --}}
+                <form onsubmit="return deleteproduct('{{this.id}}')" method="post">
                   <input type="submit" value="Delete" class="btn btn-warning">
                 </form>
+
               </div>
               <form action="/admin/editproduct/{{this.id}}" method="get">
                 <input type="submit" value="Edit" class="btn ms-5" style="background-color: black; color:white;">
@@ -227,28 +237,150 @@
         {{/each}}
       </tbody>
     </table>
-<script>
- 
- async function alerts(event) {
-    if (event) event.preventDefault(); // Prevents form submission by default
-    
-    const result = await Swal.fire({
-        icon: 'warning',
-        title: 'Warning',
-        text: 'Are you sure to perform this action?',
-        showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No'
-    });
 
-    if (result.isConfirmed) {
-        // Allow form submission by using event.target.submit()
-        event.target.submit();
-    } else {
-        console.log('Action cancelled');
-    }
-}
-</script>
+    <script>
+      function block(product) {
+        event.preventDefault()
+
+        Swal.fire({
+          title: 'Are you sure?',
+          text: 'Do you want to block this product?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#28a745',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Yes, block!',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            fetch(`/admin/block/${product}`, {
+              method: 'PATCH',
+              headers: {
+                'content-type': 'application/json'
+              },
+              body: JSON.stringify({ product: product })
+            }).then((response) => {
+              if (response.ok) {
+                return response.json().then(() => {
+
+                  window.location.reload()
+
+                })
+
+              } else {
+                Swal.fire({
+                  icon: 'warning',
+                  title: 'warnig',
+                  text: 'an error occured'
+                })
+              }
+            })
+          }
+        })
+      }
+
+
+      function unblock(product) {
+        event.preventDefault()
+
+        Swal.fire({
+          title: 'Are you sure?',
+          text: 'Do you want to unblock this product?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#28a745',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Yes, unblock!',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            fetch(`/admin/unblock/${product}`, {
+              method: 'PATCH',
+              headers: {
+                'content-type': 'application/json'
+              },
+              body: JSON.stringify({ product: product })
+            }).then((response) => {
+              if (response.ok) {
+                return response.json().then(() => {
+
+                  window.location.reload()
+
+                })
+
+              } else {
+                Swal.fire({
+                  icon: 'warning',
+                  title: 'warnig',
+                  text: 'an error occured'
+                })
+              }
+            })
+          }
+        })
+      }
+    </script>
+
+    <script>
+      function deleteproduct(product) {
+        event.preventDefault();
+        console.log('This is product ID:', product);
+
+        Swal.fire({
+          title: 'Are you sure?',
+          text: 'Do you want to delete this product?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#28a745',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Yes, delete!',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            fetch(`/admin/deleteproduct/${product}`, {
+              method: 'DELETE',
+            })
+              .then((result) => {
+                if (result.ok) {
+
+                  window.location.reload();
+
+                } else {
+                  return result.json().then((data) => {
+                    Swal.fire('Error!', data.message || 'Failed to delete the product.', 'error');
+                  });
+                }
+              })
+              .catch((error) => {
+                console.error('Error:', error);
+                Swal.fire('Error!', 'An error occurred while deleting the product.', 'error');
+              });
+          }
+        });
+
+        return false;
+      }
+    </script>
+
+    <script>
+
+      async function alerts(event) {
+        if (event) event.preventDefault(); // Prevents form submission by default
+
+        const result = await Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: 'Are you sure to perform this action?',
+          showCancelButton: true,
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No'
+        });
+
+        if (result.isConfirmed) {
+          // Allow form submission by using event.target.submit()
+          event.target.submit();
+        } else {
+          console.log('Action cancelled');
+        }
+      }
+    </script>
     <!-- Pagination -->
     <nav aria-label="Page navigation example">
       <ul class="pagination justify-content-center">

@@ -322,7 +322,8 @@ exports.posteditoffer = async (req, res) => {
         discountValue: persent
     }).then(() => {
         console.log('offer updated successfully ')
-        res.redirect('/admin/offer')
+        // res.redirect('/admin/offer')
+        return res.json({success:true})
     })
 
 }

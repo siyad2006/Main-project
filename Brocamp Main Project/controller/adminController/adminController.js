@@ -318,24 +318,43 @@ const dashboard = async (req, res) => {
 }
 
 
-// for block user 
+// // for block user 
+// const blockuser = async (req, res) => {
+//     const page = req.query.page || 1
+
+//     const val = req.params.id
+//     console.log(val)
+
+
+//     try {
+//         await UserDB.findByIdAndUpdate(val, { isblocked: true })
+//         // res.redirect(`/admin/usermanage?page=${page}`)
+//         return res.status(200)
+//         console.err('user blocked')
+//     } catch (err) {
+//         console.log(err)
+//     }
+
+
+// }
+
 const blockuser = async (req, res) => {
-    const page = req.query.page || 1
-
-    const val = req.params.id
-    console.log(val)
-
+    const val = req.params.id; // Extract user ID from request params
+    const page = req.query.page || 1; // Optional query parameter for redirection
 
     try {
-        await UserDB.findByIdAndUpdate(val, { isblocked: true })
-        res.redirect(`/admin/usermanage?page=${page}`)
-        console.err('user blocked')
+        const updatedUser = await UserDB.findByIdAndUpdate(val, { isblocked: true });
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+        console.log('User blocked:', val);
+        return res.status(200).json({ message: 'User successfully blocked.', userId: val });
     } catch (err) {
-        console.log(err)
+        console.error('Error blocking user:', err);
+        return res.status(500).json({ message: 'Internal server error.' });
     }
+};
 
-
-}
 
 
 // for ubblock user
@@ -347,9 +366,11 @@ const unblockuser = async (req, res) => {
     try {
         await UserDB.findByIdAndUpdate(val, { isblocked: false })
         console.warn('user inblocked ')
-        res.redirect(`/admin/usermanage?page=${page}`)
+        // res.redirect(`/admin/usermanage?page=${page}`)
+        return res.status(200).json({messasge:'user unblocked '})
     } catch (err) {
         console.log(err)
+        return res.status(500).json({ message: 'Internal server error.' });
     }
 
 }
@@ -463,7 +484,9 @@ const blockcategory = async (req, res) => {
 
         await CategoryDB.findByIdAndUpdate(ID, { isblocked: 'Unlisted' })
 
-        res.redirect('/admin/category')
+        // res.redirect('/admin/category')
+        console.log('edited the category ')
+        return res.json({success:true})
 
 
 
@@ -489,7 +512,8 @@ const unblockcategory = async (req, res) => {
     try {
 
         await CategoryDB.findByIdAndUpdate(ID, { isblocked: 'Listed' })
-        res.redirect('/admin/category')
+        // res.redirect('/admin/category')
+        return res.json({success:true})
 
     } catch (err) {
         console.log(err);
