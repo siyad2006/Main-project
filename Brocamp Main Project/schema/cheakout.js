@@ -87,6 +87,10 @@ const cheakoutSchema = new Schema({
         type: Boolean,
         required: false,
         default: false
+    },
+    order_Id:{
+        type:String,
+            require:true
     }
     // orderId:{
     //     type:String,

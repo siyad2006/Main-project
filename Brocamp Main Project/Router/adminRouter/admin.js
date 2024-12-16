@@ -50,7 +50,7 @@ router.post('/deletecoupun/:id',coupuncontroller.deletecoupun)
 router.get('/addoffer',adminAuth.isAdmin,offer.addoffer)
 router.post('/createoffer',offer.createoffer)
 router.get('/offer',adminAuth.isAdmin,offer.getoffer)
-router.post('/deleteoffer/:id',offer.deleteoffer)
+router.delete('/deleteoffer/:id',offer.deleteoffer)
 router.get('/editoffer/:id',adminAuth.isAdmin,offer.editoffer)
 
 router.patch('/posteditoffer/:id',offer.posteditoffer)

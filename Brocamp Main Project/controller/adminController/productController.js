@@ -19,7 +19,7 @@ const addproduct = async (req, res) => {
 
 const add = async (req, res) => {
     const val = req.body;
-    console.log(val.regularprice)
+ 
 
     const imagePaths = [];
 
@@ -115,7 +115,7 @@ const postEdit = async (req, res) => {
                     realprice: val.regularprice
                 }
             );
-            console.log('offer product updated successfully ')
+          
             return res.redirect('/admin/products')
 
         }
@@ -205,10 +205,7 @@ const blockproduct = async (req, res) => {
                 $pull: { products: ID }
             })
         }
-
-        console.log('complete the task and entered to anotehr codes')
-
-        
+  
         await productDB.findByIdAndUpdate({ _id: ID }, { isblocked: true })
         // res.redirect('/admin/products')
         res.json({success:true})
@@ -237,27 +234,13 @@ const unblockproduct = async (req, res) => {
 
     }
 }
-
-// const deleteproduct = async (req, res) => {
-//     try {
-
-//         const ID = req.params.id
-//         await productDB.findByIdAndDelete(ID)
-//         console.log('deleted ')
-//         // res.redirect('/admin/products')
-//         return res.status(200)
-
-//     } catch {
-//         console.log('an error occured wilte delete product ');
-
-//     }
-// }
+ 
 
 const deleteproduct = async (req, res) => {
     try {
       const ID = req.params.id;
       await productDB.findByIdAndDelete(ID);
-      console.log('Deleted');
+      
       return res.status(200).json({ message: 'Product deleted successfully' });
     } catch (error) {
       console.error('An error occurred while deleting the product:', error);

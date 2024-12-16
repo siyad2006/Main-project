@@ -9,7 +9,7 @@ const path = require('path');
 const xlsx = require('xlsx');
 const walletDB = require('../../schema/wallet')
 const productDB = require('../../schema/productschema')
-const categoryDB= require('../../schema/category')
+const categoryDB = require('../../schema/category')
 
 exports.getordermanage = async (req, res) => {
   let limit = 10
@@ -39,7 +39,7 @@ exports.getordermanage = async (req, res) => {
 
 exports.changestatus = async (req, res) => {
   const { orderid, status } = req.body
-  console.log(orderid, status)
+
   const nowdate = new Date();
   if (status == 'canceled') {
 
@@ -54,7 +54,7 @@ exports.changestatus = async (req, res) => {
       const wallet = await walletDB.findOne({ user: userid })
 
       if (wallet) {
-        console.log('User already has a wallet');
+
 
         const existingWallet = await walletDB.findOne({ user: userid }, { amount: 1, _id: 0 });
 
@@ -62,7 +62,6 @@ exports.changestatus = async (req, res) => {
           throw new Error('Wallet not found for user');
         }
 
-        console.log('thi is the  ', existingWallet)
         const newAmount = wallet.amount += order.totalprice
         await walletDB.updateOne(
           { user: userid },
@@ -86,21 +85,19 @@ exports.changestatus = async (req, res) => {
 
           const product = await productDB.findById(productid)
 
-          if(product){
-              const category = await categoryDB.findById(product.category)
+          if (product) {
+            const category = await categoryDB.findById(product.category)
 
-          if (category) {
-            console.log('entered to the category ')
+            if (category) {
+              let categorysold = Number(category.sold -= qty)
 
-            let categorysold = Number(category.sold -= qty)
-
-            category.sold = categorysold
-            await category.save()
-          }
+              category.sold = categorysold
+              await category.save()
+            }
 
           }
 
-        
+
           if (product) {
             const productqty = Number(product.quantity += qty)
             const soldqty = Number(product.sold -= qty)
@@ -110,7 +107,7 @@ exports.changestatus = async (req, res) => {
             })
           } else {
 
-            console.log(`Product with ID ${item.productId} does not exist. Skipping...`);
+            // console.log(`Product with ID ${item.productId} does not exist. Skipping...`);
             continue; // Skip this iteration and move to the next item
 
           }
@@ -150,7 +147,7 @@ exports.changestatus = async (req, res) => {
           const category = await categoryDB.findById(product.category)
 
           if (category) {
-            console.log('entered to the category ')
+
 
             let categorysold = Number(category.sold -= qty)
 
@@ -169,9 +166,7 @@ exports.changestatus = async (req, res) => {
             })
 
           } else {
-
-            console.log(`Product with ID ${item.productId} does not exist. Skipping...`);
-            continue;  
+            continue;
 
           }
 
@@ -197,7 +192,7 @@ exports.changestatus = async (req, res) => {
 
         const product = await productDB.findById(productid)
 
-        
+
 
         if (product) {
           const productqty = Number(product.quantity += qty)
@@ -208,7 +203,7 @@ exports.changestatus = async (req, res) => {
           })
         } else {
 
-          console.log(`Product with ID ${item.productId} does not exist. Skipping...`);
+          // console.log(`Product with ID ${item.productId} does not exist. Skipping...`);
           continue; // Skip this iteration and move to the next item
 
         }
@@ -251,12 +246,12 @@ exports.getsalesreport = async (req, res) => {
   try {
     const { filter, startDate, endDate } = req.query;
 
-    let query = { status: { $nin: ['canceled', 'return','payment-pending'] } };
+    let query = { status: { $nin: ['canceled', 'return', 'payment-pending'] } };
     let finalStartDate = new Date();
     let finalEndDate = new Date();
 
     if (startDate > endDate) {
-      console.log('entered to the condition code ')
+      // console.log('entered to the condition code ')
       req.flash('date', 'cannot start date less than send date ')
       return res.redirect('/admin/salesreport')
     }
@@ -280,10 +275,7 @@ exports.getsalesreport = async (req, res) => {
           break;
       }
     }
-
-    console.log('start and end date', startDate, endDate)
-
-
+ 
 
     if (startDate && endDate) {
       finalStartDate = new Date(startDate) || Date.now();
@@ -295,12 +287,24 @@ exports.getsalesreport = async (req, res) => {
       $lte: finalEndDate
 
     };
-
-    console.log('after final start and end date ', finalStartDate, finalEndDate)
-
+    let page = parseInt(req.query.page) || 1;
+    let limit = 10;
+    let skip = (page - 1) * limit;
+ 
     const salesData = await cheackoutDB.find(query)
       .populate('products.productId')
       .populate('userID')
+
+    const salesDatas = await cheackoutDB.find(query)
+      .populate('products.productId')
+      .populate('userID')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+ 
+    const totalSales = await cheackoutDB.countDocuments(query);
+    const totalPages = Math.ceil(totalSales / limit); // Total pages
+
 
 
     let totalOrders = salesData.length;
@@ -318,8 +322,7 @@ exports.getsalesreport = async (req, res) => {
     const totalOffer = offer.length > 0 ? offer[0].totaloffer : 0;
     totalDiscount += totalOffer
 
-
-    console.log(totalDiscount)
+ 
 
     // this is the original 
     // const coupunoffer = await coupunDB.find().populate('user');
@@ -339,10 +342,9 @@ exports.getsalesreport = async (req, res) => {
     const coupunAmount = await cheackoutDB.aggregate([
       { $match: { createdAt: { $gte: finalStartDate, $lte: finalEndDate }, status: { $nin: ['return,canceled'] } } }, { $group: { _id: null, coupun: { $sum: '$applayedcoupun' } } }, { $project: { _id: 0, coupun: 1 } }
     ])
-    console.log('coupun amount ', coupunAmount)
+     
     totalDiscount += coupunAmount[0]?.coupun || 0
-
-    console.log(coupundiscount)
+ 
 
     salesData.forEach(order => {
       totalRevenue += order.totalprice || 0;
@@ -354,20 +356,16 @@ exports.getsalesreport = async (req, res) => {
     req.session.totalOrders = totalOrders
     req.session.totalRevenue = totalRevenue
     req.session.totalDiscount = totalDiscount
-
-    console.log('totalOrders', totalOrders,
-      'totalRevenue', totalRevenue,
-      'totalItemsSold', totalItemsSold,
-      'totalDiscount', totalDiscount,
-      'salesData', salesData);
-    console.log(req.session)
+ 
     res.render('admin/salesreport', {
       totalOrders,
       totalRevenue,
       totalItemsSold,
       totalDiscount,
-      salesData,
+      salesDatas,
       valid: req.flash('date'),
+      currentPage: page,
+      totalPages
 
     });
   } catch (error) {
@@ -380,14 +378,13 @@ exports.getsalesreport = async (req, res) => {
 exports.downloadpdf = async (req, res) => {
   try {
     const { filter, startDate, endDate } = req.query;
-    console.log(filter, startDate, endDate)
-
-    console.log('load pdf startted ')
+    
+ 
     let start = new Date();
     let end = new Date();
-    console.log(start, end)
+  
     if (startDate && endDate) {
-      console.log('entered to the start edn')
+    
       start = new Date(startDate);
       end = new Date(endDate);
     }
@@ -395,12 +392,12 @@ exports.downloadpdf = async (req, res) => {
     if (filter) {
       switch (filter) {
         case 'daily':
-          console.log('entered to the daily ')
+   
           start.setHours(0, 0, 0, 0);
 
           break;
         case 'weekly':
-          console.log('entered to the weekly ')
+          // console.log('entered to the weekly ')
           start.setDate(start.getDate() - 7);
           break;
         case 'monthly':
@@ -418,10 +415,7 @@ exports.downloadpdf = async (req, res) => {
     if (isNaN(start) || isNaN(end)) {
       return res.status(400).send('Invalid date format');
     }
-
-    console.log(start)
-    console.log(end)
-
+ 
 
     const query = { createdAt: { $gte: start, $lte: end }, status: { $nin: ['return', 'canceled'] } };
     const salesData = await cheackoutDB.find(query)
@@ -472,18 +466,18 @@ exports.downloadpdf = async (req, res) => {
       .fillColor('#2C3E50')
       .text('Sales Report', { align: 'center' })
       .moveDown(0.5);
- 
+
     doc.fontSize(12)
       .fillColor('#7F8C8D')
       .text(`Generated on: ${new Date().toLocaleDateString()}`, { align: 'center' })
       .moveDown(1.5);
- 
+
     doc.rect(50, doc.y, 500, 100)
       .fillColor('#F8F9FA')
       .fill();
- 
+
     doc.y -= 90;
- 
+
     doc.fontSize(16)
       .fillColor('#2C3E50')
       .text(`Total Orders: ${req.session.totalOrders}`, { align: 'left', indent: 20 })
@@ -495,9 +489,9 @@ exports.downloadpdf = async (req, res) => {
       .lineTo(550, doc.y)
       .stroke()
       .moveDown();
- 
+
     salesData.forEach((sale, index) => {
-      
+
       if (index % 2 === 0) {
         doc.rect(50, doc.y - 5, 500, 80)
           .fillColor('#F8F9FA')
@@ -519,7 +513,7 @@ exports.downloadpdf = async (req, res) => {
         .text(`Net Sales: ₹${sale.totalprice}`, { indent: 20 })
         .text(`Discount: ₹${sale.discount}`, { indent: 20 })
         .moveDown();
- 
+
       if (index < salesData.length - 1) {
         doc.moveTo(70, doc.y)
           .lineTo(530, doc.y)
@@ -527,7 +521,7 @@ exports.downloadpdf = async (req, res) => {
           .stroke()
           .moveDown(0.5);
       }
- 
+
       if (doc.y > 700) {
         doc.addPage();
       }
@@ -580,7 +574,7 @@ exports.downloadExcel = async (req, res) => {
           break;
 
         default:
-          console.log('there is no filter like you giv e')
+     
           break
 
 
@@ -647,7 +641,7 @@ exports.downloadExcel = async (req, res) => {
 
 
 exports.orderview = async (req, res) => {
-  console.log(req.params.id)
+  // console.log(req.params.id)
   let ID = req.params.id
   const order = await cheackoutDB.findById(ID).populate('products.productId')
   const discount = order.discount

@@ -40,18 +40,17 @@ exports.getcheackout = async (req, res) => {
 
     const cartItem = await cartDB.findById(cartId);
 
-    if( req.session.discount > 0){
-        if(cartItem.coupun == null  ){
-            
-        req.session.discount=0
-        req.flash('limit', `Sorry your coupun is not available now `);
-        return res.redirect('/user/cart')
+    if (req.session.discount > 0) {
+        if (cartItem.coupun == null) {
+
+            req.session.discount = 0
+            req.flash('limit', `Sorry your coupun is not available now `);
+            return res.redirect('/user/cart')
         }
     }
 
     const address = await AddressDB.find({ user: userId });
     const cartTotal = req.session.totalAmount
-    console.log('this is the total amount from cart in cheackot :', cartTotal)
 
     const coupun = await coupunDB.findById(cartItem.coupun)
 
@@ -86,8 +85,6 @@ exports.getcheackout = async (req, res) => {
 
         };
     });
-
-    console.log(cartProductDetails)
     res.render('user/cheakout', { cartProducts: cartProductDetails, address, userId, cartItem, cartTotal, realprice: req.session.realprice, discount: req.session.discount });
 };
 
@@ -95,7 +92,7 @@ exports.getcheackout = async (req, res) => {
 
 exports.placeorder = async (req, res) => {
     const user = req.params.user;
-    console.log('this is the user id from checkout', user);
+    // console.log('this is the user id from checkout', user);
 
     const uid = req.session.userId;
     if (!uid) {
@@ -112,7 +109,7 @@ exports.placeorder = async (req, res) => {
 
 
     const { name, phone, street, city, state, postalCode, paymentMethod, products, country } = req.body;
-    console.log(name, phone, street, city, state, postalCode, paymentMethod, products);
+    // console.log(name, phone, street, city, state, postalCode, paymentMethod, products);
 
 
     const cart = await cartDB.findOne({ user: user });
@@ -129,89 +126,55 @@ exports.placeorder = async (req, res) => {
 
     if (cart.coupun) {
         const coupun = await coupunDB.findById(cart.coupun);
-        console.log('Retrieved coupun:', coupun);
+
 
         if (coupun) {
             coupunamount += Number(coupun.maximumDiscount) || 0;
         } else {
-            console.log('No coupun document found');
+
         }
     } else {
-        console.log('No coupun ID in cart');
+
     }
 
-    console.log('Coupon Amount:', coupunamount);
 
     const cheakpro = await productDB.find();
     if (coupunamount > 0) {
-        console.log('Entered the check code');
+
         let subtotal = 0;
         let cheaktotal = total + coupunamount;
 
         // const pro = cart.products.map((item) => {
         for (let item of cart.products) {
             const findpro = cheakpro.find(x => x._id.toString() === item.productId.toString());
-            console.log('Checking product ID:', item.productId, 'Found Product:', findpro);
 
             if (findpro) {
                 subtotal += findpro.regularprice * item.qty;
             } else {
-                console.log(`Product with ID ${item.productId} not found.`);
+
             }
             if (item.qty > findpro.quantity) {
                 return res.status(404).send(`this product :${findpro.name} have no qty by for  you selected qty `)
             }
         }
 
-        console.log('Calculated Subtotal:', subtotal);
-        console.log('Total after Coupon Applied:', cheaktotal);
 
         if (cheaktotal !== subtotal) {
-            console.log('Price mismatch detected, returning error');
+
             return res.status(404).send('you cant add it because of the admin make changes in the products peice  ')
         }
     } else {
         let subtotal = 0;
         let cheaktotal = total
-        // const pro = cart.products.map((item) => {
-        // for (let item of cart.products) {
-        //     const findpro = cheakpro.find(x => x._id.toString() === item.productId.toString());
-        //     console.log('Checking product ID:', item.productId, 'Found Product:', findpro);
 
-
-        //     if (findpro) {
-        //         subtotal += findpro.regularprice * item.qty
-        //     } else {
-        //         console.log(`Product with ID ${item.productId} not found.`);
-        //     }
-
-
-        //     if (!findpro) {
-        //         console.log(`Product with ID ${item.productId} is missing.`);
-        //         cart.products = cart.products.filter(cartItem => cartItem.productId.toString() !== item.productId.toString());
-        //     }
-
-
-
-        //     if (!findpro) {
-        //         return res.status(404).send(`Product with ID ${item.productId} does not exist.`);
-        //     }
-
-        //     // Continue processing only if no response is sent
-        //     if (item.qty > findpro.quantity) {
-        //         return res.status(404).send(`This product: ${findpro.name} does not have enough quantity.`);
-        //     }
-        // }
 
 
         for (let item of cart.products) {
             const findpro = cheakpro.find(x => x._id.toString() === item.productId.toString());
-            console.log('Checking product ID:', item.productId, 'Found Product:', findpro);
 
             if (findpro) {
                 subtotal += findpro.regularprice * item.qty;
             } else {
-                console.log(`Product with ID ${item.productId} is missing.`);
                 cart.products = cart.products.filter(cartItem => cartItem.productId.toString() !== item.productId.toString());
                 continue;
             }
@@ -224,20 +187,18 @@ exports.placeorder = async (req, res) => {
         await cart.save();
 
 
-        console.log('Calculated Subtotal:', subtotal);
-        console.log('Total after Coupon Applied:', cheaktotal);
-
         if (cheaktotal !== subtotal) {
-            console.log('Price mismatch detected, returning error');
+            // console.log('Price mismatch detected, returning error');
             return res.status(404).send('you cant add it because of the admin make changes in products price  ')
         }
     }
 
-    console.log('Proceeding with checkout');
 
 
     if (paymentMethod === 'cod') {
         try {
+
+
 
             if (total > 1000) {
                 return res.status(400).send('you cant buy as items Cash On Delivery Above Rs:1000 ')
@@ -251,6 +212,17 @@ exports.placeorder = async (req, res) => {
             if (!cart || cart.products.length === 0) {
                 return res.status(400).send("Cart is empty");
             }
+            function generateOrderIds() {
+                const min = 10 ** 9;
+                const max = 10 ** 10 - 1;
+                const randomId = Math.floor(Math.random() * (max - min + 1)) + min;
+
+                const timestamp = Date.now().toString();
+                const orderId = randomId.toString() + timestamp.slice(-3);
+                return orderId;
+            }
+            const generateOrderId = generateOrderIds()
+            //  order_Id:generateOrderId
 
 
 
@@ -270,7 +242,7 @@ exports.placeorder = async (req, res) => {
                 const category = await categoryDB.findById(product.category)
 
                 if (category) {
-                    console.log('entered to the category ')
+
 
                     let categorysold = Number(category.sold += item.qty)
 
@@ -283,9 +255,6 @@ exports.placeorder = async (req, res) => {
                     if (product.quantity < item.qty) {
                         return res.status(400).send(`Not enough stock for product: ${product.name}`);
                     }
-                    console.log('Product sold:', product.sold);
-                    console.log('Item quantity:', item.qty);
-
                     product.sold = Number(product.sold || 0) + Number(item.qty);
 
 
@@ -321,7 +290,8 @@ exports.placeorder = async (req, res) => {
                 },
                 discount: discounts,
                 applayedcoupun: coupunamount,
-                paymentStatus: true
+                paymentStatus: true,
+                order_Id: generateOrderId
 
             });
 
@@ -337,7 +307,10 @@ exports.placeorder = async (req, res) => {
     if (paymentMethod == 'wallet') {
         const nowdate = new Date();
         const wallet = await walletDB.findOne({ user: user })
+        if (!wallet) {
+            return res.status(404).send('not balance for buy that  ')
 
+        }
         if (wallet) {
             if (total > wallet.amount) {
                 return res.status(404).send('you have not balace for buy this item')
@@ -354,14 +327,24 @@ exports.placeorder = async (req, res) => {
                 };
             });
 
+            function generateOrderIds() {
+                const min = 10 ** 9;
+                const max = 10 ** 10 - 1;
+                const randomId = Math.floor(Math.random() * (max - min + 1)) + min;
 
+                const timestamp = Date.now().toString();
+                const orderId = randomId.toString() + timestamp.slice(-3);
+                return orderId;
+            }
+            const generateOrderId = generateOrderIds()
+            //  order_Id:generateOrderId
             for (const item of items) {
                 const product = await productDB.findById(item.productId);
 
                 const category = await categoryDB.findById(product.category)
 
                 if (category) {
-                    console.log('entered to the category ')
+
 
                     let categorysold = Number(category.sold += item.qty)
 
@@ -374,9 +357,6 @@ exports.placeorder = async (req, res) => {
                     if (product.quantity < item.qty) {
                         return res.status(400).send(`Not enough stock for product: ${product.name}`);
                     }
-                    console.log('Product sold:', product.sold);
-                    console.log('Item quantity:', item.qty);
-
                     product.sold = Number(product.sold || 0) + Number(item.qty);
 
                     product.quantity -= item.qty;
@@ -410,8 +390,8 @@ exports.placeorder = async (req, res) => {
                 },
                 discount: discounts,
                 applayedcoupun: coupunamount,
-                paymentStatus: true
-
+                paymentStatus: true,
+                order_Id: generateOrderId
             });
 
             await order.save();
@@ -439,7 +419,18 @@ exports.placeorder = async (req, res) => {
 
     }
     if (paymentMethod === 'razorpay') {
-        console.log('this is from razorpay');
+
+        function generateOrderIds() {
+            const min = 10 ** 9;
+            const max = 10 ** 10 - 1;
+            const randomId = Math.floor(Math.random() * (max - min + 1)) + min;
+
+            const timestamp = Date.now().toString();
+            const orderId = randomId.toString() + timestamp.slice(-3);
+            return orderId;
+        }
+        const generateOrderId = generateOrderIds()
+        //  order_Id:generateOrderId
 
         const razorpay = new Razorpay({
             key_id: process.env.RAZORPAY_ID,
@@ -457,9 +448,6 @@ exports.placeorder = async (req, res) => {
 
         try {
             const order = await razorpay.orders.create(options);
-            // console.log('this is the text event of razorpat', req.body.event)
-            // res.json({order_id: order.id, currency: order.currency, amount: order.amount  });
-            console.log('this is from success of Razor');
 
             if (!cart || cart.products.length === 0) {
                 return res.status(400).send("Cart is empty");
@@ -482,7 +470,7 @@ exports.placeorder = async (req, res) => {
                 const category = await categoryDB.findById(product.category)
 
                 if (category) {
-                    console.log('entered to the category ')
+
 
                     let categorysold = Number(category.sold += item.qty)
 
@@ -495,9 +483,6 @@ exports.placeorder = async (req, res) => {
                     if (product.quantity < item.qty) {
                         return res.status(400).send(`Not enough stock for product: ${product.name}`);
                     }
-
-                    console.log('Product sold:', product.sold);
-                    console.log('Item quantity:', item.qty);
 
                     product.sold = Number(product.sold || 0) + Number(item.qty);
 
@@ -530,7 +515,8 @@ exports.placeorder = async (req, res) => {
                     pincode: postalCode,
                     country: country
                 },
-                discount: discounts
+                discount: discounts,
+                order_Id: generateOrderId
             });
 
 
@@ -546,191 +532,223 @@ exports.placeorder = async (req, res) => {
 };
 
 
-// exports.myorders = async (req, res) => {
-//     const userID = req.session.userId;
-
-
-//     const orders = await checkoutDB.find({ userID: userID });
-//     console.log(orders);
-
-//     res.render('user/myorder', { orders })
-
-
-
-// }
 
 exports.myorders = async (req, res) => {
-    const userID = req.session.userId;
+    try {
 
-    if (!userID) {
-        return res.redirect('/user/home');
+
+        const userID = req.session.userId;
+
+        if (!userID) {
+            return res.redirect('/user/home');
+        }
+
+        const uid = req.session.userId;
+        if (!uid) {
+            return res.redirect('/user/login');
+        }
+        const isblockuser = await userDB.findById(uid);
+        if (!isblockuser) {
+
+            return res.redirect('/user/logout');
+        }
+        if (isblockuser.isblocked === true) {
+            return res.redirect('/user/logout');
+        }
+
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+        const skip = (page - 1) * limit;
+
+        const totalOrders = await checkoutDB.countDocuments({ userID });
+        const totalPages = Math.ceil(totalOrders / limit);
+
+        const orders = await checkoutDB
+            .find({ userID })
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 });
+
+        res.render('user/myorder', {
+            orders,
+            currentPage: page,
+            totalPages,
+            userID
+        });
+    } catch (error) {
+        console.log(error)
     }
-
-    const uid = req.session.userId;
-    if (!uid) {
-        return res.redirect('/user/login');
-    }
-    const isblockuser = await userDB.findById(uid);
-    if (!isblockuser) {
-
-        return res.redirect('/user/logout');
-    }
-    if (isblockuser.isblocked === true) {
-        return res.redirect('/user/logout');
-    }
-
-
-    const page = parseInt(req.query.page) || 1;
-    const limit = 10;
-    const skip = (page - 1) * limit;
-
-    const totalOrders = await checkoutDB.countDocuments({ userID });
-    const totalPages = Math.ceil(totalOrders / limit);
-
-    const orders = await checkoutDB
-        .find({ userID })
-        .skip(skip)
-        .limit(limit)
-        .sort({ createdAt: -1 });
-
-    res.render('user/myorder', {
-        orders,
-        currentPage: page,
-        totalPages,
-        userID
-    });
 };
 
 
 exports.cancelorder = async (req, res) => {
-    const ID = req.params.id
-    const userid = req.session.userId
 
-    const uid = req.session.userId;
-    if (!uid) {
-        return res.redirect('/user/login');
-    }
-    const isblockuser = await userDB.findById(uid);
-    if (!isblockuser) {
-
-        return res.redirect('/user/logout');
-    }
-    if (isblockuser.isblocked === true) {
-        return res.redirect('/user/logout');
-    }
-
-
-    // console.log(user)
-    const db = await checkoutDB.findById(ID)
+    try {
 
 
 
-    if (db.paymentMethods == 'razorpay' || db.paymentMethods == 'wallet') {
-        console.log('entered to the razorpaay code ')
-        await checkoutDB.findByIdAndUpdate(ID, {
-            status: 'canceled'
-        })
-        console.log(db.totalprice)
-        const isWallet = await walletDB.findOne({ user: userid })
+        const ID = req.params.id
+        const userid = req.session.userId
 
-        // const newdate=new Date()
-        // const nowdate=newdate.toLocaleDateString('en-GB')
-        const nowdate = new Date();
+        const uid = req.session.userId;
+        if (!uid) {
+            return res.redirect('/user/login');
+        }
+        const isblockuser = await userDB.findById(uid);
+        if (!isblockuser) {
 
-        if (isWallet) {
-            console.log('User already has a wallet');
+            return res.redirect('/user/logout');
+        }
+        if (isblockuser.isblocked === true) {
+            return res.redirect('/user/logout');
+        }
 
-            const existingWallet = await walletDB.findOne({ user: userid }, { amount: 1, _id: 0 });
 
-            if (!existingWallet) {
-                throw new Error('Wallet not found for user');
-            }
+        // console.log(user)
+        const db = await checkoutDB.findById(ID)
 
-            const existingAmount = existingWallet.amount || 0;
-            console.log(existingAmount);
 
-            const newAmount = existingAmount + db.totalprice;
 
-            await walletDB.updateOne(
-                { user: userid },
-                {
-                    amount: newAmount,
-                    $push: {
-                        transaction: {
-                            typeoftransaction: 'debit',
-                            amountOfTransaction: db.totalprice,
-                            dateOfTransaction: nowdate,
+        if (db.paymentMethods == 'razorpay' || db.paymentMethods == 'wallet') {
+
+            await checkoutDB.findByIdAndUpdate(ID, {
+                status: 'canceled'
+            })
+
+            const isWallet = await walletDB.findOne({ user: userid })
+
+            // const newdate=new Date()
+            // const nowdate=newdate.toLocaleDateString('en-GB')
+            const nowdate = new Date();
+
+            if (isWallet) {
+
+
+                const existingWallet = await walletDB.findOne({ user: userid }, { amount: 1, _id: 0 });
+
+                if (!existingWallet) {
+                    throw new Error('Wallet not found for user');
+                }
+
+                const existingAmount = existingWallet.amount || 0;
+
+
+                const newAmount = existingAmount + db.totalprice;
+
+                await walletDB.updateOne(
+                    { user: userid },
+                    {
+                        amount: newAmount,
+                        $push: {
+                            transaction: {
+                                typeoftransaction: 'debit',
+                                amountOfTransaction: db.totalprice,
+                                dateOfTransaction: nowdate,
+                            }
                         }
                     }
-                }
-            ).then(() => console.log('Successfully updated the wallet'));
+                ).then(() => console.log('Successfully updated the wallet'));
 
-            const canceledproducts = await checkoutDB.findById(ID)
-            const items = canceledproducts.products
-            for (let pro of items) {
-                const id = pro.productId;
-                const singleItem = await productDB.findById(id);
-                const buyedqty = pro.qty;
-
-
-
-                if (!singleItem) {
-                    continue
-                }
-
-
-                const category = await categoryDB.findById(singleItem.category)
-
-                if (category) {
-                    console.log('entered to the category ')
-
-                    let categorysold = Number(category.sold -= buyedqty)
-
-                    category.sold = categorysold
-                    await category.save()
-                }
-
-                // if (singleItem.quantity < buyedqty) {
-                //     console.log(`Insufficient stock for product with ID ${id}`);
-                //     return res.status(400).send(`Not enough stock for product with ID ${id}`);
-                // }
-
-
-                singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
-
-                singleItem.quantity += buyedqty;
+                const canceledproducts = await checkoutDB.findById(ID)
+                const items = canceledproducts.products
+                for (let pro of items) {
+                    const id = pro.productId;
+                    const singleItem = await productDB.findById(id);
+                    const buyedqty = pro.qty;
 
 
 
-                await singleItem.save();
-            }
-
-
-
-            res.redirect(`/user/myorders/${userid}`)
-        }
-        else {
-
-            console.log('user dont have wallet ')
-            const newwallet = new walletDB({
-                user: userid,
-                amount: db.totalprice,
-                transaction: [
-                    {
-                        typeoftransaction: 'debit',
-                        amountOfTransaction: db.totalprice,
-                        dateOfTransaction: nowdate
-
+                    if (!singleItem) {
+                        continue
                     }
-                ]
+
+
+                    const category = await categoryDB.findById(singleItem.category)
+
+                    if (category) {
+                        let categorysold = Number(category.sold -= buyedqty)
+
+                        category.sold = categorysold
+                        await category.save()
+                    }
 
 
 
+                    singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
+
+                    singleItem.quantity += buyedqty;
+
+
+
+                    await singleItem.save();
+                }
+
+
+
+                res.redirect(`/user/myorders/${userid}`)
+            }
+            else {
+
+                const newwallet = new walletDB({
+                    user: userid,
+                    amount: db.totalprice,
+                    transaction: [
+                        {
+                            typeoftransaction: 'debit',
+                            amountOfTransaction: db.totalprice,
+                            dateOfTransaction: nowdate
+
+                        }
+                    ]
+
+
+
+                })
+                newwallet.save()
+                const canceledproducts = await checkoutDB.findById(ID)
+                const items = canceledproducts.products
+
+                for (let pro of items) {
+                    const id = pro.productId;
+                    const singleItem = await productDB.findById(id);
+                    const buyedqty = pro.qty;
+
+                    if (!singleItem) {
+                        continue
+                    }
+
+
+                    const category = await categoryDB.findById(singleItem.category)
+
+                    if (category) {
+                        let categorysold = Number(category.sold -= buyedqty)
+
+                        category.sold = categorysold
+                        await category.save()
+                    }
+
+                    singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
+
+                    singleItem.quantity += buyedqty;
+
+
+                    await singleItem.save();
+                }
+
+                res.redirect(`/user/myorders/${userid}`)
+            }
+
+
+        }
+        if (db.paymentMethods == 'cod') {
+
+            await checkoutDB.findByIdAndUpdate({ _id: ID }, {
+                status: 'canceled'
             })
-            newwallet.save()
+
             const canceledproducts = await checkoutDB.findById(ID)
             const items = canceledproducts.products
-            console.log(items)
             for (let pro of items) {
                 const id = pro.productId;
                 const singleItem = await productDB.findById(id);
@@ -744,7 +762,7 @@ exports.cancelorder = async (req, res) => {
                 const category = await categoryDB.findById(singleItem.category)
 
                 if (category) {
-                    console.log('entered to the category ')
+
 
                     let categorysold = Number(category.sold -= buyedqty)
 
@@ -752,555 +770,531 @@ exports.cancelorder = async (req, res) => {
                     await category.save()
                 }
 
-                // if (singleItem.quantity < buyedqty) {
-                //     console.log(`Insufficient stock for product with ID ${id}`);
-                //     return res.status(400).send(`Not enough stock for product with ID ${id}`);
-                // }
 
-                // product.sold -= item.qty
-                // console.log('Product sold:', product.sold);
-                //     console.log('Item quantity:', item.qty);
 
                 singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
 
                 singleItem.quantity += buyedqty;
 
 
+                // puthiya options 
+
+                // singleItem.quantity += buyedqty;
+
+
                 await singleItem.save();
             }
 
+
             res.redirect(`/user/myorders/${userid}`)
+
         }
 
-
+    } catch (err) {
+        console.log(err, 'an error occured ')
     }
-    if (db.paymentMethods == 'cod') {
-        console.log('entered to else cancel order ')
-        await checkoutDB.findByIdAndUpdate({ _id: ID }, {
-            status: 'canceled'
-        })
-
-        const canceledproducts = await checkoutDB.findById(ID)
-        const items = canceledproducts.products
-        for (let pro of items) {
-            const id = pro.productId;
-            const singleItem = await productDB.findById(id);
-            const buyedqty = pro.qty;
-
-            if (!singleItem) {
-                console.log(`Product with ID ${id} not found`);
-                // return res.status(404).send(`Product with ID ${id} not found`)
-                continue
-            }
-
-
-            const category = await categoryDB.findById(singleItem.category)
-
-            if (category) {
-                console.log('entered to the category ')
-
-                let categorysold = Number(category.sold -= buyedqty)
-
-                category.sold = categorysold
-                await category.save()
-            }
-
-            // if (singleItem.quantity < buyedqty) {
-            //     console.log(`Insufficient stock for product with ID ${id}`);
-            //     return res.status(400).send(`Not enough stock for product with ID ${id}`);
-            // }
-
-            // product.sold -= item.qty
-
-            singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
-
-            singleItem.quantity += buyedqty;
-
-
-            // puthiya options 
-
-            // singleItem.quantity += buyedqty;
-
-
-            await singleItem.save();
-        }
-
-
-        res.redirect(`/user/myorders/${userid}`)
-
-    }
-
-
 
 
 }
 
 exports.success = async (req, res) => {
-    console.log('sucessfully entered to the suceess page');
 
-    const user = req.session.userId
-
+    try {
 
 
-    const order = await checkoutDB.findByIdAndUpdate(req.params.orderid, {
-        paymentStatus: true,
-        status: 'pending'
-    })
+        const user = req.session.userId
 
-    console.log('this is the order document', order)
 
-    // const cart = await cartDB.findOne({ user: user })
-    // if (cart) {
-    //     await cartDB.deleteOne({ user: user })
-    //     return res.render('user/sucess')
-    // } else {
-    return res.render('user/sucess');
-    // }
 
+        const order = await checkoutDB.findByIdAndUpdate(req.params.orderid, {
+            paymentStatus: true,
+            status: 'pending'
+        })
+
+
+
+        return res.render('user/sucess');
+
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 exports.details = async (req, res) => {
-    console.log('entered to the order details code')
-    const order = req.params.id
-    const db = await checkoutDB.findById(order)
 
-    const uid = req.session.userId;
-    if (!uid) {
-        return res.redirect('/user/login');
+    try {
+
+
+
+        const order = req.params.id
+        const db = await checkoutDB.findById(order)
+
+        const uid = req.session.userId;
+        if (!uid) {
+            return res.redirect('/user/login');
+        }
+        const isblockuser = await userDB.findById(uid);
+        if (!isblockuser) {
+
+            return res.redirect('/user/logout');
+        }
+        if (isblockuser.isblocked === true) {
+            return res.redirect('/user/logout');
+        }
+
+
+
+        const items = db.products.map((item) => ({
+
+            id: item.productId,
+            qty: item.qty,
+            soldprice: item.soldprice
+
+        }));
+
+
+        const creat = db.createdAt
+        const date = creat.toLocaleDateString('en-GB')
+        // console.log(date)
+        const a = items.map((x) => new ObjectId(x.id));
+
+
+
+        const products = await productDB.find({
+            _id: { $in: a }
+        });
+
+        //   console.log(products);
+        const productsWithQty = products.map(product => {
+
+            const productQty = items.find(item => item.id.toString() === product._id.toString()).qty;
+            const solds = items.find(item => item.id.toString() === product._id.toString()).soldprice;
+            return {
+                ...product.toObject(),
+                qty: productQty,
+                solds: solds
+
+            };
+        });
+        // console.log(productsWithQty)
+        const coupun = db.applayedcoupun
+        let offer = db.discount
+        const realprice = Number(db.totalprice + coupun + db.discount)
+        //   res.json(db)
+        // console.log(realprice)
+        res.render('user/orderdetails', { products: productsWithQty, order: db, date: date, coupun, realprice, offer, expire: req.flash('expired') })
+    } catch (error) {
+        console.log(error)
     }
-    const isblockuser = await userDB.findById(uid);
-    if (!isblockuser) {
-
-        return res.redirect('/user/logout');
-    }
-    if (isblockuser.isblocked === true) {
-        return res.redirect('/user/logout');
-    }
-
-
-
-    const items = db.products.map((item) => ({
-
-        id: item.productId,
-        qty: item.qty,
-        soldprice: item.soldprice
-
-    }));
-
-    console.log(items)
-
-    const creat = db.createdAt
-    const date = creat.toLocaleDateString('en-GB')
-    // console.log(date)
-    const a = items.map((x) => new ObjectId(x.id));
-    console.log(a)
-
-
-    const products = await productDB.find({
-        _id: { $in: a }
-    });
-
-    //   console.log(products);
-    const productsWithQty = products.map(product => {
-
-        const productQty = items.find(item => item.id.toString() === product._id.toString()).qty;
-        const solds = items.find(item => item.id.toString() === product._id.toString()).soldprice;
-        return {
-            ...product.toObject(),
-            qty: productQty,
-            solds: solds
-
-        };
-    });
-    console.log(productsWithQty)
-    const coupun = db.applayedcoupun
-    let offer = db.discount
-    const realprice = Number(db.totalprice + coupun + db.discount)
-    //   res.json(db)
-    console.log(realprice)
-    res.render('user/orderdetails', { products: productsWithQty, order: db, date: date, coupun, realprice, offer , expire:req.flash('expired') })
-
 
 }
 
 exports.return = async (req, res) => {
 
-    const uid = req.session.userId;
-    if (!uid) {
-        return res.redirect('/user/login');
-    }
-    const isblockuser = await userDB.findById(uid);
-    if (!isblockuser) {
-
-        return res.redirect('/user/logout');
-    }
-    if (isblockuser.isblocked === true) {
-        return res.redirect('/user/logout');
-    }
+    try {
 
 
 
-    console.log('retrun')
-    const ID = req.params.id
-    const db = await checkoutDB.findById(ID)
-    const userid = req.session.userId
+        const uid = req.session.userId;
+        if (!uid) {
+            return res.redirect('/user/login');
+        }
+        const isblockuser = await userDB.findById(uid);
+        if (!isblockuser) {
+
+            return res.redirect('/user/logout');
+        }
+        if (isblockuser.isblocked === true) {
+            return res.redirect('/user/logout');
+        }
 
 
 
-    const currentDate = new Date();
-    const orderDate = new Date(db.createdAt);
-    const currentDay = currentDate.getDate();
-    const orderDay = orderDate.getDate();
-    currentDate.setDate(currentDay - 7);
-
-    if (orderDate <= currentDate) {
-        console.log('The order is expired.');
-        req.flash('expired','you cant return because it is expired the order date')
-        return res.redirect(`/user/orderdetails/${ID}`);
-    } 
+        const ID = req.params.id
+        const db = await checkoutDB.findById(ID)
+        const userid = req.session.userId
 
 
 
-    if (db.paymentMethods == 'razorpay' || db.paymentMethods == 'wallet') {
-        console.log('entered to the razorpaay code ')
-        await checkoutDB.findByIdAndUpdate(ID, {
-            status: 'return'
-        })
-        console.log(db.totalprice)
-        const isWallet = await walletDB.findOne({ user: userid })
+        const currentDate = new Date();
+        const orderDate = new Date(db.createdAt);
+        const currentDay = currentDate.getDate();
+        const orderDay = orderDate.getDate();
+        currentDate.setDate(currentDay - 7);
 
-        // const newdate=new Date()
-        // const nowdate=newdate.toLocaleDateString('en-GB')
-        const nowdate = new Date(); // Creates a Date object representing the current date and time
+        if (orderDate <= currentDate) {
 
-        if (isWallet) {
-            console.log('User already has a wallet');
+            req.flash('expired', 'you cant return because it is expired the order date')
+            return res.redirect(`/user/orderdetails/${ID}`);
+        }
 
-            const existingWallet = await walletDB.findOne({ user: userid }, { amount: 1, _id: 0 });
 
-            if (!existingWallet) {
-                throw new Error('Wallet not found for user');
-            }
 
-            const existingAmount = existingWallet.amount || 0;
-            console.log(existingAmount);
+        if (db.paymentMethods == 'razorpay' || db.paymentMethods == 'wallet') {
 
-            const newAmount = existingAmount + db.totalprice;
+            await checkoutDB.findByIdAndUpdate(ID, {
+                status: 'return'
+            })
 
-            await walletDB.updateOne(
-                { user: userid },
-                {
-                    amount: newAmount,
-                    $push: {
-                        transaction: {
-                            typeoftransaction: 'debit',
-                            amountOfTransaction: db.totalprice,
-                            dateOfTransaction: nowdate,
+            const isWallet = await walletDB.findOne({ user: userid })
+
+            // const newdate=new Date()
+            // const nowdate=newdate.toLocaleDateString('en-GB')
+            const nowdate = new Date(); // Creates a Date object representing the current date and time
+
+            if (isWallet) {
+                const existingWallet = await walletDB.findOne({ user: userid }, { amount: 1, _id: 0 });
+
+                if (!existingWallet) {
+                    throw new Error('Wallet not found for user');
+                }
+
+                const existingAmount = existingWallet.amount || 0;
+
+
+                const newAmount = existingAmount + db.totalprice;
+
+                await walletDB.updateOne(
+                    { user: userid },
+                    {
+                        amount: newAmount,
+                        $push: {
+                            transaction: {
+                                typeoftransaction: 'debit',
+                                amountOfTransaction: db.totalprice,
+                                dateOfTransaction: nowdate,
+                            }
                         }
                     }
-                }
-            ).then(() => console.log('Successfully updated the wallet'));
+                ).then(() => console.log('Successfully updated the wallet'));
 
 
-            const canceledproducts = await checkoutDB.findById(ID)
-            const items = canceledproducts.products
-            for (let pro of items) {
-                const id = pro.productId;
-                const singleItem = await productDB.findById(id);
-                const buyedqty = pro.qty;
+                const canceledproducts = await checkoutDB.findById(ID)
+                const items = canceledproducts.products
+                for (let pro of items) {
+                    const id = pro.productId;
+                    const singleItem = await productDB.findById(id);
+                    const buyedqty = pro.qty;
 
-                if (!singleItem) {
-                    console.log(`Product with ID ${id} not found`);
-                    return res.status(404).send(`Product with ID ${id} not found`);
-                }
-
-
-                const category = await categoryDB.findById(singleItem.category)
-
-                if (category) {
-                    console.log('entered to the category ')
-
-                    let categorysold = Number(category.sold -= buyedqty)
-
-                    category.sold = categorysold
-                    await category.save()
-                }
-
-
-                if (singleItem.quantity < buyedqty) {
-                    console.log(`Insufficient stock for product with ID ${id}`);
-                    return res.status(400).send(`Not enough stock for product with ID ${id}`);
-                }
-
-
-
-                singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
-
-                singleItem.quantity += buyedqty;
-
-
-
-
-                await singleItem.save();
-            }
-
-
-            res.redirect(`/user/orderdetails/${ID}`);
-        }
-        else {
-            console.log('user dont have wallet ')
-            const newwallet = new walletDB({
-                user: userid,
-                amount: db.totalprice,
-                transaction: [
-                    {
-                        typeoftransaction: 'debit',
-                        amountOfTransaction: db.totalprice,
-                        dateOfTransaction: nowdate
-
+                    if (!singleItem) {
+                        // console.log(`Product with ID ${id} not found`);
+                        return res.status(404).send(`Product with ID ${id} not found`);
                     }
-                ]
+
+
+                    const category = await categoryDB.findById(singleItem.category)
+
+                    if (category) {
+                        // console.log('entered to the category ')
+
+                        let categorysold = Number(category.sold -= buyedqty)
+
+                        category.sold = categorysold
+                        await category.save()
+                    }
+
+
+                    if (singleItem.quantity < buyedqty) {
+                        // console.log(`Insufficient stock for product with ID ${id}`);
+                        return res.status(400).send(`Not enough stock for product with ID ${id}`);
+                    }
 
 
 
-            })
-            newwallet.save()
+                    singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
+
+                    singleItem.quantity += buyedqty;
 
 
-            const canceledproducts = await checkoutDB.findById(ID)
-            const items = canceledproducts.products
-            for (let pro of items) {
-                const id = pro.productId;
-                const singleItem = await productDB.findById(id);
-                const buyedqty = pro.qty;
 
-                if (!singleItem) {
-                    console.log(`Product with ID ${id} not found`);
-                    return res.status(404).send(`Product with ID ${id} not found`);
+
+                    await singleItem.save();
                 }
 
 
-                const category = await categoryDB.findById(singleItem.category)
+                res.redirect(`/user/orderdetails/${ID}`);
+            }
+            else {
+                // console.log('user dont have wallet ')
+                const newwallet = new walletDB({
+                    user: userid,
+                    amount: db.totalprice,
+                    transaction: [
+                        {
+                            typeoftransaction: 'debit',
+                            amountOfTransaction: db.totalprice,
+                            dateOfTransaction: nowdate
 
-                if (category) {
-                    console.log('entered to the category ')
+                        }
+                    ]
 
-                    let categorysold = Number(category.sold -= buyedqty)
 
-                    category.sold = categorysold
-                    await category.save()
+
+                })
+                newwallet.save()
+
+
+                const canceledproducts = await checkoutDB.findById(ID)
+                const items = canceledproducts.products
+                for (let pro of items) {
+                    const id = pro.productId;
+                    const singleItem = await productDB.findById(id);
+                    const buyedqty = pro.qty;
+
+                    if (!singleItem) {
+                        // console.log(`Product with ID ${id} not found`);
+                        return res.status(404).send(`Product with ID ${id} not found`);
+                    }
+
+
+                    const category = await categoryDB.findById(singleItem.category)
+
+                    if (category) {
+                        // console.log('entered to the category ')
+
+                        let categorysold = Number(category.sold -= buyedqty)
+
+                        category.sold = categorysold
+                        await category.save()
+                    }
+
+
+                    if (singleItem.quantity < buyedqty) {
+                        // console.log(`Insufficient stock for product with ID ${id}`);
+                        return res.status(400).send(`Not enough stock for product with ID ${id}`);
+                    }
+
+
+
+
+                    singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
+
+                    singleItem.quantity += buyedqty;
+
+
+
+
+                    await singleItem.save();
                 }
 
 
-                if (singleItem.quantity < buyedqty) {
-                    console.log(`Insufficient stock for product with ID ${id}`);
-                    return res.status(400).send(`Not enough stock for product with ID ${id}`);
-                }
-
-
-
-
-                singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
-
-                singleItem.quantity += buyedqty;
-
-
-
-
-                await singleItem.save();
+                res.redirect(`/user/orderdetails/${ID}`)
             }
 
+
+        } else {
+            await checkoutDB.findByIdAndUpdate(ID, {
+                status: 'return'
+            })
+            const isWallet = await walletDB.findOne({ user: userid })
+
+            // const newdate=new Date()
+            // const nowdate=newdate.toLocaleDateString('en-GB')
+            const nowdate = new Date(); // Creates a Date object representing the current date and time
+
+            if (isWallet) {
+                // console.log('User already has a wallet');
+
+                const existingWallet = await walletDB.findOne({ user: userid }, { amount: 1, _id: 0 });
+
+                if (!existingWallet) {
+                    throw new Error('Wallet not found for user');
+                }
+
+                const existingAmount = existingWallet.amount || 0;
+                // console.log(existingAmount);
+
+                const newAmount = existingAmount + db.totalprice;
+
+                await walletDB.updateOne(
+                    { user: userid },
+                    {
+                        amount: newAmount,
+                        $push: {
+                            transaction: {
+                                typeoftransaction: 'debit',
+                                amountOfTransaction: db.totalprice,
+                                dateOfTransaction: nowdate,
+                            }
+                        }
+                    }
+                ).then(() => console.log('Successfully updated the wallet'));
+
+
+                const canceledproducts = await checkoutDB.findById(ID)
+                const items = canceledproducts.products
+                for (let pro of items) {
+                    const id = pro.productId;
+                    const singleItem = await productDB.findById(id);
+                    const buyedqty = pro.qty;
+
+                    if (!singleItem) {
+                        // console.log(`Product with ID ${id} not found`);
+                        return res.status(404).send(`Product with ID ${id} not found`);
+                    }
+
+
+
+                    const category = await categoryDB.findById(singleItem.category)
+
+                    if (category) {
+                        // console.log('entered to the category ')
+
+                        let categorysold = Number(category.sold -= buyedqty)
+
+                        category.sold = categorysold
+                        await category.save()
+                    }
+
+
+                    if (singleItem.quantity < buyedqty) {
+                        // console.log(`Insufficient stock for product with ID ${id}`);
+                        return res.status(400).send(`Not enough stock for product with ID ${id}`);
+                    }
+
+
+
+                    singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
+
+                    singleItem.quantity += buyedqty;
+
+
+
+
+                    await singleItem.save();
+                }
+            } else {
+
+                // console.log('user dont have wallet ')
+                const newwallet = new walletDB({
+                    user: userid,
+                    amount: db.totalprice,
+                    transaction: [
+                        {
+                            typeoftransaction: 'debit',
+                            amountOfTransaction: db.totalprice,
+                            dateOfTransaction: nowdate
+
+                        }
+                    ]
+
+
+
+                })
+                newwallet.save()
+
+
+                const canceledproducts = await checkoutDB.findById(ID)
+                const items = canceledproducts.products
+                for (let pro of items) {
+                    const id = pro.productId;
+                    const singleItem = await productDB.findById(id);
+                    const buyedqty = pro.qty;
+
+                    if (!singleItem) {
+                        // console.log(`Product with ID ${id} not found`);
+                        return res.status(404).send(`Product with ID ${id} not found`);
+                    }
+
+
+
+                    const category = await categoryDB.findById(singleItem.category)
+
+                    if (category) {
+                        // console.log('entered to the category ')
+
+                        let categorysold = Number(category.sold -= buyedqty)
+
+                        category.sold = categorysold
+                        await category.save()
+                    }
+
+
+                    if (singleItem.quantity < buyedqty) {
+                        // console.log(`Insufficient stock for product with ID ${id}`);
+                        return res.status(400).send(`Not enough stock for product with ID ${id}`);
+                    }
+
+
+
+                    singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
+
+                    singleItem.quantity += buyedqty;
+
+
+
+
+                    await singleItem.save();
+                }
+            }
 
             res.redirect(`/user/orderdetails/${ID}`)
         }
-
-
-    } else {
-        await checkoutDB.findByIdAndUpdate(ID, {
-            status: 'return'
-        })
-        const isWallet = await walletDB.findOne({ user: userid })
-
-        // const newdate=new Date()
-        // const nowdate=newdate.toLocaleDateString('en-GB')
-        const nowdate = new Date(); // Creates a Date object representing the current date and time
-
-        if (isWallet) {
-            console.log('User already has a wallet');
-
-            const existingWallet = await walletDB.findOne({ user: userid }, { amount: 1, _id: 0 });
-
-            if (!existingWallet) {
-                throw new Error('Wallet not found for user');
-            }
-
-            const existingAmount = existingWallet.amount || 0;
-            console.log(existingAmount);
-
-            const newAmount = existingAmount + db.totalprice;
-
-            await walletDB.updateOne(
-                { user: userid },
-                {
-                    amount: newAmount,
-                    $push: {
-                        transaction: {
-                            typeoftransaction: 'debit',
-                            amountOfTransaction: db.totalprice,
-                            dateOfTransaction: nowdate,
-                        }
-                    }
-                }
-            ).then(() => console.log('Successfully updated the wallet'));
-
-
-            const canceledproducts = await checkoutDB.findById(ID)
-            const items = canceledproducts.products
-            for (let pro of items) {
-                const id = pro.productId;
-                const singleItem = await productDB.findById(id);
-                const buyedqty = pro.qty;
-
-                if (!singleItem) {
-                    console.log(`Product with ID ${id} not found`);
-                    return res.status(404).send(`Product with ID ${id} not found`);
-                }
-
-
-
-                const category = await categoryDB.findById(singleItem.category)
-
-                if (category) {
-                    console.log('entered to the category ')
-
-                    let categorysold = Number(category.sold -= buyedqty)
-
-                    category.sold = categorysold
-                    await category.save()
-                }
-
-
-                if (singleItem.quantity < buyedqty) {
-                    console.log(`Insufficient stock for product with ID ${id}`);
-                    return res.status(400).send(`Not enough stock for product with ID ${id}`);
-                }
-
-
-
-                singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
-
-                singleItem.quantity += buyedqty;
+    } catch (err) {
+        console.log(err)
+    }
+}
 
 
 
 
-                await singleItem.save();
-            }
-        } else {
-
-            console.log('user dont have wallet ')
-            const newwallet = new walletDB({
-                user: userid,
-                amount: db.totalprice,
-                transaction: [
-                    {
-                        typeoftransaction: 'debit',
-                        amountOfTransaction: db.totalprice,
-                        dateOfTransaction: nowdate
-
-                    }
-                ]
+// }
+exports.wallet = async (req, res) => {
+    try {
 
 
-
-            })
-            newwallet.save()
-
-
-            const canceledproducts = await checkoutDB.findById(ID)
-            const items = canceledproducts.products
-            for (let pro of items) {
-                const id = pro.productId;
-                const singleItem = await productDB.findById(id);
-                const buyedqty = pro.qty;
-
-                if (!singleItem) {
-                    console.log(`Product with ID ${id} not found`);
-                    return res.status(404).send(`Product with ID ${id} not found`);
-                }
-
-
-
-                const category = await categoryDB.findById(singleItem.category)
-
-                if (category) {
-                    console.log('entered to the category ')
-
-                    let categorysold = Number(category.sold -= buyedqty)
-
-                    category.sold = categorysold
-                    await category.save()
-                }
-
-
-                if (singleItem.quantity < buyedqty) {
-                    console.log(`Insufficient stock for product with ID ${id}`);
-                    return res.status(400).send(`Not enough stock for product with ID ${id}`);
-                }
-
-
-
-                singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
-
-                singleItem.quantity += buyedqty;
-
-
-
-
-                await singleItem.save();
-            }
+        const uid = req.session.userId;
+        if (!uid) {
+            return res.redirect('/user/login');
         }
 
-        res.redirect(`/user/orderdetails/${ID}`)
+        const isblockuser = await userDB.findById(uid);
+        if (!isblockuser) {
+            return res.redirect('/user/logout');
+        }
+
+        if (isblockuser.isblocked === true) {
+            return res.redirect('/user/logout');
+        }
+
+        const wallet = await walletDB.findOne({ user: req.params.id });
+        if(!wallet){
+            return  res.render('user/wallet', {
+                wallet 
+            })
+        }
+
+         
+        const transactions = wallet.transaction.reverse();
+
+        // Pagination logic
+        const page = parseInt(req.query.page) || 1;  // Default to page 1
+        const limit = 5;  // Define the number of transactions per page
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+
+        // Paginate the transactions
+        const paginatedTransactions = transactions.slice(startIndex, endIndex);
+
+        // Calculate total pages
+        const totalPages = Math.ceil(transactions.length / limit);
+
+        res.render('user/wallet', {
+            wallet,
+            transactions: paginatedTransactions,
+            currentPage: page,
+            totalPages: totalPages
+        });
+    } catch (err) {
+        console.log(err)
     }
-
-}
-
-
-
-
-
-
-exports.wallet = async (req, res) => {
-
-    const uid = req.session.userId;
-    if (!uid) {
-        return res.redirect('/user/login');
-    }
-    const isblockuser = await userDB.findById(uid);
-    if (!isblockuser) {
-
-        return res.redirect('/user/logout');
-    }
-    if (isblockuser.isblocked === true) {
-        return res.redirect('/user/logout');
-    }
-
-
-
-
-    console.log(req.params.id)
-    const wallet = await walletDB.findOne({ user: req.params.id })
-    console.log(wallet)
-    res.render('user/wallet', { wallet })
-}
-
+};
 
 
 exports.dowloadsummary = async (req, res) => {
     try {
         const orderid = req.body.orderid;
-        console.log(orderid);
+
         const uid = req.session.userId;
 
 
@@ -1325,35 +1319,11 @@ exports.dowloadsummary = async (req, res) => {
         const order = await checkoutDB.findById(orderid);
         const user = await userDB.findById(order.userID)
 
-        console.log('this is the user ', user)
-        // const productarray=order.products.map((i)=>{
-        //      return i.productId
-
-        // })
-
-        // console.log(productarray)
-        //         const products=await productDB.find({_id:{$in:productarray}}) 
-        //         console.log('products ',products)
-
-        //         const productDetails=order.products.map((item)=>{
-        //             let details= products.find((i)=> i._id.toString() === item._id.toString() )
-        //             if (details) {
-        //                 return {
-        //                     name: details.name, 
-        //                     qty: item.qty,
-        //                     price: item.soldprice
-        //                 };
-        //             }
-        //         })
-
-        //         console.log('this is the products details',productDetails)
-
-
         const productarray = order.products.map(i => i.productId);
-        console.log(productarray);
+
 
         const products = await productDB.find({ _id: { $in: productarray } });
-        console.log('products ', products);
+
 
 
         const productDetails = order.products.map((item) => {
@@ -1368,8 +1338,6 @@ exports.dowloadsummary = async (req, res) => {
             }
             return null;
         });
-
-        console.log('this is the products details', productDetails);
 
 
 
@@ -1477,10 +1445,10 @@ exports.dowloadsummary = async (req, res) => {
 
 
         writeable.on('finish', () => {
-            console.log('PDF file created successfully.');
+            // console.log('PDF file created successfully.');
 
             if (!fs.existsSync(filepath)) {
-                console.log('The file does not exist.');
+                // console.log('The file does not exist.');
                 return res.status(500).json({ success: false, message: 'File creation failed.' });
             }
 
@@ -1489,111 +1457,60 @@ exports.dowloadsummary = async (req, res) => {
         });
 
         writeable.on('error', (writeErr) => {
-            console.log('Error writing PDF:', writeErr);
+            // console.log('Error writing PDF:', writeErr);
             return res.status(500).json({ success: false, message: 'Error generating PDF.' });
         });
 
     } catch (err) {
-        console.log('Error from download summary:', err);
+        // console.log('Error from download summary:', err);
         return res.status(500).json({ success: false, message: 'Internal server error.' });
     }
 };
 
-// exports.dowloadsummary = async (req, res) => {
-//     try {
-// console.log('entered to the pdf download code ')
-//         if(!req.session.userId){
-//             return res.redirect('/user/login')
-//         }
-
-//         const doc = new PDFdocument();
-//         const filepath = path.join(__dirname, '..', 'invoice.pdf');
-//         const writeable = fs.createWriteStream(filepath);
-
-//         doc.fontSize(20).text('Invoice', { align: 'center' });
-//         doc.moveDown();
-
-//         doc.pipe(writeable);
-//         doc.end();
-
-
-//         res.json({success:true , redirect:'/user/invoice'})
-//     } catch (err) {
-//         console.log('Error from download summary:', err);
-//         res.status(500).send('An error occurred');
-//     }
-// };
 
 
 exports.invoice = async (req, res) => {
-    console.log('this is the invoice')
-    let paths = path.join(__dirname, '..', 'invoice.pdf')
-    console.log(paths)
+    try {
+        let paths = path.join(__dirname, '..', 'invoice.pdf')
 
 
-    // ith veruthe disable aaki vechkkan 
 
-    res.download(paths, (err) => {
-        if (err) {
-            console.log(err)
-        } else {
-            fs.unlink(paths, (err) => {
-                if (err) {
-                    console.log('an error occured when delete the file')
-                } else {
-                    console.log('successfully deleted the file ')
-                }
-            })
-        }
-    })
+        // ith veruthe disable aaki vechkkan 
 
+        res.download(paths, (err) => {
+            if (err) {
+                console.log(err)
+            } else {
+                fs.unlink(paths, (err) => {
+                    if (err) {
+                        console.log('an error occured when delete the file')
+                    } else {
+                        console.log('successfully deleted the file ')
+                    }
+                })
+            }
+        })
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 
 exports.pendingorder = async (req, res) => {
-    const userid = req.params.user
+    try {
 
-    await cartDB.findOneAndDelete({ user: userid })
 
-    res.redirect(`/user/myorders/${userid}`)
+        const userid = req.params.user
 
+        await cartDB.findOneAndDelete({ user: userid })
+
+        res.redirect(`/user/myorders/${userid}`)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 
-// exports.repay = async (req, res) => {
-// console.log(req.body)
-
-//     try {
-
-
-// const db= await checkoutDB.findById(req.body.orderid)
-// let total=db.totalprice
-
-//         console.log('successfully entered to the repay function')
-//         const razorpay = new Razorpay({
-//             key_id: process.env.RAZORPAY_ID,
-//             key_secret: process.env.RAZORPAY_SECRET
-//         });
-
-//         const options = {
-//             amount: Math.round(total * 100),
-//             currency: "INR",
-//             receipt: `receipt_${new Date().getTime()}`,
-//             notes: {
-//                 key: "value"
-//             }
-//         };
-
-//         const order = await razorpay.orders.create(options);
-
-//         res.json({ order_id: order.id, currency: order.currency, amount: order.amount, orderID: orders._id });
-//         // res.status(200)
-//     } catch (err) {
-//         console.log('error from repay ', err)
-//     }
-
-
-// }
 
 
 exports.repay = async (req, res) => {
@@ -1613,7 +1530,7 @@ exports.repay = async (req, res) => {
         }
 
 
-        console.log(req.body);
+        // console.log(req.body);
 
         if (!req.body.orderid) {
             return res.status(400).json({ error: 'Order ID is required' });
@@ -1632,12 +1549,12 @@ exports.repay = async (req, res) => {
         if (!checkout) {
             throw new Error('Checkout order not found.');
         }
-        console.log(checkout.createdAt)
+        // console.log(checkout.createdAt)
         if (checkout.createdAt < new Date(Date.now() - 24 * 60 * 60 * 1000)) {
-            console.log('it bedore 24 hourse ')
+            // console.log('it bedore 24 hourse ')
 
             const items = checkout.products
-             
+
 
             for (let pro of items) {
                 const id = pro.productId;
@@ -1671,7 +1588,7 @@ exports.repay = async (req, res) => {
 
             if (!product) {
                 flag1 = true
-                console.log(`Product with ID ${item.productId} does not exist.`);
+                // console.log(`Product with ID ${item.productId} does not exist.`);
                 continue;
             }
 
@@ -1696,7 +1613,7 @@ exports.repay = async (req, res) => {
         checkout.totalprice = totalprice;
         await checkout.save();
 
-       
+
 
         if (flag1 == true || flag2 == true) {
             return res.redirect(`/user/myorders/${uid}`)
@@ -1708,7 +1625,7 @@ exports.repay = async (req, res) => {
 
 
         const total = db.totalprice;
-        console.log('Successfully entered the repay function');
+        // console.log('Successfully entered the repay function');
 
         const razorpay = new Razorpay({
             key_id: process.env.RAZORPAY_ID,
@@ -1733,7 +1650,7 @@ exports.repay = async (req, res) => {
             orderID: db._id
         });
     } catch (err) {
-        console.log('Error from repay:', err);
+        // console.log('Error from repay:', err);
         res.status(500).json({ error: 'An error occurred while processing the repayment', details: err.message });
     }
 };

@@ -26,14 +26,22 @@ router.get('/demo', userController.demo)
 router.get('/logout', userController.logout)
 router.get('/profile', userAuth.loginuser, userController.userprofile)
 router.get('/editprofile/:id', userAuth.loginuser, userController.editprofile)
-router.post('/editprofile/change/:id', userController.updateprofile)
+
+router.patch('/editprofile/change/:id', userController.updateprofile)
+
 router.get('/changepassword/:id', userAuth.loginuser, userController.changepassword)
+
 router.post('/updatepassword/:id', userController.updatepassword)
+
 router.get('/address/:id',userAuth.loginuser, userController.address);
 router.post('/createaddress/:id', userController.createaddress);
-router.post('/deleteaddress/:id/:user', userController.deleteaddress);
+
+router.delete('/deleteaddress/:id/:user', userController.deleteaddress);
+
 router.get('/updateaddress/:id/:user', userController.updateaddress);
-router.post('/postchange/:id/:user', userController.updatingAddress);
+
+router.patch('/postchange/:id/:user', userController.updatingAddress);
+
 router.get('/cart', userAuth.loginuser, cartController.getcart);
 router.post('/addcart/:id/:user', cartController.addcart);
 router.post('/cart/update', cartController.updateCart);

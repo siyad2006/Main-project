@@ -12,7 +12,7 @@ exports.addoffer = async (req, res) => {
 
 
 exports.createoffer = async (req, res) => {
-    console.log(req.body)
+ 
 
     const name = req.body.name
     const discription = req.body.discription
@@ -26,7 +26,7 @@ exports.createoffer = async (req, res) => {
         return res.status(404).send('cannot add more than 75% ');
     }
     const isnameactive = await offerDB.findOne({ name: name })
-    console.log(isnameactive)
+    
 
     if (isnameactive) {
         return res.status(404).send('this name is already existas')
@@ -34,7 +34,7 @@ exports.createoffer = async (req, res) => {
 
     startdate.setHours(0, 0, 0, 0);
     date.setHours(0, 0, 0, 0);
-    console.log(startdate)
+     
     const today = new Date()
     const d = Date.now();
   
@@ -71,11 +71,10 @@ exports.createoffer = async (req, res) => {
                 big = products[j].existOffer.discountValue;
             }
         }
-
-        console.log(big);   
+  
 
         const getoffer = await offerDB.findOne({ _id: products[0].existOffer })
-        console.log('this is the get offer : ', getoffer)
+        // console.log('this is the get offer : ', getoffer)
         if (big > persent) {
             return res.status(404).send(' in this category  product already have offer bigger than it , so first delete the product offfer')
         }
@@ -83,7 +82,7 @@ exports.createoffer = async (req, res) => {
         // if (getoffer.discountValue < persent) {
         
 
-        console.log('we can apply that offer , because our offer is bigger ')
+        // console.log('we can apply that offer , because our offer is bigger ')
         //  return res.status(404).send('apply new offer to it  ')
 
 
@@ -123,9 +122,7 @@ exports.createoffer = async (req, res) => {
                 regularprice: offerPrice
 
             }).then(() => console.log('succeeeeess')).catch((err) => console.log(err))
-        }
-        console.log('successfully updated the product to new offer ')
-
+        } 
         // return  res.redirect('/admin/addoffer')
 
         return res.json({ success: true })
@@ -139,7 +136,7 @@ exports.createoffer = async (req, res) => {
         // }
 
     } else {
-        console.log('entered to the else code ')
+         
         const offer = new offerDB({
             name: name,
             dicription: discription,
@@ -155,14 +152,14 @@ exports.createoffer = async (req, res) => {
         await offer.save()
 
         const findoffer = await offerDB.findOne({ name: name }, { _id: 1 })
-        console.log(findoffer)
+        // console.log(findoffer)
 
 
         for (let item of products) {
             const normalprice = item.regularprice;
             const ID = item.id;
             const offerPrice = normalprice - (normalprice * (persent / 100));
-            console.log(offerPrice)
+            // console.log(offerPrice)
 
 
             await productDB.findByIdAndUpdate(ID, {
@@ -172,13 +169,12 @@ exports.createoffer = async (req, res) => {
                 offerPersent: persent,
                 existOffer: findoffer._id
             }, { new: true });
-            console.log(products)
+            // console.log(products)
         }
         // res.redirect('/admin/addoffer')
 
         res.json({ success: true })
-        console.log('successfully added newoffers to the products in that category ')
-
+        
     }
 
 
@@ -194,8 +190,7 @@ exports.getoffer = async (req, res) => {
 
 exports.deleteoffer = async (req, res) => {
     const ID = req.params.id
-
-    console.log(ID)
+ 
 
     const productOffer = await offerDB.findById(ID)
     if (productOffer.tyoffer == 'product') {
@@ -219,7 +214,7 @@ exports.deleteoffer = async (req, res) => {
 
             }
             await offerDB.findByIdAndDelete(ID)
-            return res.redirect('/admin/offer')
+            return res.json({success:true})
 
 
         } catch (err) {
@@ -246,7 +241,8 @@ exports.deleteoffer = async (req, res) => {
     }
     await offerDB.findByIdAndDelete(ID).then(() => console.log('success')).catch((err) => console.log(err))
     // const cheack=await await productDB.find({existOffer:ID})
-    res.redirect('/admin/offer')
+    // res.redirect('/admin/offer')
+    return res.json({success:true})
 
 }
 
@@ -264,20 +260,20 @@ exports.editoffer = async (req, res) => {
 
  
 exports.posteditoffer = async (req, res) => {
-    console.log('edit offer page got successfully')
+    
     const ID = req.params.id
-    console.log(ID)
+ 
     const persent = req.body.persent
     const { startdate, date, name } = req.body
-    console.log(persent, startdate, date, name)
+    // console.log(persent, startdate, date, name)
     const startdates = new Date(startdate)
     const expires = new Date(date)
     const currentOffer = await offerDB.findById(ID)
-    console.log(currentOffer)
+    // console.log(currentOffer)
     const offeredproduct = await productDB.find({ existOffer: ID })
-    console.log(offeredproduct)
+    // console.log(offeredproduct)
     const category = req.body.category
-    console.log(category)
+    // console.log(category)
 
     if (persent > 75) {
         // return res.status(404).send('cannot add more than 75% ');
@@ -321,7 +317,7 @@ exports.posteditoffer = async (req, res) => {
         expire: expires,
         discountValue: persent
     }).then(() => {
-        console.log('offer updated successfully ')
+        // console.log('offer updated successfully ')
         // res.redirect('/admin/offer')
         return res.json({success:true})
     })

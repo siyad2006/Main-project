@@ -51,7 +51,7 @@
 
 
                         <th>Order ID</th>
-
+                        <th>Date</th>
                         <th>Price</th>
                         <th>Payment Method</th>
                         <th>status</th>
@@ -66,10 +66,10 @@
                     {{#each orders}}
 
 
-                    <tr>
-                        {{!-- <td id=".orderid">{{this._id}}</td> --}}
-                        <td class="orderid" data-orderid="{{this._id}}">{{this._id}}</td>
-
+                    <tr> 
+                        <td class="orderid" data-orderid="{{this._id}}" style="display: none;">{{this._id}}</td>
+                        <td>#{{this.order_Id}}</td>
+                        <td>{{formatDate this.createdAt}}</td>
                         <input type="hidden" value="{{this._id}}" id="userid">
                         <td style="color: green;font-weight:bold">RS: {{this.totalprice}}</td>
                         <td style="font-weight: bold;">{{this.paymentMethods}}</td>
@@ -263,8 +263,7 @@
                 cancelButtonText: 'No'
             });
 
-            if (result.isConfirmed) {
-                // Allow form submission by using event.target.submit()
+            if (result.isConfirmed) { 
                 event.target.submit();
             } else {
                 console.log('Action cancelled');

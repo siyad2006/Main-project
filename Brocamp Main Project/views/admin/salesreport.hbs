@@ -241,25 +241,31 @@
   <div class="sidebar" id="sidebar">
     <ul class="navbar-nav w-100">
       <li class="nav-item">
-        <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie" style="margin-right: 10px;"></i> Statistics</a>
+        <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie" style="margin-right: 10px;"></i>
+          Statistics</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users" style="margin-right: 10px;"></i> User Management</a>
+        <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users" style="margin-right: 10px;"></i> User
+          Management</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/admin/products"><i class="fas fa-box" style="margin-right: 10px;"></i> Product Management</a>
+        <a class="nav-link" href="/admin/products"><i class="fas fa-box" style="margin-right: 10px;"></i> Product
+          Management</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice" style="margin-right: 10px;"></i> Order Management</a>
+        <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice"
+            style="margin-right: 10px;"></i> Order Management</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" href="/admin/salesreport"><i class="fas fa-chart-line" style="margin-right: 10px;"></i> Sales Report</a>
+        <a class="nav-link active" href="/admin/salesreport"><i class="fas fa-chart-line"
+            style="margin-right: 10px;"></i> Sales Report</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/admin/offer"><i class="fas fa-gift" style="margin-right: 10px;"></i> Offer</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt" style="margin-right: 10px;"></i> Coupon</a>
+        <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt" style="margin-right: 10px;"></i>
+          Coupon</a>
       </li>
       <li class="nav-item">
         <a class="nav-link " href="/admin/category"><i class="fas fa-tags" style="margin-right: 10px;"></i> Category</a>
@@ -303,23 +309,29 @@
       </div>
 
 
-      <script> 
+      <script>
         document.getElementById('filter').addEventListener('change', function () {
-          let value = document.getElementById('filter').value;
+          let value = document.getElementById('filter').value  
+
+          const searchparams = new URLSearchParams(window.location.search)
+          let page = searchparams.get('page') || 1
+
           if (value !== 'default') {
-            window.location.href = `/admin/salesreport?filter=${value}`;
+            window.location.href = `/admin/salesreport?filter=${value}&page=${page}`;
           }
         });
 
         document.getElementById('filter-btn').addEventListener('click', function () {
 
+          const searchparams = new URLSearchParams(window.location.search)
+          let page = searchparams.get('page') || 1
           let startDate = document.getElementById('start-date').value;
           let endDate = document.getElementById('end-date').value;
 
 
           if (startDate && endDate) {
 
-            window.location.href = `/admin/salesreport?startDate=${startDate}&endDate=${endDate}`;
+            window.location.href = `/admin/salesreport?startDate=${startDate}&endDate=${endDate}&page=${page}`;
           }
 
         });
@@ -343,7 +355,7 @@
           </thead>
           <tbody>
 
-            {{#each salesData}}
+            {{#each salesDatas}}
             <tr>
               <td>{{formatDate this.createdAt}}</td>
               <td>{{this.userID.username}}</td>
@@ -374,13 +386,39 @@
 
   </div>
 
+
+
+  <nav aria-label="Sales Pagination">
+    <ul class="pagination justify-content-center">
+
+      {{#if (gt currentPage 1)}}
+      <li class="page-item">
+        <a class="page-link" href="/admin/salesreport?page={{subtract currentPage 1}}">Previous</a>
+      </li>
+      {{/if}}
+
+      {{#each (range 1 totalPages)}}
+      <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+        <a class="page-link" href="/admin/salesreport?page={{this}}">{{this}}</a>
+      </li>
+      {{/each}}
+
+      {{#if (lt currentPage totalPages)}}
+      <li class="page-item">
+        <a class="page-link" href="/admin/salesreport?page={{add currentPage 1}}">Next</a>
+      </li>
+      {{/if}}
+    </ul>
+  </nav>
+
   <script>
     document.getElementById('download-pdf').addEventListener('click', function () {
       const searchparams = new URLSearchParams(window.location.search)
+      let page = searchparams.get('page') || 1
       let startDate = searchparams.get('startDate')
       let endDate = searchparams.get('endDate')
-    
-      let filter = searchparams.get('filter')
+
+      let filter = searchparams.get('filter')  
       console.log(filter)
 
       let url = '/admin/salesreport/pdf';
@@ -401,7 +439,7 @@
     });
 
   </script>
-   
+
 
   <!-- SweetAlert2 CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -421,33 +459,33 @@
   {{!-- <input type="hidden" value="{{startDate}}" id="backendSD"> --}}
 
   <script>
-    document.addEventListener('DOMContentLoaded',function (){
+    document.addEventListener('DOMContentLoaded', function () {
 
-      const url= new URLSearchParams(window.location.search)
-      let startdate= document.getElementById('filter')
-      let st=document.getElementById('start-date')
-      let et=document.getElementById('end-date')
-        console.log(st)
+      const url = new URLSearchParams(window.location.search)
+      let startdate = document.getElementById('filter') 
+      let st = document.getElementById('start-date')
+      let et = document.getElementById('end-date')
+      console.log(st)
       console.log(et)
 
 
-      const start=url.get('filter')
-      const startDate=url.get('startDate')
-      const endDate=url.get('endDate')
-       
-      
-      if(start !== 'default'){
-        startdate.value=start
+      const start = url.get('filter')  
+      const startDate = url.get('startDate')
+      const endDate = url.get('endDate')
+
+
+      if (start !== 'default') {
+        startdate.value = start
       }
 
-      if(startDate && endDate){
-        startdate.value='default'
-        st.value=startDate
-        et.value=endDate
+      if (startDate && endDate) {
+        startdate.value = 'default'
+        st.value = startDate
+        et.value = endDate
       }
-      
-     
-     
+
+
+
     })
   </script>
 

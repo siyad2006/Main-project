@@ -18,10 +18,9 @@ exports.addcoupun = async (req, res) => {
 
         res.json({ success: false, message: 'this  is already in use' })
 
-    } else {
-        console.log('entered to this cod ')
+    } else { 
         const expires = new Date(expire)
-        console.log(expires)
+      
 
         const coupun = new coupunDB({
             code: code,
@@ -46,9 +45,7 @@ exports.deletecoupun=async (req,res)=>{
 
     try {
         
-    } catch (error) {
-        console.log('an error occured when delete the coupun',error )
-    }
+   
 
     const id=req.params.id
 
@@ -64,11 +61,14 @@ exports.deletecoupun=async (req,res)=>{
 
     await coupunDB.findByIdAndDelete(id)
     res.redirect('/admin/coupun')
+} catch (error) {
+    console.log('an error occured when delete the coupun',error )
+}
 }
 
 
 exports.viewcoupun= async (req,res)=>{
-    console.log(req.params.user)
+   
     const user= req.params.user
     const coupun=await coupunDB.find({user:{$ne:user}})
     // console.log(coupun)

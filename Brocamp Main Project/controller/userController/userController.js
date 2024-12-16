@@ -15,7 +15,7 @@ const userRegister = async (req, res) => {
     if (req.session.regestered == true) {
         return res.redirect('/')
     }
-    console.log('User registration page accessed successfully.');
+
     res.render('user/userRegister', { error: req.flash('error') });
 }
 
@@ -24,7 +24,7 @@ const userRegister = async (req, res) => {
 
 const postregister = async (req, res) => {
     const { username, Email, password } = req.body;
-    console.log(username, Email, password);
+
 
 
     // const exists = await UserDB.findOne({ username: username });
@@ -36,7 +36,7 @@ const postregister = async (req, res) => {
 
     if (exists || mailExists) {
         req.flash('error', "the user is already exists")
-        console.log('User already exists');
+
         return res.redirect('/user/register');
     }
 
@@ -57,7 +57,7 @@ const postregister = async (req, res) => {
     const otp = generateNumericOtp(6);
     console.log(otp);
     req.session.userOtp = otp
-    console.log(req.session)
+
 
     try {
 
@@ -81,7 +81,6 @@ const postregister = async (req, res) => {
             text: `Your OTP for verification is: ${otp}`
         });
 
-        console.log('OTP sent successfully.');
 
     } catch (error) {
         console.log('Error sending OTP:', error);
@@ -96,11 +95,16 @@ const postregister = async (req, res) => {
 
 
 const otp = async (req, res) => {
-    console.log('otp page got sucessfully')
-    if (req.session.regestered) {
-        return res.redirect('/user/login')
+    try {
+
+
+        if (req.session.regestered) {
+            return res.redirect('/user/login')
+        }
+        res.render('user/otp')
+    } catch (err) {
+        console.log(err, 'this error from the otp')
     }
-    res.render('user/otp')
 }
 
 
@@ -108,15 +112,13 @@ const otpVerification = async (req, res) => {
     console.log('OTP received:', req.body.otp);
     const { otp } = req.body;
     if (req.session.userOtp == otp) {
-        console.log('otp verification sucessfull')
 
-        console.log(req.session)
         const username = req.session.username;
         const Email = req.session.Email;
         const localpassword = req.session.password;
         let saltRound = 10
         const password = await bcrypt.hash(localpassword, saltRound)
-        console.log(password)
+
         // req.session.hashedpassword=password
         try {
 
@@ -146,12 +148,11 @@ const otpVerification = async (req, res) => {
 
 
 const resentotp = async (req, res) => {
-    // delete req.session.userOtp
-    console.log('Entered to resend OTP');
+    // delete req.session.userOtp 
 
     const email = req.session.Email;
     if (!email) {
-        console.log('No email found in session.');
+
         return res.json({ success: false, message: 'No email found in session.' });
     }
 
@@ -188,7 +189,6 @@ const resentotp = async (req, res) => {
             text: `Your OTP for verification is: ${otp}`
         });
 
-        console.log('OTP resent successfully.');
 
 
         res.json({ success: true, message: 'OTP resent successfully.', redirectUrl: '/user/otp' });
@@ -202,16 +202,21 @@ const resentotp = async (req, res) => {
 
 
 const userlogin = async (req, res) => {
-    console.log(req.session)
-    if (req.session.isRegistered) {
-        req.session.regestered = true
-    }
+    try {
 
-    if (req.session.loginuser) {
-        return res.redirect('/user/home')
-    }
 
-    res.render('user/userLogin')
+        if (req.session.isRegistered) {
+            req.session.regestered = true
+        }
+
+        if (req.session.loginuser) {
+            return res.redirect('/user/home')
+        }
+
+        res.render('user/userLogin')
+    } catch (error) {
+        console.log(error, 'this is from uselogin')
+    }
 }
 
 
@@ -228,7 +233,6 @@ const postlogin = async (req, res) => {
 
 
 
-        console.log(name);
 
         if (!name) {
 
@@ -237,11 +241,10 @@ const postlogin = async (req, res) => {
 
 
         const cheakpassword = await bcrypt.compare(password, name.password)
-        console.log(cheakpassword)
+
 
         if (name.Email == Email) {
-            if (cheakpassword) {
-                console.warn('user posted')
+            if (cheakpassword) { 
                 if (name.isblocked) {
                     res.json({ success: false, message: 'you are blocked by the admin ' })
                 } else {
@@ -253,7 +256,6 @@ const postlogin = async (req, res) => {
                     // console.log(req.session)
                     res.json({ success: true, message: 'the message is sucess', redirectUrl: '/' })
 
-                    console.log('Admin logged in:', req.session.loginuser);
 
                 }
 
@@ -279,15 +281,14 @@ const postlogin = async (req, res) => {
 
 
 const lo = async (req, res) => {
-    // console.log(req.session.passport.user)
-    console.log(req.session)
+
 
 
 
     try {
         const currentdate = Date.now()
         const offers = await offerDB.find({ expire: { $lt: currentdate } })
-        console.log('expire offers', offers)
+
         for (let offer of offers) {
             const products = await productDB.find({ existOffer: offer._id })
             for (let item of products) {
@@ -313,7 +314,7 @@ const lo = async (req, res) => {
     try {
 
         if (req.session.passport && req.session.passport.user) {
-            console.log('entered to passport');
+
             req.session.loginuser = true;
             req.session.userId = req.session.passport.user;
 
@@ -322,17 +323,16 @@ const lo = async (req, res) => {
                 const email = await UserDB.findOne({ _id: req.session.userId });
 
                 if (!email) {
-                    console.log('User not found');
+
                     return;
                 }
 
-                console.log(email.Email);
                 req.session.email_profile = email.Email;
             } catch (err) {
                 console.error('Error fetching user:', err);
             }
         } else {
-            console.log('no passport');
+
         }
 
         let cartCount = 0
@@ -343,7 +343,6 @@ const lo = async (req, res) => {
         }
         req.session.cartCount = cartCount
 
-        console.log(cartCount)
         const userid = req.session.userId
         const products = await productDB.find({ isblocked: false }).limit(8).populate('category')
         res.render('user/index', { products, userid, cartCount });
@@ -358,7 +357,6 @@ let productDetails = async (req, res) => {
     const ID = req.params.id;
     let userid = req.session.userId
 
-    console.log(req.session)
     const product = await productDB.findById(ID).populate('category')
 
     if (product.isblocked == true) {
@@ -373,73 +371,79 @@ let productDetails = async (req, res) => {
 
 
 const shoping = async (req, res) => {
-    const { page = 1, limit = 16, sort = 'default', search } = req.query;
-    const skip = (page - 1) * limit;
-    console.log(search)
-    const categories = await category.find({ isblocked: "Listed" });
-    const categorys = req.query.category
-    console.log('this is category', categories)
-    console.log(search)
-    let productsQuery = productDB.find({ isblocked: false }).populate('category').skip(skip).limit(limit);
-    if (search !== undefined) {
-        // const regex = new RegExp(search, 'i');
-        console.log('entered to the earch')
-        const regex = new RegExp(`^${search}`, 'i');
 
-        productsQuery = productsQuery.find({
-            name: { $regex: regex }
+    try {
+
+
+
+        const { page = 1, limit = 16, sort = 'default', search } = req.query;
+        const skip = (page - 1) * limit;
+
+        const categories = await category.find({ isblocked: "Listed" });
+        const categorys = req.query.category
+
+        let productsQuery = productDB.find({ isblocked: false }).populate('category').skip(skip).limit(limit);
+        if (search !== undefined) {
+
+            const regex = new RegExp(`^${search}`, 'i');
+
+            productsQuery = productsQuery.find({
+                name: { $regex: regex }
+            });
+        }
+
+        if (categorys) {
+
+            productsQuery = productsQuery.find({ category: categorys })
+        }
+
+        if (search && categorys) {
+
+            const regex = new RegExp(`^${search}`, 'i');
+            productsQuery = productsQuery.find({ category: categorys, name: { $regex: regex } })
+        }
+
+
+
+
+        switch (sort) {
+            case 'lowToHigh':
+                productsQuery = productsQuery.sort({ regularprice: 1 });
+                break;
+            case 'highToLow':
+                productsQuery = productsQuery.sort({ regularprice: -1 });
+                break;
+            case 'aA-zZ':
+                productsQuery = productsQuery.sort({ name: 1 });
+                break;
+            case 'zZ-aA':
+                productsQuery = productsQuery.sort({ name: -1 });
+                break;
+            case 'New arrivals':
+                productsQuery = productsQuery.sort({ createdAt: -1 });
+                break;
+
+
+            default:
+                break;
+        }
+
+
+        const products = await productsQuery.exec();
+        const totalProducts = await productDB.countDocuments({ isblocked: false });
+        const cartCount = req.session.cartCount
+
+        res.render('user/shoping', {
+            products,
+            currentPage: Number(page),
+            totalPages: Math.ceil(totalProducts / limit),
+            categories,
+            sortOption: sort,
+            cartCount
         });
+    } catch (error) {
+        console.log(error)
     }
-
-    if (categorys) {
-        console.log('entered to the categoryd')
-        productsQuery = productsQuery.find({ category: categorys })
-    }
-
-    if (search && categorys) {
-        console.log('entered to the code of search and category')
-        const regex = new RegExp(`^${search}`, 'i');
-        productsQuery = productsQuery.find({ category: categorys, name: { $regex: regex } })
-    }
-
-
-
-
-    switch (sort) {
-        case 'lowToHigh':
-            productsQuery = productsQuery.sort({ regularprice: 1 });
-            break;
-        case 'highToLow':
-            productsQuery = productsQuery.sort({ regularprice: -1 });
-            break;
-        case 'aA-zZ':
-            productsQuery = productsQuery.sort({ name: 1 });
-            break;
-        case 'zZ-aA':
-            productsQuery = productsQuery.sort({ name: -1 });
-            break;
-        case 'New arrivals':
-            productsQuery = productsQuery.sort({ createdAt: -1 });
-            break;
-
-
-        default:
-            break;
-    }
-
-
-    const products = await productsQuery.exec();
-    const totalProducts = await productDB.countDocuments({ isblocked: false });
-    const cartCount = req.session.cartCount
-
-    res.render('user/shoping', {
-        products,
-        currentPage: Number(page),
-        totalPages: Math.ceil(totalProducts / limit),
-        categories,
-        sortOption: sort,
-        cartCount
-    });
 };
 
 const demo = async (req, res) => {
@@ -452,7 +456,7 @@ const userprofile = async (req, res) => {
     try {
 
         if (!req.session.email_profile) {
-            console.log('Session email_profile is missing');
+
             return res.redirect('/user/home'); // Redirect to login if email is missing
         }
 
@@ -469,7 +473,7 @@ const userprofile = async (req, res) => {
 
             res.render('user/profile', { user, success: req.flash('sucess_update') });
         } else {
-            console.log('No user found with the specified email');
+
             res.status(404).send('User not found');
         }
     } catch (err) {
@@ -480,65 +484,83 @@ const userprofile = async (req, res) => {
 
 
 const logout = async (req, res) => {
-    req.session.loginuser = false
-    req.session.userId = null
-    req.session.passport = false
-    req.session.regestered = false
-    req.session.totalAmount = null
-    req.session.realprice=null
-    req.session.discount=null
-    console.log(req.session.userlogin)
-    res.redirect('/user/login')
+    try {
+
+
+        req.session.loginuser = false
+        req.session.userId = null
+        req.session.passport = false
+        req.session.regestered = false
+        req.session.totalAmount = null
+        req.session.realprice = null
+        req.session.discount = null
+
+        res.redirect('/user/login')
+    } catch (err) {
+        console.log(err, 'error from the logout controller ')
+    }
 }
 
 const editprofile = async (req, res) => {
-    const ID = req.params.id
-    if (ID !== req.session.userId) {
-        return res.redirect('/user/home')
+
+    try {
+
+
+
+        const ID = req.params.id
+        if (ID !== req.session.userId) {
+            return res.redirect('/user/home')
+        }
+        const user = await UserDB.findById(ID)
+        res.render('user/editprofile', { user })
+    } catch (err) {
+        console.log(err, 'error from edit profile ')
     }
-    const user = await UserDB.findById(ID)
-    res.render('user/editprofile', { user })
 }
 
 const updateprofile = async (req, res) => {
-    const ID = req.params.id
 
-    if (ID !== req.session.userId) {
-        return res.redirect('/user/home')
+    try {
+
+
+        const ID = req.params.id
+
+        if (ID !== req.session.userId) {
+            return res.redirect('/user/home')
+        }
+        const username = req.body.username
+        
+        const phone = req.body.phone
+
+
+        await UserDB.findByIdAndUpdate(ID, { username: username.trim(), phonenumber: phone }) 
+        req.flash('sucess_update', 'sucessfully updated profile')
+      
+        return res.json({ success: true })
+    } catch (error) {
+        console.log(error)
     }
-    const username = req.body.username
-    // const email = req.body.email
-    const phone = req.body.phone
-    console.log(username, phone)
-    console.log(phone)
-    // const isactive = await UserDB.findOne({ username: username.trim() })
-    // const emailactive = await UserDB.findOne({ Email: email.trim() })
-    // console.log(isactive,emailactive)
-    // if()
-    // if (!isactive || !emailactive) {
-    // req.session.email_profile = email.trim();
-    console.log('entered to it')
-    await UserDB.findByIdAndUpdate(ID, { username: username.trim(), phonenumber: phone }).then(() => console.log('success')).catch((err) => console.log(err))
-    req.flash('sucess_update', 'sucessfully updated profile')
-    res.redirect('/user/profile')
 
-    // } else {
-    // req.flash('sucess_update', 'this username or Email already in use')
-    // res.redirect('/user/profile')
 
-    // }
 
 }
 
 const changepassword = async (req, res) => {
-    const ID = req.params.id
 
-    if (ID !== req.session.userId) {
-        return res.redirect('/user/home')
+    try {
+
+
+        const ID = req.params.id
+
+        if (ID !== req.session.userId) {
+            return res.redirect('/user/home')
+        }
+
+        const user = await UserDB.findById(ID)
+        res.render('user/changepassword', { user })
+    } catch (error) {
+        console.log(error)
     }
-
-    const user = await UserDB.findById(ID)
-    res.render('user/changepassword', { user })
 }
 
 
@@ -549,6 +571,13 @@ const updatepassword = async (req, res) => {
             return res.redirect('/user/home')
         }
         const { password, newPassword, confirmPassword } = req.body;
+
+        const isgoogle= await UserDB.findById(userId)
+
+        if(isgoogle.googleId){
+            return res.json({ success: false, message: "Sorry you are not able to change the password , cause of you are loggin using google id" });
+       
+        }
 
         if (!password || !newPassword || !confirmPassword) {
             return res.json({ success: false, message: "All fields are required" });
@@ -638,6 +667,9 @@ const createaddress = async (req, res) => {
 }
 
 const deleteaddress = async (req, res) => {
+    try {
+        
+   
     const ID = req.params.id
     const userid = req.params.user
     if (userid !== req.session.userId) {
@@ -645,7 +677,11 @@ const deleteaddress = async (req, res) => {
     }
 
     await addressDB.findByIdAndDelete(ID)
-    res.redirect(`/user/address/${userid}`)
+    // res.redirect(`/user/address/${userid}`)
+    res.json({ success: true })
+} catch (error) {
+        console.log(error)
+}
 }
 
 // const updateaddress=async (req,res)=>{
@@ -703,7 +739,8 @@ const updatingAddress = async (req, res) => {
             title: title
         }).then((data) => console.log('changed successfully')).catch(err => console.log(err))
 
-        res.redirect(`/user/address/${userid}`)
+        // res.redirect(`/user/address/${userid}`)
+        return res.json({ success: true })
     } catch (err) {
         console.log('error occured when update address', err)
     }
@@ -714,9 +751,13 @@ const updatingAddress = async (req, res) => {
 
 
 const test = async (req, res) => {
-    console.log('entered to the page of test')
+    try{
+        
     const products = await productDB.find()
     res.render('user/index', { products })
+    }catch(err){
+        console.log(err,'error occured when testing ')
+    }
 }
 
 module.exports = {

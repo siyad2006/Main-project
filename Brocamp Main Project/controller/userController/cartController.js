@@ -17,12 +17,7 @@ exports.getcart = async (req, res, next) => {
     try {
 
 
-
-        // const uid = req.session.userId
-        // const isblockuser = await userDB.findById(uid)
-        // if (isblockuser.isblocked == true) {
-        //     return res.redirect('/user/logout')
-        // }
+ 
 
 
         const uid = req.session.userId;
@@ -53,13 +48,13 @@ exports.getcart = async (req, res, next) => {
         if (cart && cart.coupun && mongoose.Types.ObjectId.isValid(cart.coupun)) {
             const coupunAmount = await coupunDB.findById(cart.coupun);
             if (coupunAmount) {
-                console.log('this is existing coupun', coupunAmount);
+                // console.log('this is existing coupun', coupunAmount);
                 discount += coupunAmount.maximumDiscount
             } else {
-                console.log('Coupon not found');
+                // console.log('Coupon not found');
             }
         }
-        console.log('this is the discount ', discount)
+        // console.log('this is the discount ', discount)
         const cartItems = cart.products.map(product => ({
             productId: product.productId,
             qty: product.qty
@@ -76,41 +71,38 @@ exports.getcart = async (req, res, next) => {
         });
 
         let pricee = 0;
-        console.log("Mapped Cart Products:", cartProducts);
+        // console.log("Mapped Cart Products:", cartProducts);
 
         for (let item of cartProducts) {
             if (item.regularprice && item.qty) {
                 pricee += item.regularprice * item.qty;
             } else {
-                console.log(`Invalid data for product: ${item._id}, Regular Price: ${item.regularprice}, Quantity: ${item.qty}`);
+                // console.log(`Invalid data for product: ${item._id}, Regular Price: ${item.regularprice}, Quantity: ${item.qty}`);
             }
         }
 
-        console.log(`Total Price: ${pricee}`);
+        // console.log(`Total Price: ${pricee}`);
 
         let realprice = 0
         for (let item of cartProducts) {
             if (item.realprice && item.qty) {
                 realprice += item.realprice * item.qty;
             } else {
-                console.log(`Invalid data for product: ${item._id}, Regular Price: ${item.regularprice}, Quantity: ${item.qty}`);
+                // console.log(`Invalid data for product: ${item._id}, Regular Price: ${item.regularprice}, Quantity: ${item.qty}`);
             }
         }
 
-
-        console.log('discount', discount)
-        console.log('real price', realprice)
-
+ 
         req.session.totalAmount = pricee - discount
         req.session.realprice=realprice
         req.session.discount=discount
 
-        console.log(req.session)
+        // console.log(req.session)
         const totalAmount = req.session.totalAmount
         const cartCount = req.session.cartCount || 0
         res.render('user/cart', { userid, cart, products: cartProducts, limit: req.flash('limit'), coupuns: coupuns, totalAmount, discount: discount, realprice,cartCount });
     } catch (err) {
-        console.log('error from get cart', err)
+         
         res.redirect('/user/logout')
     }
 
@@ -134,7 +126,7 @@ exports.addcart = async (req, res) => {
         }
 
 
-        console.log('entered to the cart control page ')
+        // console.log('entered to the cart control page ')
         const productId = req.params.id;
         const userId = req.params.user;
         const { quantity, regularprice } = req.body;
@@ -147,7 +139,7 @@ exports.addcart = async (req, res) => {
             return res.redirect('/')
         }
 
-        console.log('Product ID:', productId, 'User ID:', userId, 'Quantity:', quantity, 'Price:', regularprice);
+        // console.log('Product ID:', productId, 'User ID:', userId, 'Quantity:', quantity, 'Price:', regularprice);
 
         const existingCart = await cartDB.findOne({ user: userId });
 
@@ -177,7 +169,7 @@ exports.addcart = async (req, res) => {
 
 
                 await existingCart.save();
-                console.log('Updated cart:', existingCart);
+                // console.log('Updated cart:', existingCart);
             } else {
 
                 const finalQuantity = Math.min(Number(quantity), 8);
@@ -190,10 +182,10 @@ exports.addcart = async (req, res) => {
                 req.session.totalAmount += regularprice * finalQuantity;
 
                 await existingCart.save();
-                console.log('Added new product to cart:', existingCart);
+                // console.log('Added new product to cart:', existingCart);
             }
         } else {
-            console.log('entered to the else code of cart ')
+            // console.log('entered to the else code of cart ')
             const findpro = await productDB.findById(productId).populate('category')
             if (findpro.category.isblocked == 'Unlisted' || findpro.isblocked == true) {
                 return res.redirect('/')
@@ -210,7 +202,7 @@ exports.addcart = async (req, res) => {
             });
             req.session.totalAmount = regularprice * finalQuantity
             await newCart.save();
-            console.log('Created new cart:', newCart);
+            // console.log('Created new cart:', newCart);
         }
 
         res.redirect(`/user/cart`);
@@ -282,7 +274,7 @@ exports.updateCart = async (req, res, next) => {
             if (discount > newTotalAmount) {
                 discount = newTotalAmount;
             }
-            console.log('Applying discount:', discount);
+            // console.log('Applying discount:', discount);
         }
 
 
@@ -290,7 +282,7 @@ exports.updateCart = async (req, res, next) => {
 
 
         req.session.totalAmount = newTotalAmount - discount;
-        console.log(req.session)
+        // console.log(req.session)
         await cart.save();
 
         res.json({
@@ -335,22 +327,22 @@ exports.removecart = async (req, res) => {
 
 
 
-        console.log('started the remove function');
+        // console.log('started the remove function');
         const userid = req.session.userId;
         const { productId } = req.body;
-        console.log(productId);
+        // console.log(productId);
 
         const cartItem = await cartDB.findOne({ user: userid });
         if (!cartItem) {
-            console.log('No cart found for user');
+            // console.log('No cart found for user');
             return res.redirect(`/user/cart`);
         }
-        console.log('cart ITEM', cartItem);
+        // console.log('cart ITEM', cartItem);
 
 
         const productToRemove = cartItem.products.find(product => product.productId.toString() === productId);
         if (!productToRemove) {
-            console.log('Product not found in cart');
+            // console.log('Product not found in cart');
             return res.redirect(`/user/cart/${userid}`);
         }
 
@@ -362,14 +354,14 @@ exports.removecart = async (req, res) => {
             { regularprice: 1 }
         );
         if (!deletedProduct) {
-            console.log('Product not found in database');
+            // console.log('Product not found in database');
             return res.redirect(`/user/cart/${userid}`);
         }
-        console.log('product for delete', deletedProduct);
+        // console.log('product for delete', deletedProduct);
 
 
         const amountToDeduct = deletedProduct.regularprice * productQty;
-        console.log('Amount to deduct:', amountToDeduct);
+        // console.log('Amount to deduct:', amountToDeduct);
 
         await cartDB.updateOne(
             { user: userid },
@@ -379,7 +371,7 @@ exports.removecart = async (req, res) => {
 
 
         req.session.totalAmount = cartItem.totalAmount - amountToDeduct;
-        console.log('this is the session details of delet', req.session)
+        // console.log('this is the session details of delet', req.session)
         // await cartDB.updateOne(
         //     { user: userid },
         //     { totalAmount: newTotalAmount }
@@ -413,10 +405,7 @@ exports.addcoupun = async (req, res) => {
 
 
 
-
-        console.log('this is from add coupun')
-        console.log(req.session.userId)
-        console.log(req.body);
+ 
         const coupunid = req.body.coupunId;
         const userid = req.session.userId;
         const coupun = await coupunDB.findOne({ code: coupunid });
@@ -430,10 +419,10 @@ exports.addcoupun = async (req, res) => {
             return res.json({ success: false, message: 'There is no coupon with this code' });
         }
         const coupunId = coupun._id
-        console.log('The coupon is active');
+       
 
         if (String(coupun.user) === String(userid)) {
-            console.log('Entered to the check used code');
+ 
             return res.json({ success: false, message: 'This coupon is already used' });
         }
 
@@ -444,7 +433,7 @@ exports.addcoupun = async (req, res) => {
         couponExpiryDate.setHours(0, 0, 0, 0);
 
         if (couponExpiryDate > currentDate) {
-            console.log('Success');
+       
 
             const cart = await cartDB.find({ user: userid }, { totalAmount: 1, _id: 0 });
             if (cart.length === 0) {
@@ -456,19 +445,17 @@ exports.addcoupun = async (req, res) => {
             }
 
             const offeramount = cart[0].totalAmount - coupun.maximumDiscount;
-            console.log(offeramount);
+          
             req.session.totalAmount = offeramount
             req.flash('coupun', coupun.maximumDiscount)
             await cartDB.updateOne(
                 { user: userid },
                 { coupun: coupunId }
-            );
-            console.log('Successfully applied the coupon to the cart');
-
+            ); 
             await coupunDB.updateOne({ code: coupunid }, { user: userid });
             return res.json({ success: true });
         } else {
-            console.log('Coupon is expired');
+         
             return res.json({ success: false, message: 'This coupon is expired' });
         }
     } catch (error) {
@@ -499,10 +486,7 @@ exports.removecoupun = async (req, res) => {
             return res.redirect('/user/logout');
         }
 
-
-
-        console.log('success fully entered to remove coupun cart ')
-        console.log(req.body)
+ 
         const userid = req.body.user
         const cart = await cartDB.findOne({ user: userid })
         let total = cart.totalAmount
@@ -511,21 +495,21 @@ exports.removecoupun = async (req, res) => {
 
         const coupun = cart.coupun
         const isactive = await coupunDB.findById(coupun)
-        console.log(isactive)
+     
         if (!isactive) {
             return res.json({ success: false })
         }
         let down = isactive.maximumDiscount
         const coupunuser = isactive.user
-        console.log(coupunuser)
+  
         let count = 0
         for (let use of coupunuser) {
             if (userid == use) {
-                console.log(use, userid)
+                // console.log(use, userid)
                 count++
             }
         }
-        console.log(count)
+        // console.log(count)
         if (count > 0) {
             const updatedAmount = Number(total + down)
 
@@ -538,7 +522,7 @@ exports.removecoupun = async (req, res) => {
 
 
             })
-            console.log('every think is fine')
+            // console.log('every think is fine')
             res.json({ success: true, message: 'coupun removed ' })
         } else {
             res.json({ success: true, message: 'there is no coupun to remove' })

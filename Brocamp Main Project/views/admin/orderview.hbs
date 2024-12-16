@@ -178,10 +178,11 @@
       <div class="container my-5">
         <!-- Order Header -->
         <div class="order-header d-flex align-items-center justify-content-between mb-4">
-          <h4 class="mb-0 fw-bold">Order: {{order.id}}</h4>
+          <h4 class="mb-0 fw-bold">OrderID db: {{order.id}}</h4>
+          <h4 class="mb-0 fw-bold">Track id: {{order.order_Id}}</h4>
           <input type="hidden" id="ID" value="{{order.id}}">
           <button class="btn btn-outline-primary btn-sm">
-            <i class="fa-solid fa-file-download me-2"></i>Download Summary
+            {{!-- <i class="fa-solid fa-file-download me-2"></i>Download Summary --}}
           </button>
         </div>
 
@@ -197,6 +198,14 @@
             <p>
               <i class="fa-solid fa-location-dot me-2"></i><strong>Shipping Address:</strong>
               {{order.address.houseAddress}}
+            </p>
+            <p>
+              <i class="fa-solid fa-location-dot me-2"></i><strong>State:</strong>
+               {{order.address.state}}
+            </p>
+            <p>
+              <i class="fa-solid fa-location-dot me-2"></i><strong>pin:</strong>
+               {{order.address.pincode}}
             </p>
           </div>
         </div>

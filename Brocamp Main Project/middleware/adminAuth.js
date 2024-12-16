@@ -1,8 +1,7 @@
 
 const adminController = require('./../controller/adminController/adminController')
 
-function isAdmin(req, res, next) {
-    console.log('Checking admin session:', req.session);
+function isAdmin(req, res, next) { 
     if (req.session.admin) {
         next();
     } else {

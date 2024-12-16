@@ -15,17 +15,16 @@ const checkoutDB = require('../../schema/cheakout')
 const login = async (req, res) => {
 
     res.render('admin/adminLogin', { err: req.flash('err') })
-    console.log('admin page got sucessfully')
+    
 }
 
 const postLogin = async (req, res) => {
     const { adminname, password } = req.body;
-
-    console.log('Admin name:', adminname);
+ 
     if (adminname.trim() === process.env.ADMIN_NAME && password.trim() === process.env.ADMIN_PASSWORD) {
-        console.log(adminname)
+     
         req.session.admin = true;
-        console.log('Admin logged in:', req.session.admin);
+      
         res.redirect('/admin/dashboard');
     } else {
 
@@ -64,15 +63,7 @@ const dashboard = async (req, res) => {
 
         const totalUsers = await UserDB.countDocuments();
 
-
-        // const paymentPending = await checkoutDB.aggregate([
-        //     { $match: { status: { $in: ['payment-pending'] } } },
-        //     { $count: 'pendingcount' }
-        // ])
-
-        // console.log('this is the pending count ', paymentPending[0].pendingcount)
-
-        // let pendingCount = paymentPending[0].pendingcount || 0
+ 
         let pendingCount = 0
         const totalsaless = await checkoutDB.aggregate([
             { $match: { status: { $nin: ['canceled', 'return', 'payment-pending'] } } },
@@ -85,8 +76,7 @@ const dashboard = async (req, res) => {
         if (totalsaless && totalsaless.length > 0 && totalsaless[0].totalsales) {
             totalsales = totalsaless[0].totalsales;
         }
-
-        console.log('This is total sales:', totalsales);
+ 
 
         const topProducts = await product.find().sort({ sold: -1 }).limit(10)
 
@@ -115,12 +105,11 @@ const dashboard = async (req, res) => {
             };
             topCategories.push(obj);
         }
-
-        console.log('This is the categories:', topCategories);
+ 
 
         // const sortedAnswer = topCategories.sort((b, a) => a.sold - b.sold);
         const sortedAnswer = await CategoryDB.find({}).sort({ sold: -1 }).limit(10)
-        console.log('This is the sorted answer:', sortedAnswer);
+     
 
 
  
@@ -130,7 +119,7 @@ const dashboard = async (req, res) => {
             { $project: { _id: 0, brand: 1 } }
         ])
 
-        console.log('this is brand products', brandproducts)
+ 
 
         const uniqueBrands = [];
         const seen = new Set();
@@ -141,24 +130,8 @@ const dashboard = async (req, res) => {
                 seen.add(item.brand);  
             }
         }
-
-        console.log('these are unique brandes', uniqueBrands)
-
-        // let topBrands = []
-
-        // for (let item of uniqueBrands) {
-        //     let sold = 0
-        //     const productsinBrnad = await product.find({ brand: item })
-        //     for (let i of productsinBrnad) {
-        //         sold += i.sold
-        //     }
-
-        //     topBrands.push({
-        //         brandname: item,
-        //         sold: sold
-        //     })
-
-        // }
+ 
+ 
 
         let topBrands = [];
 
@@ -175,15 +148,10 @@ const dashboard = async (req, res) => {
                 brandname: item,
                 sold: sold
             });
-        }
-
-        console.log('top brands from loops with  sold', topBrands)
+        } 
 
         const brands = topBrands.sort((b, a) => a.sold - b.sold)
-        console.log('this is the main brands', brands)
-        //  graph 
-
-        console.log(req.query.filter)
+        
 
         let filter = req.query.filter || 'yearly'
 
@@ -228,9 +196,7 @@ const dashboard = async (req, res) => {
                 ])
 
                 // console.log(test)
-
-
-                console.log('yearly data',yearlyData)
+ 
 
                 const formattedData = {
                     year: {
@@ -274,8 +240,7 @@ const dashboard = async (req, res) => {
                             $sort: { "_id.year": 1, "_id.month": 1 }
                         }
                     ]);
-
-                    console.log('Monthly Data:', monthlyData);
+ 
 
                     const formattedData = {
                         year: {
@@ -289,7 +254,7 @@ const dashboard = async (req, res) => {
                         formattedData.year.sales[monthIndex] = item.totalSalesAmount;
                     });
 
-                    console.log('Formatted Monthly Data:', formattedData);
+                    // console.log('Formatted Monthly Data:', formattedData);
 
                     res.render('admin/dashboard', {
                         totalUsers,
@@ -304,11 +269,146 @@ const dashboard = async (req, res) => {
 
                 break;
 
-
+ 
+                // case 'weekly':
+                //     if(true){
+                //     // Get the current date and calculate the current week's start and end date
+                //     const currentDate = new Date();
+                //     const currentDay = currentDate.getDay(); // Sunday = 0, Monday = 1, ..., Saturday = 6
+                //     const currentWeekStart = new Date(currentDate);
+                //     currentWeekStart.setDate(currentDate.getDate() - currentDay); // Start of current week
+                
+                //     const currentWeekEnd = new Date(currentWeekStart);
+                //     currentWeekEnd.setDate(currentWeekStart.getDate() + 6); // End of current week
+                
+                //     // Get the previous week's start and end date
+                //     const previousWeekStart = new Date(currentWeekStart);
+                //     previousWeekStart.setDate(currentWeekStart.getDate() - 7); // Start of previous week
+                
+                //     const previousWeekEnd = new Date(currentWeekEnd);
+                //     previousWeekEnd.setDate(currentWeekEnd.getDate() - 7); // End of previous week
+                
+                //     // Aggregate sales data for current and previous week
+                //     const weeklyData = await checkoutDB.aggregate([
+                //         {
+                //             $match: {
+                //                 status: { $nin: ['canceled', 'return', 'payment-pending'] },
+                //                 createdAt: { $gte: previousWeekStart, $lt: currentWeekEnd } // Filter by date range
+                //             }
+                //         },
+                //         {
+                //             $project: {
+                //                 week: {
+                //                     $cond: {
+                //                         if: { $gte: ["$createdAt", currentWeekStart] }, // Check if createdAt is in the current week
+                //                         then: "current",
+                //                         else: "previous"
+                //                     }
+                //                 },
+                //                 salesAmount: "$totalprice"
+                //             }
+                //         },
+                //         {
+                //             $group: {
+                //                 _id: "$week",
+                //                 totalSalesAmount: { $sum: "$salesAmount" }
+                //             }
+                //         }
+                //     ]);
+                
+                //     // Format the data for the chart
+                //     const formattedData = {
+                //         year: {
+                //             labels: ['Current Week', 'Previous Week'],
+                //             sales: [
+                //                 weeklyData.find(item => item._id === 'current')?.totalSalesAmount || 0, // Default to 0 if no data
+                //                 weeklyData.find(item => item._id === 'previous')?.totalSalesAmount || 0
+                //             ]
+                //         }
+                //     };
+                
+                //     res.render('admin/dashboard', {
+                //         totalUsers,
+                //         topProducts,
+                //         categories: sortedAnswer,
+                //         formattedData: JSON.stringify(formattedData),
+                //         brands,
+                //         totalsales,
+                //         pendingCount
+                //     });
+                //     }
+                //     break;
+                case 'weekly':
+                    if (true) {
+                      // Get the current date and calculate the start date for the last 7 days
+                      const currentDate = new Date();
+                      const startDate = new Date(currentDate);
+                      startDate.setDate(currentDate.getDate() - 6); // Start date of the last 7 days
+                  
+                      // Aggregate sales data for the last 7 days by day
+                      const dailyData = await checkoutDB.aggregate([
+                        {
+                          $match: {
+                            status: { $nin: ['canceled', 'return', 'payment-pending'] },
+                            createdAt: { $gte: startDate, $lte: currentDate } // Filter by date range
+                          }
+                        },
+                        {
+                          $project: {
+                            date: {
+                              $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } // Format date to "YYYY-MM-DD"
+                            },
+                            salesAmount: "$totalprice"
+                          }
+                        },
+                        {
+                          $group: {
+                            _id: "$date",
+                            totalSalesAmount: { $sum: "$salesAmount" } // Sum up sales for each day
+                          }
+                        },
+                        {
+                          $sort: { _id: 1 } // Sort by date
+                        }
+                      ]);
+                  
+                      // Format the data for the chart with each day in the last 7 days
+                      const labels = [];
+                      const sales = [];
+                  
+                      // Generate all dates for the last 7 days
+                      for (let i = 0; i < 7; i++) {
+                        const date = new Date(startDate);
+                        date.setDate(startDate.getDate() + i);
+                        const formattedDate = date.toISOString().split('T')[0]; // Format "YYYY-MM-DD"
+                  
+                        labels.push(formattedDate);
+                        
+                        const dayData = dailyData.find(item => item._id === formattedDate);
+                        sales.push(dayData ? dayData.totalSalesAmount : 0); // Default to 0 if no data for the day
+                      }
+                  
+                      const formattedData = {
+                        year: {
+                          labels,
+                          sales
+                        }
+                      };
+                  
+                      res.render('admin/dashboard', {
+                        totalUsers,
+                        topProducts,
+                        categories: sortedAnswer,
+                        formattedData: JSON.stringify(formattedData),
+                        brands,
+                        totalsales,
+                        pendingCount
+                      });
+                    }
+                    break;
+                
 
         }
-
-
 
 
 
@@ -347,7 +447,7 @@ const blockuser = async (req, res) => {
         if (!updatedUser) {
             return res.status(404).json({ message: 'User not found.' });
         }
-        console.log('User blocked:', val);
+      
         return res.status(200).json({ message: 'User successfully blocked.', userId: val });
     } catch (err) {
         console.error('Error blocking user:', err);
@@ -361,7 +461,7 @@ const blockuser = async (req, res) => {
 const unblockuser = async (req, res) => {
     const val = req.params.id
     const page = req.query.page || 1
-    console.log(val)
+ 
 
     try {
         await UserDB.findByIdAndUpdate(val, { isblocked: false })
@@ -458,7 +558,7 @@ const blockcategory = async (req, res) => {
 
 
         let ID = req.params.id
-        console.log(ID)
+     
 
         const categoryProducts = await product.find({ category: ID })
 
@@ -483,9 +583,7 @@ const blockcategory = async (req, res) => {
         }
 
         await CategoryDB.findByIdAndUpdate(ID, { isblocked: 'Unlisted' })
-
-        // res.redirect('/admin/category')
-        console.log('edited the category ')
+ 
         return res.json({success:true})
 
 

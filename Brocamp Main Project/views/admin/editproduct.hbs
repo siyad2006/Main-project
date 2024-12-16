@@ -243,23 +243,103 @@
           min="1">
       </div>
 
-      <!-- Image Uploads -->
-      <div class="mb-3">
-        <label for="imageUpload1" class="form-label">Add Image 1</label>
-        <input type="file" class="form-control" id="imageUpload1" accept="image/*" name="image1"
-          onchange="openCropper(event, 'canvas1')">
-        <canvas id="canvas1" style="display:none;"></canvas>
-      </div>
-      <div class="mb-3">
-        <input type="file" class="form-control" id="imageUpload2" accept="image/*" name="image2"
-          onchange="openCropper(event, 'canvas2')">
-        <canvas id="canvas2" style="display:none;"></canvas>
-      </div>
-      <div class="mb-3">
-        <input type="file" class="form-control" id="imageUpload3" accept="image/*" name="image3"
-          onchange="openCropper(event, 'canvas3')">
-        <canvas id="canvas3" style="display:none;"></canvas>
-      </div>
+      
+      
+
+<div class="mb-3">
+  <label for="imageUpload1" class="form-label">Add Image 1</label>
+  <input type="file" class="form-control" id="imageUpload1" accept="image/*" name="image1"
+    onchange="openCropper(event, 'canvas1', 'imageUpload1')">
+  <canvas id="canvas1" style="display:none; max-width: 100%;"></canvas>
+</div>
+
+<div class="mb-3">
+  <label for="imageUpload2" class="form-label">Add Image 2</label>
+  <input type="file" class="form-control" id="imageUpload2" accept="image/*" name="image2"
+    onchange="openCropper(event, 'canvas2', 'imageUpload2')">
+  <canvas id="canvas2" style="display:none; max-width: 100%;"></canvas>
+</div>
+
+<div class="mb-3">
+  <label for="imageUpload3" class="form-label">Add Image 3</label>
+  <input type="file" class="form-control" id="imageUpload3" accept="image/*" name="image3"
+    onchange="openCropper(event, 'canvas3', 'imageUpload3')">
+  <canvas id="canvas3" style="display:none; max-width: 100%;"></canvas>
+</div>
+
+<link href="https://unpkg.com/cropperjs/dist/cropper.min.css" rel="stylesheet">
+<script src="https://unpkg.com/cropperjs"></script>
+
+<script>
+  function openCropper(event, canvasId, inputId) {
+    const file = event.target.files[0];
+    const canvas = document.getElementById(canvasId);
+    const ctx = canvas.getContext('2d');
+
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      const img = new Image();
+      img.src = imageUrl;
+
+      img.onload = () => {
+        canvas.style.display = 'block';
+        canvas.width = 300; // Set desired crop width
+        canvas.height = 300; // Set desired crop height
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        const cropper = new Cropper(canvas, {
+          aspectRatio: 1,
+          viewMode: 1,
+        });
+
+        const confirmButton = document.createElement('button');
+        confirmButton.textContent = 'Crop and Replace';
+        confirmButton.className = 'btn btn-primary mt-2';
+
+        confirmButton.onclick = () => {
+          const croppedCanvas = cropper.getCroppedCanvas({
+            width: 300,
+            height: 300,
+          });
+
+          croppedCanvas.toBlob((blob) => {
+            const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(croppedFile);
+
+            const input = document.getElementById(inputId);
+            input.files = dataTransfer.files;
+
+            alert('Cropped image is now ready to be saved!');
+            cropper.destroy();
+          }, 'image/jpeg');
+        };
+
+        const skipCropButton = document.createElement('button');
+        skipCropButton.textContent = 'Save Without Cropping';
+        skipCropButton.className = 'btn btn-secondary mt-2';
+
+        skipCropButton.onclick = () => {
+          const input = document.getElementById(inputId);
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          input.files = dataTransfer.files;
+
+          alert('Image saved without cropping!');
+          cropper.destroy();
+          canvas.style.display = 'none';
+          confirmButton.remove();
+          skipCropButton.remove();
+        };
+
+        canvas.parentElement.appendChild(confirmButton);
+        canvas.parentElement.appendChild(skipCropButton);
+      };
+    }
+  }
+</script>
 
 
       <div style="display:inline;">
