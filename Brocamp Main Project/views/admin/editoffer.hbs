@@ -237,11 +237,11 @@
 
                     <input type="hidden" id="startDate" value="{{start}}">
 
-                    <div class="form-group">
+                    {{!-- <div class="form-group">
                         <label for="discount">Start Date</label>
                         <input type="date" id="start" name="startdate" value="{{offer.start}}" class="form-control"
                             required>
-                    </div>
+                    </div> --}}
 
                     <div class="form-group">
                         <label for="discount">Expire Date</label>
@@ -263,7 +263,7 @@
 
         
         const name = document.getElementById('offerName').value;
-        const startDate = document.getElementById('start').value;
+        const startDate = new Date()
         const end = document.getElementById('expire').value;
         const persent = document.getElementById('discount').value;
 
@@ -289,8 +289,8 @@
                 // Handle success (e.g., show a success message or redirect)
                 window.location.href='/admin/offer'
                 console.log('Offer updated successfully');
-            } else {
-                alert('An error occurred when updating from the backend');
+            } else { 
+                window.location.reload()
             }
         } catch (error) {
             console.error('Error during fetch:', error);

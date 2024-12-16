@@ -12,54 +12,27 @@
 </head>
 
 <body>
-   {{!-- <nav class="navbar na navbar-expand-lg fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand text-white ms-2 head-logo" href="#">
-                <img src="/img/download copy.png" alt="Logo" width="40" height="34"
-                    class="d-inline-block align-text-top"> TimeHaven
-            </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="/user/home">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="/user/shop">Shopping</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Contact Us</a>
-                    </li>
-                </ul>
-
-                <div class="d-flex align-items-center">
-                    <a href="#" class="text-white ms-3">
-                        <i class="bi bi-search"></i>
-                    </a>
-                    <a href="/user/wishlist" class="text-white ms-3">
-                        <i class="bi bi-heart"></i>
-                    </a>
-                    <a href="/user/cart/{{userid}}" class="text-white ms-3">
-                        <i class="bi bi-cart"></i>
-                    </a>
-                    <a href="/user/profile" class="text-white ms-3">
-                        <i class="bi bi-person"></i>
-                    </a>
-
-                </div>
-            </div>
-        </div>
-    </nav> --}}
+   
 
     {{> header}}
+     <input type="hidden" value="{{cartCount}}" id="cartCount">
+
+    <script>
+        console.log('console is working for this page ')
+    </script>
+
+    <script>
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const count = document.getElementById('cart-count')?.textContent || '0';
+            const cart = document.getElementById('cartCount').value || 0
+            console.log('this is the value from backend', cart)
+            console.log('This is the value from the header:', count);
+            document.getElementById('cart-count').textContent = cart
+        });
+
+    </script>
 
     <section class="breadcrumb-option">
         <div class="container">
@@ -185,44 +158,7 @@
             }
         });
     </script>
-
-    {{!-- <div class="container-fluid details-container justify-content-center">
-        <div class="details-card">
-            {{#if success}}
-            <h4 id="successmessage" style="color: green;">{{success}}</h4>
-            {{/if}}
-            <h4 class="text-center">Saved Details</h4>
-
-            <div class="user-info">
-                <p><span>Username:</span> {{user.username}}</p>
-                <p><span>Email:</span> {{user.Email}}</p>
-                <p><span>Phone Number:</span> {{user.phonenumber}}</p>
-            </div>
-
-
-            <div class="d-flex justify-content-center gap-3">
-                <form action="/user/editprofile/{{user.id}}" method="get">
-                    <button class="btn btn-custom btn-edit" type="submit">Edit</button>
-                </form>
-                <form action="/user/changepassword/{{user.id}}" method="get">
-                    <button class="btn btn-custom btn-password" type="submit">Change Password</button>
-                </form>
-                <form action="/user/address/{{user.id}}" method="get">
-                    <button class="btn btn-custom btn-address" type="submit">Address</button>
-                </form>
-
-                <form action="/user/logout" method="get">
-                    <button class="btn btn-custom btn-logout">Logout</button>
-                </form>
-
-                <form action="/user/myorders/{{user.id}}" method="get">
-                    <button class="btn btn-custom btn-logout">My orders</button>
-                </form>
-
-            </div>
-
-        </div>
-    </div> --}}
+ 
 
     <div class="container-fluid   ">
         <div class="details-card">

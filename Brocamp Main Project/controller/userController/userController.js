@@ -470,8 +470,8 @@ const userprofile = async (req, res) => {
             const userdata = userid[0]._id;
             const user = await UserDB.findById(userdata);
 
-
-            res.render('user/profile', { user, success: req.flash('sucess_update') });
+            const cartCount = req.session.cartCount
+            res.render('user/profile', { user, success: req.flash('sucess_update'),cartCount });
         } else {
 
             res.status(404).send('User not found');

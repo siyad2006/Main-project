@@ -32,9 +32,9 @@ exports.getpage = async (req, res) => {
         const userhave = await wishlistDB.findOne({ user: userid })
 
         if (userhave) {
-            let page = parseInt(req.query.page) || 1; // Default to page 1
-            let limit = 10; // Number of items per page
-            let skip = (page - 1) * limit; // Calculate skip value
+            let page = parseInt(req.query.page) || 1; 
+            let limit = 10; 
+            let skip = (page - 1) * limit;  
 
             try {
                 const wishlist = await wishlistDB.findOne({ user: userid }).populate('products');
@@ -44,14 +44,14 @@ exports.getpage = async (req, res) => {
                 if (!wishlist || !wishlist.products || wishlist.products.length === 0) {
                     return res.render('user/emptyWishlist');
                 }
-
-                // Use slice for debugging
+ 
                 const sortedProducts = wishlist.products.slice(skip, skip + limit);
-
+                const cartCount = req.session.cartCount
                 return res.render('user/wishlist', {
                     products: sortedProducts,
                     currentPage: page,
                     totalPages,
+                    cartCount
                 });
             } catch (error) {
                 console.error(error);

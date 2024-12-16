@@ -201,18 +201,7 @@
         <input type="text" class="form-control" id="description" value="{{product.discription}}" name="discription"
           required>
       </div>
-      {{!-- <div class="mb-3">
-        <label for="categorySelect" class="form-label">Category</label>
-        <select class="form-select" id="categorySelect" name="category" required>
-          <option value="">Select a category</option>
-          {{#each categoris}}
-          
-          <option value="{{this._id}}">{{this.categoryname}}</option>
-          
-          {{/each}}
-
-        </select>
-      </div> --}}
+       
 
        
       <div class="mb-3">
@@ -225,17 +214,11 @@
         <input type="text" class="form-control" id="color" value="{{product.color}}" name="color" required>
       </div> --}}
 
-         <div class="mb-3">
+         {{!-- <div class="mb-3">
         <label for="exampleInputPassword1" class="form-label">Color</label>
-        <select class="form-control" id="exampleInputPassword1" name="color" required>
-          <option value="" disabled selected>Select a color</option>
-          <option value="red">Red</option>
-          <option value="blue">Blue</option>
-          <option value="green">Green</option>
-          <option value="yellow">Yellow</option>
-          <option value="purple">Purple</option>
-        </select>
-      </div>
+       
+        <p style="color: #ff4444;">{{product.color}}</p>
+      </div> --}}
 
       <div class="mb-3">
         <label for="quantity" class="form-label">Stock</label>
@@ -244,26 +227,26 @@
       </div>
 
       
-      
+    
 
 <div class="mb-3">
   <label for="imageUpload1" class="form-label">Add Image 1</label>
   <input type="file" class="form-control" id="imageUpload1" accept="image/*" name="image1"
-    onchange="openCropper(event, 'canvas1', 'imageUpload1')">
+    onchange="openCropper(event, 0)">
   <canvas id="canvas1" style="display:none; max-width: 100%;"></canvas>
 </div>
 
 <div class="mb-3">
   <label for="imageUpload2" class="form-label">Add Image 2</label>
   <input type="file" class="form-control" id="imageUpload2" accept="image/*" name="image2"
-    onchange="openCropper(event, 'canvas2', 'imageUpload2')">
+    onchange="openCropper(event, 1)">
   <canvas id="canvas2" style="display:none; max-width: 100%;"></canvas>
 </div>
 
 <div class="mb-3">
   <label for="imageUpload3" class="form-label">Add Image 3</label>
   <input type="file" class="form-control" id="imageUpload3" accept="image/*" name="image3"
-    onchange="openCropper(event, 'canvas3', 'imageUpload3')">
+    onchange="openCropper(event, 2)">
   <canvas id="canvas3" style="display:none; max-width: 100%;"></canvas>
 </div>
 
@@ -271,8 +254,12 @@
 <script src="https://unpkg.com/cropperjs"></script>
 
 <script>
-  function openCropper(event, canvasId, inputId) {
+  const imagesData = [null, null, null]; // Array to store image blobs for each index
+
+  function openCropper(event, index) {
     const file = event.target.files[0];
+    const canvasId = `canvas${index + 1}`;
+    const inputId = `imageUpload${index + 1}`;
     const canvas = document.getElementById(canvasId);
     const ctx = canvas.getContext('2d');
 
@@ -304,7 +291,9 @@
           });
 
           croppedCanvas.toBlob((blob) => {
-            const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+            const croppedFile = new File([blob], `cropped-image-${index + 1}.jpg`, { type: 'image/jpeg' });
+            
+            imagesData[index] = croppedFile; // Update only the current image in the array
 
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(croppedFile);
@@ -312,7 +301,7 @@
             const input = document.getElementById(inputId);
             input.files = dataTransfer.files;
 
-            alert('Cropped image is now ready to be saved!');
+            alert(`Cropped image ${index + 1} is now ready to be saved!`);
             cropper.destroy();
           }, 'image/jpeg');
         };
@@ -322,12 +311,13 @@
         skipCropButton.className = 'btn btn-secondary mt-2';
 
         skipCropButton.onclick = () => {
+          imagesData[index] = file;  
           const input = document.getElementById(inputId);
           const dataTransfer = new DataTransfer();
           dataTransfer.items.add(file);
           input.files = dataTransfer.files;
 
-          alert('Image saved without cropping!');
+          alert(`Image ${index + 1} saved without cropping!`);
           cropper.destroy();
           canvas.style.display = 'none';
           confirmButton.remove();
@@ -360,32 +350,7 @@
           <p style="font-size: medium; color:#ff4444; font-weight:600">{{product.brand}}</p>
         </div>
       </div>  
-
-      {{!-- <div class="mb-3">
-        <label for="brandInput" class="form-label">Brand</label>
-        <select class="form-control" id="brandInput" name="brand" required>
-          <option value="" disabled selected>Select a brand</option>
-          <option value="Rolex">Rolex</option>
-          <option value="Omega">Omega</option>
-          <option value="Casio">Casio</option>
-          <option value="Seiko">Seiko</option>
-          <option value="Tag Heuer">Tag Heuer</option>
-          <option value="Patek Philippe">Patek Philippe</option>
-          <option value="Audemars Piguet">Audemars Piguet</option>
-          <option value="Tissot">Tissot</option>
-          <option value="Citizen">Citizen</option>
-          <option value="Fossil">Fossil</option>
-        </select>
-      </div> --}}
-
-
-      {{!-- <div class="mb-3">
-        <label for="statusSelect" class="form-label">Status</label>
-        <select class="form-select" id="statusSelect" name="status">
-          <option value="available">Available</option>
-          <option value="out of stock">Out of Stock</option>
-        </select>
-      </div> --}}
+ 
       <button type="submit" class="btn btn-primary">Edit</button>
     </form>
 

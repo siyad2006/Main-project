@@ -112,7 +112,15 @@ const postEdit = async (req, res) => {
                     offerPersent: discount,
                     offerprice: offeredValue,
                     regularprice: offeredValue,
-                    realprice: val.regularprice
+                    realprice: val.regularprice,
+                    name: val.productname.trim(),
+                    discription: val.discription.trim(),
+                       
+                    quantity: val.quantity,
+                   
+                    image: updatedImages,
+                    status: val.status || "available",
+               
                 }
             );
           
@@ -129,7 +137,7 @@ const postEdit = async (req, res) => {
                 // category: val.category,
                 regularprice: val.regularprice,
                 quantity: val.quantity,
-                color: val.color.trim(),
+               
                 image: updatedImages,
                 status: val.status || "available",
                 realprice: val.regularprice

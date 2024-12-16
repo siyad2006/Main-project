@@ -23,6 +23,25 @@
 <body>
     {{> header}}
 
+    <input type="hidden" value="{{cartCount}}" id="cartCount">
+
+    <script>
+        console.log('console is working for this page ')
+    </script>
+
+    <script>
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const count = document.getElementById('cart-count')?.textContent || '0';
+            const cart = document.getElementById('cartCount').value || 0
+            console.log('this is the value from backend', cart)
+            console.log('This is the value from the header:', count);
+            document.getElementById('cart-count').textContent = cart
+        });
+
+    </script>
+
     <section class="breadcrumb-option">
         <div class="container">
             <div class="row">

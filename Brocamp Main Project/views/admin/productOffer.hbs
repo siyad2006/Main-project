@@ -210,10 +210,10 @@
                     <input type="number" name="persent" class="form-control" id="discount"
                         placeholder="Enter discount percentage" min="0" max="100" required>
                 </div>
-                <div class="form-group">
+                {{!-- <div class="form-group">
                     <label for="discount">Start Date</label>
                     <input type="date" id="start" name="startdate" class="form-control" required>
-                </div>
+                </div> --}}
                 <div class="form-group">
                     <label for="discount">Expire Date</label>
                     <input type="date" id="expire" name="date" class="form-control" required>
@@ -234,7 +234,7 @@
             const selectedProducts = Array.from(selectedOptions).map(option => option.value);
 
             const data = {
-                start: document.getElementById('start').value,
+                start:new Date(),
                 name: document.getElementById('offerName').value,
                 discription: document.getElementById('offerDescription').value,
                 products: selectedProducts, // Send the array of selected product IDs

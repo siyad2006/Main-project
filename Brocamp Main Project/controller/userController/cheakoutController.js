@@ -1266,17 +1266,14 @@ exports.wallet = async (req, res) => {
 
          
         const transactions = wallet.transaction.reverse();
-
-        // Pagination logic
-        const page = parseInt(req.query.page) || 1;  // Default to page 1
-        const limit = 5;  // Define the number of transactions per page
+ 
+        const page = parseInt(req.query.page) || 1;   
+        const limit = 5;  
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
-
-        // Paginate the transactions
+ 
         const paginatedTransactions = transactions.slice(startIndex, endIndex);
-
-        // Calculate total pages
+ 
         const totalPages = Math.ceil(transactions.length / limit);
 
         res.render('user/wallet', {

@@ -20,7 +20,9 @@ exports.createoffer = async (req, res) => {
     const persent = req.body.persent
     const Expire = req.body.date
     const date = new Date(Expire)
-    const startdate = new Date(req.body.startdate)
+    // const startdate = new Date(req.body.startdate)
+    const startdate = new Date()
+
 
     if (persent > 75) {
         return res.status(404).send('cannot add more than 75% ');
@@ -38,12 +40,12 @@ exports.createoffer = async (req, res) => {
     const today = new Date()
     const d = Date.now();
   
-    if (startdate < today.setHours(0,0,0,0)) {
-        return res.status(404).send('Add a valid date');
-    }
+    // if (startdate < today.setHours(0,0,0,0)) {
+    //     return res.status(404).send('Add a valid date');
+    // }
 
     if (startdate > date) {
-        return res.status(404).send('Start date cannot be later than expire date');
+        return res.status(404).send('Not a valid Date ');
     }
 
 
@@ -121,7 +123,7 @@ exports.createoffer = async (req, res) => {
                 offerprice: offerPrice,
                 regularprice: offerPrice
 
-            }).then(() => console.log('succeeeeess')).catch((err) => console.log(err))
+            })
         } 
         // return  res.redirect('/admin/addoffer')
 
@@ -266,7 +268,7 @@ exports.posteditoffer = async (req, res) => {
     const persent = req.body.persent
     const { startdate, date, name } = req.body
     // console.log(persent, startdate, date, name)
-    const startdates = new Date(startdate)
+    const startdates = new Date()
     const expires = new Date(date)
     const currentOffer = await offerDB.findById(ID)
     // console.log(currentOffer)
@@ -278,13 +280,17 @@ exports.posteditoffer = async (req, res) => {
     if (persent > 75) {
         // return res.status(404).send('cannot add more than 75% ');
         req.flash('validation', 'cannot offer bigger tham 75%');
-        return res.redirect(`/admin/editoffer/${ID}`)
+        // return res.redirect(`/admin/editoffer/${ID}`)
+        return res.json({success:false})
+
     }
 
     if (startdates > expires) {
         // return res.status(404).send('cannot the expire date lesser than start date  ');
         req.flash('validation', 'cannot start date lesser than end date ');
-        return res.redirect(`/admin/editoffer/${ID}`)
+        // return res.redirect(`/admin/editoffer/${ID}`)
+        return res.json({success:false})
+
     }
 
     const d = new Date();  
@@ -292,7 +298,8 @@ exports.posteditoffer = async (req, res) => {
 
     if (new Date(startdate).setHours(0,0,0,0) < d.setHours(0,0,0,0)) { 
         req.flash('validation', 'Enter a valid date');
-        return res.redirect(`/admin/editoffer/${ID}`);
+        // return res.redirect(`/admin/editoffer/${ID}`);
+        return res.json({success:false})
     }
 
 
@@ -308,8 +315,7 @@ exports.posteditoffer = async (req, res) => {
             realprice: realprice
 
 
-        }).then(() => console.log('success'))
-
+        }) 
     }
     await offerDB.findByIdAndUpdate(ID, {
         name: name,
@@ -331,103 +337,19 @@ exports.getproductoffer = async (req, res) => {
 
 
 
-
-
-
-
-// exports.postproductoffer = async (req, res) => {
-//     console.log(req.body)
-//     const start = new Date(req.body.start)
-//     const Expire = new Date(req.body.expire)
-//     const discription = req.body.discription
-//     const name = req.body.name
-//     const product = req.body.product
-//     const discount = req.body.discount
-
-//     console.log(start, Expire, discription, name, product, discount)
-
-//     try {
-//         const singleproduct = await productDB.findById(product)
-//         console.log(singleproduct)
-//         if (!singleproduct) {
-//             console.log('there is no user in that productid')
-//             return res.json({ success: false })
-//         }
-
-//         if (singleproduct.existOffer) {
-//             console.log('you have an existing offer ')
-//             const existingoffer = await offerDB.findById(singleproduct.existOffer)
-//             console.log(existingoffer)
-//             if (existingoffer.discountValue > discount) {
-//                 console.log('you cant add this offer ')
-//                 return res.status(404).send('you cant add this offer , because of the offer less than the current offer')
-//             } else {
-//                 console.log('yopu can add this offer ')
-
-//                 const newoffer = new offerDB({
-//                     name: name,
-//                     discountValue: discount,
-//                     dicription: discription,
-//                     start: start,
-//                     expire: Expire,
-//                     tyoffer: 'product'
-
-//                 })
-//                 const savedOffer = await newoffer.save()
-//                 const offerid = savedOffer._id
-//                 const offeredValue = singleproduct.realprice - Number(singleproduct.realprice * (discount / 100))
-//                 await productDB.updateOne({ _id: singleproduct._id }, {
-//                     existOffer: offerid,
-//                     offerPersent: discount,
-//                     offerprice: offeredValue,
-//                     regularprice: offeredValue,
-
-//                 }).then(() => console.log('updated the product offer '))
-
-//                 return res.json({ success: true })
-//             }
-//         } else {
-//             console.log('you have not an existing offer ')
-//             const newoffer = new offerDB({
-//                 name: name,
-//                 discountValue: discount,
-//                 dicription: discription,
-//                 start: start,
-//                 expire: Expire,
-//                 tyoffer: 'product'
-
-//             })
-//             const savedOffer = await newoffer.save()
-//             const offerid = savedOffer._id
-//             const offeredValue = singleproduct.realprice - Number(singleproduct.realprice * (discount / 100))
-//             await productDB.updateOne({ _id: singleproduct._id }, {
-//                 existOffer: offerid,
-//                 offerPersent: discount,
-//                 offerprice: offeredValue,
-//                 regularprice: offeredValue,
-
-//             }).then(() => console.log('updated the product offer '))
-//             return res.json({ success: true })
-//         }
-
-
-//     } catch (err) {
-//         console.log('an erroior occured in the side of product-offer', err)
-//     }
-// }
-
+ 
 
 exports.postproductoffer = async (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
 
-    const start = new Date(req.body.start);
+    const start = new Date();
     const expire = new Date(req.body.expire);
     const description = req.body.discription;
     const name = req.body.name;
     const products = req.body.products;  
     const discount = req.body.discount;
 
-    console.log(start, expire, description, name, products, discount);
+    // console.log(start, expire, description, name, products, discount);
 
     if(discount>75){
         return res.status(404).send('please select offer less than 75%');
@@ -447,12 +369,12 @@ exports.postproductoffer = async (req, res) => {
         for (const productId of products) {
             const singleProduct = await productDB.findById(productId);
             if (!singleProduct) {
-                console.log(`No product found with ID: ${productId}`);
+                // console.log(`No product found with ID: ${productId}`);
                 continue;
             }
 
             if (singleProduct.existOffer) {
-                console.log(`Product ${productId} already has an existing offer`);
+                // console.log(`Product ${productId} already has an existing offer`);
                 const existingOffer = await offerDB.findById(singleProduct.existOffer);
                 if (existingOffer && existingOffer.discountValue > discount) {
                     console.log(`Skipping product ${productId} as the new offer discount (${discount}%) is less than the existing offer (${existingOffer.discountValue}%)`);
@@ -460,7 +382,7 @@ exports.postproductoffer = async (req, res) => {
                 }
             }
 
-            console.log(`Adding offer to product ${productId}`);
+            // console.log(`Adding offer to product ${productId}`);
             const newOffer = new offerDB({
                 name,
                 discountValue: discount,
@@ -485,7 +407,7 @@ exports.postproductoffer = async (req, res) => {
                 }
             );
 
-            console.log(`Successfully updated product ${productId} with new offer`);
+            // console.log(`Successfully updated product ${productId} with new offer`);
         }
 
         return res.json({ success: true, message: 'Offers added successfully to selected products' });
