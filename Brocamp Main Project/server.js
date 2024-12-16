@@ -99,9 +99,9 @@ hbs.registerHelper('times', function(n, block) {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
-
+// mongoConnect
 try {
-    mongoose.connect(mongoConnect, {
+    mongoose.connect('mongodb+srv://siyadakd18:KE6aNuvkQvIyH8vd@malefashion.gbfza.mongodb.net/mainproject?retryWrites=true&w=majority&appName=MaleFashion', {
         
     })
     console.log('mongodb connected successfully');
