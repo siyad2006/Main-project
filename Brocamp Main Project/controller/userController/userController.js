@@ -210,11 +210,11 @@ const userlogin = async (req, res) => {
         }
 
         if (req.session.loginuser) {
-            return res.redirect('/user/home')
+            return res.redirect('/')
         }
 
         res.render('user/UserLogin')
-        
+
     } catch (error) {
         console.log(error, 'this is from uselogin')
     }
@@ -233,6 +233,10 @@ const postlogin = async (req, res) => {
 
         const name = await UserDB.findOne({ Email })
 
+        if(name.googleId){
+            return res.json({ success: false, message: 'please click the login with google ' })
+        
+        }
 
 
 
