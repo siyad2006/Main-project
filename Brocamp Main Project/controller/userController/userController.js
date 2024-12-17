@@ -213,7 +213,8 @@ const userlogin = async (req, res) => {
             return res.redirect('/user/home')
         }
 
-        res.render('user/userLogin')
+        res.render('user/UserLogin')
+        
     } catch (error) {
         console.log(error, 'this is from uselogin')
     }
