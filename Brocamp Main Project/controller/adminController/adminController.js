@@ -49,7 +49,8 @@ const usermanage = async (req, res) => {
 
     const totalPages = Math.ceil(totalUsers / limit);
 
-    res.render('admin/usermanage', {
+    
+    res.render('admin/userManage', {
         users,
         page,
         totalPages,
