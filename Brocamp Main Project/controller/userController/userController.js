@@ -232,25 +232,26 @@ const postlogin = async (req, res) => {
         const { Email, password } = req.body
 
         const name = await UserDB.findOne({ Email })
-
-        if(name.googleId){
-            return res.json({ success: false, message: 'please click the login with google ' })
-        
-        }
-
-
-
         if (!name) {
 
             return res.json({ success: false, message: 'ithere is no user Exists in this  Email' })
         }
+
+        if (name.googleId) {
+            return res.json({ success: false, message: 'please click the login with google ' })
+
+        }
+
+
+
+
 
 
         const cheakpassword = await bcrypt.compare(password, name.password)
 
 
         if (name.Email == Email) {
-            if (cheakpassword) { 
+            if (cheakpassword) {
                 if (name.isblocked) {
                     res.json({ success: false, message: 'you are blocked by the admin ' })
                 } else {
@@ -477,7 +478,7 @@ const userprofile = async (req, res) => {
             const user = await UserDB.findById(userdata);
 
             const cartCount = req.session.cartCount
-            res.render('user/profile', { user, success: req.flash('sucess_update'),cartCount });
+            res.render('user/profile', { user, success: req.flash('sucess_update'), cartCount });
         } else {
 
             res.status(404).send('User not found');
@@ -535,13 +536,13 @@ const updateprofile = async (req, res) => {
             return res.redirect('/user/home')
         }
         const username = req.body.username
-        
+
         const phone = req.body.phone
 
 
-        await UserDB.findByIdAndUpdate(ID, { username: username.trim(), phonenumber: phone }) 
+        await UserDB.findByIdAndUpdate(ID, { username: username.trim(), phonenumber: phone })
         req.flash('sucess_update', 'sucessfully updated profile')
-      
+
         return res.json({ success: true })
     } catch (error) {
         console.log(error)
@@ -578,11 +579,11 @@ const updatepassword = async (req, res) => {
         }
         const { password, newPassword, confirmPassword } = req.body;
 
-        const isgoogle= await UserDB.findById(userId)
+        const isgoogle = await UserDB.findById(userId)
 
-        if(isgoogle.googleId){
+        if (isgoogle.googleId) {
             return res.json({ success: false, message: "Sorry you are not able to change the password , cause of you are loggin using google id" });
-       
+
         }
 
         if (!password || !newPassword || !confirmPassword) {
@@ -674,20 +675,20 @@ const createaddress = async (req, res) => {
 
 const deleteaddress = async (req, res) => {
     try {
-        
-   
-    const ID = req.params.id
-    const userid = req.params.user
-    if (userid !== req.session.userId) {
-        return res.redirect('/user/home')
-    }
 
-    await addressDB.findByIdAndDelete(ID)
-    // res.redirect(`/user/address/${userid}`)
-    res.json({ success: true })
-} catch (error) {
+
+        const ID = req.params.id
+        const userid = req.params.user
+        if (userid !== req.session.userId) {
+            return res.redirect('/user/home')
+        }
+
+        await addressDB.findByIdAndDelete(ID)
+        // res.redirect(`/user/address/${userid}`)
+        res.json({ success: true })
+    } catch (error) {
         console.log(error)
-}
+    }
 }
 
 // const updateaddress=async (req,res)=>{
@@ -757,12 +758,12 @@ const updatingAddress = async (req, res) => {
 
 
 const test = async (req, res) => {
-    try{
-        
-    const products = await productDB.find()
-    res.render('user/index', { products })
-    }catch(err){
-        console.log(err,'error occured when testing ')
+    try {
+
+        const products = await productDB.find()
+        res.render('user/index', { products })
+    } catch (err) {
+        console.log(err, 'error occured when testing ')
     }
 }
 
