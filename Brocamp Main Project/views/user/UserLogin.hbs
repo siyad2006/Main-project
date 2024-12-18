@@ -120,6 +120,25 @@
             
             let z = document.getElementById('pass').value;
 
+            if(x==''){
+                Swal.fire({
+                    icon:'warning',
+                    text:'warning',
+                    text:'please fill the email'
+                })
+                return false
+            }
+
+            if(z==''){
+                Swal.fire({
+                    icon:'warning',
+                    text:'warning',
+                    text:'please fill the password ' 
+                })
+                return false
+            }
+
+
             $.ajax({
                 type: 'POST',
                 url: '/user/userlogin',
