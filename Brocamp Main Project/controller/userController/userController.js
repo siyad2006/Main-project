@@ -518,7 +518,7 @@ const editprofile = async (req, res) => {
             return res.redirect('/user/home')
         }
         const user = await UserDB.findById(ID)
-        res.render('user/editprofile', { user })
+        res.render('user/Editprofile', { user })
     } catch (err) {
         console.log(err, 'error from edit profile ')
     }
