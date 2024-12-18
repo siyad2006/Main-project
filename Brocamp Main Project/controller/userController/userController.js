@@ -223,11 +223,7 @@ const userlogin = async (req, res) => {
 
 
 const postlogin = async (req, res) => {
-
-
-
-
-
+ 
     try {
         const { Email, password } = req.body
 
