@@ -113,7 +113,17 @@
             {{!--
         </form> --}}
     </div>
+{{!-- <script>
+    let unsavedChanges = true;
 
+window.addEventListener("beforeunload", function (event) {
+    if (unsavedChanges) {
+        event.preventDefault();
+        event.returnValue = ""; // Required to trigger the dialog
+    }
+});
+
+</script> --}}
     <script>
         // Timer variables
         let countdown = 120; // 2 minutes in seconds
@@ -150,6 +160,16 @@
 
             const OTP = document.getElementById('otpInput').value;
 
+            const regex = /^\d{6}$/
+
+            if (!regex.test(OTP)) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "warning",
+                    text: "otp must be 6 numbers"
+                });
+                return false
+            }
 
 
             $.ajax({
@@ -169,8 +189,8 @@
                         });
                     } else {
                         Swal.fire({
-                            icon: "error",
-                            title: "Error",
+                            icon: "warning",
+                            title: "warning",
                             text: response.message
                         });
                     }

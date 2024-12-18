@@ -67,47 +67,6 @@ exports.getpage = async (req, res) => {
     }
 }
 
-// exports.getpage = async (req, res) => {
-//     const userid = req.session.userId;
-
-//     if (!userid) {
-//         return res.redirect('/user/home');
-//     }
-
-//     const userhave = await wishlistDB.findOne({ user: userid });
-
-//     if (userhave) {
-//         let page = parseInt(req.query.page) || 1;
-//         let limit = 5 ;
-//         let skip = (page - 1) * limit;
-
-//         const wishlist = await wishlistDB
-//             .findOne({ user: userid })
-//             .populate({
-//                 path: 'products',
-//                 options: { skip, limit },
-//             });
-
-//         const totalProducts = wishlist.products.length;
-//         const totalPages = Math.ceil(totalProducts / limit);
-
-//         if (!wishlist.products || wishlist.products.length === 0) {
-//             return res.render('user/emptyWishlist');
-//         }
-
-//         return res.render('user/wishlist', {
-//             wishlist,
-//             userid,
-//             currentPage: page,
-//             totalPages,
-//         });
-//     } else {
-//         return res.render('user/emptyWishlist');
-//     }
-// };
-
-
-
 
 exports.additem = async (req, res) => {
     try {
@@ -116,7 +75,9 @@ exports.additem = async (req, res) => {
 
         const uid = req.session.userId;
 
-
+if(!uid){
+    return res.status(401).send('login first ')
+}
         if (!uid) {
             return res.redirect('/user/login');
         }
@@ -156,9 +117,15 @@ exports.additem = async (req, res) => {
 
         if (userWishlist) {
             const productExists = await wishlistDB.findOne({ user: userid, products: ID });
-            if (productExists) {
-                // console.log('Product already in wishlist');
-                return res.json({ success: false, message: 'Product already in wishlist' });
+            // if (productExists) {
+            //     // console.log('Product already in wishlist');
+            //     return res.json({ success: false, message: 'Product already in wishlist' });
+            // }
+            for(let item of userWishlist.products){
+                if(item.toString()==ID){
+                    console.log('already in it ')
+                    return res.status(400).send('product already in wishlist ')
+                }
             }
 
             await wishlistDB.updateOne(
@@ -201,7 +168,7 @@ exports.delete = async (req, res) => {
 
         const userid = req.session.userId
         const ID = req.params.id
-        await wishlistDB.updateOne({ user: userid }, { $pull: { products: ID } }).then(() => console.log('pulled successfuly '))
+        await wishlistDB.updateOne({ user: userid }, { $pull: { products: ID } })
         res.redirect('/user/wishlist')
     } catch (error) {
         console.log(error, 'from the delete of wishlist ')

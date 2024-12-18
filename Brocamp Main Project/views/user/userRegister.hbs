@@ -20,8 +20,7 @@
 
         <div class="inner">
             <div class="image-holder">
-                <img src="/localpictures/loginpic.jpeg"
-                    alt="" style="border-radius: 5px;">
+                <img src="/localpictures/loginpic.jpeg" alt="" style="border-radius: 5px;">
             </div>
             <form action="/user/postregister" onsubmit="return validation()" method="post">
                 <h3>Registration Form</h3>
@@ -45,7 +44,7 @@
                     <i class="zmdi zmdi-account"></i>
                 </div>
                 <div class="form-wrapper">
-                    <input type="Email" placeholder="Email Address" name="Email" class="form-control">
+                    <input type="Email" placeholder="Email Address" id="mail" name="Email" class="form-control">
                     <i class="zmdi zmdi-email"></i>
                 </div>
 
@@ -110,20 +109,57 @@
         localStorage.setItem('Appliaction Name', 'Time Heaven')
         sessionStorage.setItem('Appliaction NAme', 'Time heaven')
 
+
         function validation() {
             let name = document.getElementById('Name').value.trim();
             let password = document.getElementById('pass').value.trim();
             let confirmPassword = document.getElementById('repass').value;
-
+            let mail = document.getElementById('mail').value.trim()
             let nameRegex = /^[A-Za-z\s]+$/;
+            if (name == '' && mail == '' && password == '') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'warning',
+                    text: 'all fields are requied'
 
+                })
+                return false;
+            }
+            if (name == '') {
+                Swal.fire({
+                     icon: 'warning',
+                    title: 'warning',
+                    text: 'pleace fill name'
 
+                })
+                return false;
+            }
+
+            if (mail == '') {
+                Swal.fire({
+                     icon: 'warning',
+                    title: 'warning',
+                    text: 'pleace fill Mail'
+
+                })
+                return false;
+            }
+
+            if (password == '') {
+                Swal.fire({
+                     icon: 'warning',
+                    title: 'warning',
+                    text: 'pleace fill password'
+
+                })
+                return false;
+            }
 
             // Validate name
             if (!nameRegex.test(name.trim())) {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'An Error Occured',
+                    icon: 'warning',
+                    title: 'warning',
                     text: 'name must be contain only alpabets and spaces'
 
                 })
@@ -134,8 +170,8 @@
 
             if (password.length < 6) {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'An Error Occured',
+                     icon: 'warning',
+                    title: 'warning',
                     text: 'password must be six or more charactors'
 
                 })
@@ -143,10 +179,10 @@
             }
             let passwordRegex = /^(?=.*[A-Za-z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>?/`~]).+$/;
 
-            if (!passwordRegex.test(password)) { // Corrected the typo: `password])` to `password`
+            if (!passwordRegex.test(password)) {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'An Error Occurred',
+                   icon: 'warning',
+                    title: 'warning',
                     text: 'Password should contain at least one alphabet and one symbol.',
                 });
                 return false;
@@ -155,8 +191,8 @@
 
             if (password !== confirmPassword) {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'An Error Occured',
+                    icon: 'warning',
+                    title: 'warning',
                     text: 'password does not match '
 
                 })
@@ -164,7 +200,7 @@
             }
 
 
- 
+
             return true;
         }
 

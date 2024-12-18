@@ -109,7 +109,7 @@ const otp = async (req, res) => {
 
 
 const otpVerification = async (req, res) => {
-    console.log('OTP received:', req.body.otp);
+    
     const { otp } = req.body;
     if (req.session.userOtp == otp) {
 

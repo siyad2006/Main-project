@@ -7,7 +7,6 @@ const product = require('../../schema/productschema');
 const cartDB = require('../../schema/cart');
 const wishlistDB = require('../../schema/wishlistSchema');
 const offerDB = require('../../schema/offerSchema');
-// const { default: products } = require('razorpay/dist/types/products');
 
 const addproduct = async (req, res) => {
 
