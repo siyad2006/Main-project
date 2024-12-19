@@ -288,7 +288,7 @@ exports.getsalesreport = async (req, res) => {
 
     };
     let page = parseInt(req.query.page) || 1;
-    let limit = 10;
+    let limit = 20;
     let skip = (page - 1) * limit;
  
     const salesData = await cheackoutDB.find(query)
