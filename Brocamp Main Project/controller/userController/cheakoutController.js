@@ -635,6 +635,14 @@ exports.cancelorder = async (req, res) => {
 
 
                 const newAmount = existingAmount + db.totalprice;
+let qtys=0
+                // const checkouttest= await checkoutDB.findById(ID)
+                    for (let item of db.products){
+                        const itemproduct=item.productId
+                        let itemqty=item.qty
+                        
+                    }
+                // for ()
 
                 await walletDB.updateOne(
                     { user: userid },
@@ -735,6 +743,8 @@ exports.cancelorder = async (req, res) => {
 
                     await singleItem.save();
                 }
+
+
 
                 res.redirect(`/user/myorders/${userid}`)
             }

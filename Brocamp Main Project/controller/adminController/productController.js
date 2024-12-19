@@ -268,4 +268,6 @@ const editproduct = async (req, res) => {
     res.render('admin/editproduct', { product, categoris })
 }
 
+
+
 module.exports = { addproduct, add, getproduct, blockproduct, unblockproduct, deleteproduct, editproduct, postEdit }
