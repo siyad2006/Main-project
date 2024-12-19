@@ -275,7 +275,7 @@ exports.getsalesreport = async (req, res) => {
           break;
       }
     }
- 
+
 
     if (startDate && endDate) {
       finalStartDate = new Date(startDate) || Date.now();
@@ -290,7 +290,7 @@ exports.getsalesreport = async (req, res) => {
     let page = parseInt(req.query.page) || 1;
     let limit = 20;
     let skip = (page - 1) * limit;
- 
+
     const salesData = await cheackoutDB.find(query)
       .populate('products.productId')
       .populate('userID')
@@ -301,7 +301,7 @@ exports.getsalesreport = async (req, res) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
- 
+
     const totalSales = await cheackoutDB.countDocuments(query);
     const totalPages = Math.ceil(totalSales / limit); // Total pages
 
@@ -322,7 +322,7 @@ exports.getsalesreport = async (req, res) => {
     const totalOffer = offer.length > 0 ? offer[0].totaloffer : 0;
     totalDiscount += totalOffer
 
- 
+
 
     // this is the original 
     // const coupunoffer = await coupunDB.find().populate('user');
@@ -342,9 +342,9 @@ exports.getsalesreport = async (req, res) => {
     const coupunAmount = await cheackoutDB.aggregate([
       { $match: { createdAt: { $gte: finalStartDate, $lte: finalEndDate }, status: { $nin: ['return,canceled'] } } }, { $group: { _id: null, coupun: { $sum: '$applayedcoupun' } } }, { $project: { _id: 0, coupun: 1 } }
     ])
-     
+
     totalDiscount += coupunAmount[0]?.coupun || 0
- 
+
 
     salesData.forEach(order => {
       totalRevenue += order.totalprice || 0;
@@ -356,7 +356,7 @@ exports.getsalesreport = async (req, res) => {
     req.session.totalOrders = totalOrders
     req.session.totalRevenue = totalRevenue
     req.session.totalDiscount = totalDiscount
- 
+
     res.render('admin/salesreport', {
       totalOrders,
       totalRevenue,
@@ -378,13 +378,13 @@ exports.getsalesreport = async (req, res) => {
 exports.downloadpdf = async (req, res) => {
   try {
     const { filter, startDate, endDate } = req.query;
-    
- 
+
+
     let start = new Date();
     let end = new Date();
-  
+
     if (startDate && endDate) {
-    
+
       start = new Date(startDate);
       end = new Date(endDate);
     }
@@ -392,7 +392,7 @@ exports.downloadpdf = async (req, res) => {
     if (filter) {
       switch (filter) {
         case 'daily':
-   
+
           start.setHours(0, 0, 0, 0);
 
           break;
@@ -415,7 +415,7 @@ exports.downloadpdf = async (req, res) => {
     if (isNaN(start) || isNaN(end)) {
       return res.status(400).send('Invalid date format');
     }
- 
+
 
     const query = { createdAt: { $gte: start, $lte: end }, status: { $nin: ['return', 'canceled'] } };
     const salesData = await cheackoutDB.find(query)
@@ -574,7 +574,7 @@ exports.downloadExcel = async (req, res) => {
           break;
 
         default:
-     
+
           break
 
 

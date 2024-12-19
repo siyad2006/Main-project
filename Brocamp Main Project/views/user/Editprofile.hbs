@@ -89,8 +89,8 @@
             event.preventDefault();
 
 
-            const username = document.getElementById('username').value;
-            const phone = document.getElementById('phone').value;
+            const username = document.getElementById('username').value.trim();
+            const phone = document.getElementById('phone').value.trim();
             const userId = "{{user.id}}";
             const regex = /^[A-Za-z\s]+$/
             if (username.trim() == "") {

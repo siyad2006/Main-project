@@ -271,74 +271,7 @@ const dashboard = async (req, res) => {
                 break;
 
  
-                // case 'weekly':
-                //     if(true){
-                //     // Get the current date and calculate the current week's start and end date
-                //     const currentDate = new Date();
-                //     const currentDay = currentDate.getDay(); // Sunday = 0, Monday = 1, ..., Saturday = 6
-                //     const currentWeekStart = new Date(currentDate);
-                //     currentWeekStart.setDate(currentDate.getDate() - currentDay); // Start of current week
-                
-                //     const currentWeekEnd = new Date(currentWeekStart);
-                //     currentWeekEnd.setDate(currentWeekStart.getDate() + 6); // End of current week
-                
-                //     // Get the previous week's start and end date
-                //     const previousWeekStart = new Date(currentWeekStart);
-                //     previousWeekStart.setDate(currentWeekStart.getDate() - 7); // Start of previous week
-                
-                //     const previousWeekEnd = new Date(currentWeekEnd);
-                //     previousWeekEnd.setDate(currentWeekEnd.getDate() - 7); // End of previous week
-                
-                //     // Aggregate sales data for current and previous week
-                //     const weeklyData = await checkoutDB.aggregate([
-                //         {
-                //             $match: {
-                //                 status: { $nin: ['canceled', 'return', 'payment-pending'] },
-                //                 createdAt: { $gte: previousWeekStart, $lt: currentWeekEnd } // Filter by date range
-                //             }
-                //         },
-                //         {
-                //             $project: {
-                //                 week: {
-                //                     $cond: {
-                //                         if: { $gte: ["$createdAt", currentWeekStart] }, // Check if createdAt is in the current week
-                //                         then: "current",
-                //                         else: "previous"
-                //                     }
-                //                 },
-                //                 salesAmount: "$totalprice"
-                //             }
-                //         },
-                //         {
-                //             $group: {
-                //                 _id: "$week",
-                //                 totalSalesAmount: { $sum: "$salesAmount" }
-                //             }
-                //         }
-                //     ]);
-                
-                //     // Format the data for the chart
-                //     const formattedData = {
-                //         year: {
-                //             labels: ['Current Week', 'Previous Week'],
-                //             sales: [
-                //                 weeklyData.find(item => item._id === 'current')?.totalSalesAmount || 0, // Default to 0 if no data
-                //                 weeklyData.find(item => item._id === 'previous')?.totalSalesAmount || 0
-                //             ]
-                //         }
-                //     };
-                
-                //     res.render('admin/dashboard', {
-                //         totalUsers,
-                //         topProducts,
-                //         categories: sortedAnswer,
-                //         formattedData: JSON.stringify(formattedData),
-                //         brands,
-                //         totalsales,
-                //         pendingCount
-                //     });
-                //     }
-                //     break;
+                 
                 case 'weekly':
                     if (true) {
                       // Get the current date and calculate the start date for the last 7 days
@@ -346,8 +279,7 @@ const dashboard = async (req, res) => {
                       const startDate = new Date(currentDate);
                       startDate.setDate(currentDate.getDate() - 6); // Start date of the last 7 days
                   
-                      // Aggregate sales data for the last 7 days by day
-                      const dailyData = await checkoutDB.aggregate([
+                        const dailyData = await checkoutDB.aggregate([
                         {
                           $match: {
                             status: { $nin: ['canceled', 'return', 'payment-pending'] },
@@ -369,20 +301,17 @@ const dashboard = async (req, res) => {
                           }
                         },
                         {
-                          $sort: { _id: 1 } // Sort by date
-                        }
+                          $sort: { _id: 1 }  
+                         }
                       ]);
-                  
-                      // Format the data for the chart with each day in the last 7 days
+                   
                       const labels = [];
                       const sales = [];
-                  
-                      // Generate all dates for the last 7 days
+                   
                       for (let i = 0; i < 7; i++) {
                         const date = new Date(startDate);
                         date.setDate(startDate.getDate() + i);
-                        const formattedDate = date.toISOString().split('T')[0]; // Format "YYYY-MM-DD"
-                  
+                        const formattedDate = date.toISOString().split('T')[0]; 
                         labels.push(formattedDate);
                         
                         const dayData = dailyData.find(item => item._id === formattedDate);
@@ -419,30 +348,11 @@ const dashboard = async (req, res) => {
 }
 
 
-// // for block user 
-// const blockuser = async (req, res) => {
-//     const page = req.query.page || 1
-
-//     const val = req.params.id
-//     console.log(val)
-
-
-//     try {
-//         await UserDB.findByIdAndUpdate(val, { isblocked: true })
-//         // res.redirect(`/admin/usermanage?page=${page}`)
-//         return res.status(200)
-//         console.err('user blocked')
-//     } catch (err) {
-//         console.log(err)
-//     }
-
-
-// }
+ 
 
 const blockuser = async (req, res) => {
-    const val = req.params.id; // Extract user ID from request params
-    const page = req.query.page || 1; // Optional query parameter for redirection
-
+    const val = req.params.id;  
+    const page = req.query.page || 1;  
     try {
         const updatedUser = await UserDB.findByIdAndUpdate(val, { isblocked: true });
         if (!updatedUser) {
