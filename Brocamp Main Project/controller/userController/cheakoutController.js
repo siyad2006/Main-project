@@ -633,7 +633,7 @@ exports.cancelorder = async (req, res) => {
 
                 const existingAmount = existingWallet.amount || 0;
 
-
+                const newAmount =existingAmount + db.totalprice;
                 
 //                     let qtys=0
 // //                 // const checkouttest= await checkoutDB.findById(ID)
