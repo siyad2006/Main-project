@@ -4,7 +4,7 @@ const path = require('path')
 const cors = require("cors");
 const userRouter = require('./Router/userRouter/user');
 const adminRouter = require('./Router/adminRouter/admin')
-const start=require('./Router/userRouter/start')
+const start = require('./Router/userRouter/start')
 const flash = require('connect-flash');
 const nocache = require('nocache')
 const swal = require('sweetalert2')
@@ -18,8 +18,8 @@ app.use(bodyParser.json());
 const session = require('express-session');
 const mongoose = require('mongoose')
 require('dotenv').config()
-const cron=require('node-cron')
-const{restorePricesAfterOfferExpiration}= require('./controller/adminController/offerController')
+const cron = require('node-cron')
+const { restorePricesAfterOfferExpiration } = require('./controller/adminController/offerController')
 const Handlebars = require('handlebars')
 
 app.use(nocache())
@@ -34,25 +34,19 @@ const mongoConnect = process.env.MONGO_URI
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 app.use(cors());
-// app.use(session({
-//     secret: 'your_secret_key',
-//     resave: false,
-//     saveUninitialized: true,
-//     cookie: { maxAge: 3600000 }
-// }));
 
 app.use(session({
-    secret: 'your_secret_key',  
-    resave: false,            
-    saveUninitialized: false, 
+    secret: 'your_secret_key',
+    resave: false,
+    saveUninitialized: false,
     cookie: {
-        maxAge: 3600000,   
-        httpOnly: true,      
-        sameSite: 'lax',     
-        secure: false        
+        maxAge: 3600000,
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: false
     }
 }));
- 
+
 app.use(flash())
 
 app.use((req, res, next) => {
@@ -78,22 +72,22 @@ hbs.registerHelper('or', function (a, b) {
     return a || b;
 });
 hbs.registerHelper('formatDate', function (date) {
-    return new Date(date).toLocaleDateString('en-US');  
+    return new Date(date).toLocaleDateString('en-US');
 });
 hbs.registerHelper('neq', function (a, b) {
     return a !== b;
-  });
-hbs.registerHelper('times', function(n, block) {
-    let result = '';
-    for (let i = 0; i < n; i++) {
-        result += block.fn(i);
-    }
-    return result;
 });
+// hbs.registerHelper('times', function (n, block) {
+//     let result = '';
+//     for (let i = 0; i < n; i++) {
+//         result += block.fn(i);
+//     }
+//     return result;
+// });
 
 // Register the subtract helper
 
- 
+
 // Set up 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
@@ -101,7 +95,7 @@ app.set('view engine', 'hbs');
 // mongoConnect
 try {
     mongoose.connect('mongodb+srv://siyadakd18:KE6aNuvkQvIyH8vd@malefashion.gbfza.mongodb.net/mainproject?retryWrites=true&w=majority&appName=MaleFashion', {
-        
+
     })
     console.log('mongodb connected successfully');
 
@@ -123,13 +117,13 @@ try {
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/user/register' }), (req, res) => {
     res.redirect('/')
-    
+
 })
 
 
 app.use('/user', userRouter)
 app.use('/admin', adminRouter)
-app.use('/',start)
+app.use('/', start)
 
 
 app.use((req, res, next) => {

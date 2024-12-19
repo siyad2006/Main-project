@@ -92,9 +92,9 @@ const dashboard = async (req, res) => {
             const categoryProducts = await product.find({ category: item._id });
 
             categoryProducts.map((i) => {
-                const itemsold = Number(i.sold || 0); // Default to 0 if undefined or invalid
+                const itemsold = Number(i.sold || 0); 
                 if (!isNaN(itemsold)) {
-                    sold += itemsold; // Add only valid numbers
+                    sold += itemsold; 
                 } else {
                     console.warn(`Invalid sold value for product: ${i.sold}`);
                 }
@@ -107,8 +107,7 @@ const dashboard = async (req, res) => {
             topCategories.push(obj);
         }
  
-
-        // const sortedAnswer = topCategories.sort((b, a) => a.sold - b.sold);
+ 
         const sortedAnswer = await CategoryDB.find({}).sort({ sold: -1 }).limit(10)
      
 
@@ -254,9 +253,7 @@ const dashboard = async (req, res) => {
                         const monthIndex = item._id.month - 1;
                         formattedData.year.sales[monthIndex] = item.totalSalesAmount;
                     });
-
-                    // console.log('Formatted Monthly Data:', formattedData);
-
+ 
                     res.render('admin/dashboard', {
                         totalUsers,
                         topProducts,
@@ -274,22 +271,21 @@ const dashboard = async (req, res) => {
                  
                 case 'weekly':
                     if (true) {
-                      // Get the current date and calculate the start date for the last 7 days
-                      const currentDate = new Date();
+                      
+                       const currentDate = new Date();
                       const startDate = new Date(currentDate);
-                      startDate.setDate(currentDate.getDate() - 6); // Start date of the last 7 days
-                  
+                      startDate.setDate(currentDate.getDate() - 6);  
                         const dailyData = await checkoutDB.aggregate([
                         {
                           $match: {
                             status: { $nin: ['canceled', 'return', 'payment-pending'] },
-                            createdAt: { $gte: startDate, $lte: currentDate } // Filter by date range
+                            createdAt: { $gte: startDate, $lte: currentDate }  
                           }
                         },
                         {
                           $project: {
                             date: {
-                              $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } // Format date to "YYYY-MM-DD"
+                              $dateToString: { format: "%Y-%m-%d", date: "$createdAt" }  
                             },
                             salesAmount: "$totalprice"
                           }
@@ -297,7 +293,7 @@ const dashboard = async (req, res) => {
                         {
                           $group: {
                             _id: "$date",
-                            totalSalesAmount: { $sum: "$salesAmount" } // Sum up sales for each day
+                            totalSalesAmount: { $sum: "$salesAmount" } 
                           }
                         },
                         {

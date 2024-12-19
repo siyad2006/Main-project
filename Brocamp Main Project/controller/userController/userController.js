@@ -34,7 +34,7 @@ const postregister = async (req, res) => {
     const mailExists = await UserDB.findOne({ Email: { $regex: `^${Email}$`, $options: 'i' } });
 
 
-    if (exists || mailExists) {
+    if ( mailExists) {
         req.flash('error', "the user is already exists")
 
         return res.redirect('/user/register');
@@ -273,9 +273,9 @@ const postlogin = async (req, res) => {
     }
 
     catch (err) {
-        console.log(err);
+        // console.log(err);
 
-        console.error('there is no user exists ')
+        // console.error('there is no user exists ')
         // res.json({ success: false, message: 'there is no user eixts in the Email ' })
     }
 
