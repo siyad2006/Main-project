@@ -634,15 +634,21 @@ exports.cancelorder = async (req, res) => {
                 const existingAmount = existingWallet.amount || 0;
 
 
-                const newAmount = existingAmount + db.totalprice;
-let qtys=0
-                // const checkouttest= await checkoutDB.findById(ID)
-                    for (let item of db.products){
-                        const itemproduct=item.productId
-                        let itemqty=item.qty
-                        
-                    }
-                // for ()
+                
+//                     let qtys=0
+// //                 // const checkouttest= await checkoutDB.findById(ID)
+//                     for (let item of db.products){
+//                         // const itemproduct=item.productId
+//                         let itemqty=item.qty
+//                         qtys+=itemqty
+
+
+//                     }
+
+//                     if(qtys<=5){
+//                         const newAmount =Number() existingAmount + db.totalprice;
+//                     }
+//                 // for ()
 
                 await walletDB.updateOne(
                     { user: userid },
