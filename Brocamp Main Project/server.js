@@ -29,7 +29,6 @@ app.use(express.json())
 
 
 
-
 const mongoConnect = process.env.MONGO_URI
 // middlewares
 app.use(express.static(path.join(__dirname, 'public')));

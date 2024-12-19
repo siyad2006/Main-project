@@ -1647,7 +1647,7 @@ exports.repay = async (req, res) => {
             orderID: db._id
         });
     } catch (err) {
-        // console.log('Error from repay:', err);
+        
         res.status(500).json({ error: 'An error occurred while processing the repayment', details: err.message });
     }
 };

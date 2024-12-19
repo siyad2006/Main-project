@@ -92,6 +92,40 @@
             const username = document.getElementById('username').value;
             const phone = document.getElementById('phone').value;
             const userId = "{{user.id}}";
+            const regex = /^[A-Za-z\s]+$/
+            if (username.trim() == "") {
+                swal.fire({
+                    icon: 'error',
+                    title: 'error',
+                    text: 'name must be filled '
+                })
+                return false
+            }
+            if (!regex.test(username)) {
+                swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Name can only contain alphabets and spaces.'
+                });
+                return false;
+            }
+            if (phone.length < 10 || phone.length > 10) {
+                swal.fire({
+                    icon: 'error',
+                    title: 'error',
+                    text: 'phone number must be 10 numbers and '
+                })
+                return false
+            }
+            if (!/^\d{10}$/.test(phone)) {
+                swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Phone number must be exactly 10 digits.'
+                });
+                return false;
+            }
+
 
             const data = { username, phone };
 
@@ -124,64 +158,7 @@
 
         document.querySelector('form').addEventListener('submit', validation);
     </script>
-
-
-    <script>
-
-        function validation() {
-            const name = document.getElementById('username').value;
-
-            const phone = document.getElementById('phone').value;
-            const regex = /^[A-Za-z\s]+$/
-
-
-            if (name.trim() == "") {
-                swal.fire({
-                    icon: 'error',
-                    title: 'error',
-                    text: 'name must be filled '
-                })
-                return false
-            }
-            if (!regex.test(name)) {
-                swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Name can only contain alphabets and spaces.'
-                });
-                return false;
-            }
-            if (phone.length < 10 || phone.length > 10) {
-                swal.fire({
-                    icon: 'error',
-                    title: 'error',
-                    text: 'phone number must be 10 numbers and '
-                })
-                return false
-            }
-            if (!/^\d{10}$/.test(phone)) {
-                swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Phone number must be exactly 10 digits.'
-                });
-                return false;
-            }
-
-
-
-            return true
-        }
-
-
-
-
-
-    </script>
-
-
-
-    <!-- Bootstrap JS and Other Scripts -->
+ 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
