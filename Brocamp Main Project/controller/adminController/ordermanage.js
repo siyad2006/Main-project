@@ -120,8 +120,7 @@ exports.changestatus = async (req, res) => {
 
 
 
-      } else {
-        // return console.log('this is from non existing wallet ')
+      } else { 
         const newwallet = new walletDB({
           amount: order.totalprice,
           user: userid,
@@ -203,9 +202,8 @@ exports.changestatus = async (req, res) => {
           })
         } else {
 
-          // console.log(`Product with ID ${item.productId} does not exist. Skipping...`);
-          continue; // Skip this iteration and move to the next item
-
+            continue;
+            
         }
 
 
@@ -233,15 +231,7 @@ exports.changestatus = async (req, res) => {
 }
 
 
-// exports.getsalesreport= async (req,res)=>{
-
-// console.log(req.query.filter)
-
-//   res.render('admin/salesreport')
-//   // console.log(req.query.filter)
-
-
-// } 
+ 
 exports.getsalesreport = async (req, res) => {
   try {
     const { filter, startDate, endDate } = req.query;
@@ -442,26 +432,7 @@ exports.downloadpdf = async (req, res) => {
 
 
 
-    // doc.fontSize(20).text('Sales Report', { align: 'center' });
-    // doc.text(`totalOrder : ${req.session.totalOrders}`)
-    // doc.text(`revenew : ${req.session.totalRevenue}`)
-    // doc.text(`discount :${req.session.totalDiscount}`)
-    // doc.moveDown();
-
-    // salesData.forEach((sale, index) => {
-    //   doc.fontSize(12).text(`Order ${index + 1}`);
-    //   doc.text(`User: ${sale.userID.username}`);
-    //   doc.text(`Order ID: ${sale._id}`);
-    //   doc.text(`Net Sales: ₹${sale.totalprice}`);
-    //   doc.text(`discount : ${sale.discount}`);
-    //   doc.text(`Date: ${sale.createdAt}`);
-
-    //   doc.moveDown();
-    // });
-
-    // doc.end();
-
-    // Add a title page with styling
+    
     doc.fontSize(28)
       .fillColor('#2C3E50')
       .text('Sales Report', { align: 'center' })

@@ -40,10 +40,6 @@ exports.createoffer = async (req, res) => {
     const today = new Date()
     const d = Date.now();
   
-    // if (startdate < today.setHours(0,0,0,0)) {
-    //     return res.status(404).send('Add a valid date');
-    // }
-
     if (startdate > date) {
         return res.status(404).send('Not a valid Date ');
     }
@@ -80,20 +76,8 @@ exports.createoffer = async (req, res) => {
         if (big > persent) {
             return res.status(404).send(' in this category  product already have offer bigger than it , so first delete the product offfer')
         }
-        // start 
-        // if (getoffer.discountValue < persent) {
-        
-
-        // console.log('we can apply that offer , because our offer is bigger ')
-        //  return res.status(404).send('apply new offer to it  ')
-
-
-
-
-        // ivide existOffer aayirunnu
-
-        const offeredproduct = await productDB.find({ category: category })
-        // console.log(offeredproduct)
+              const offeredproduct = await productDB.find({ category: category })
+       
 
         const offer = new offerDB({
             name: name,
@@ -129,13 +113,7 @@ exports.createoffer = async (req, res) => {
 
         return res.json({ success: true })
 
-
-        // end
-        // } else {
-        //     console.log('the product have not any offer like that ')
-
-        //     return res.status(404).send('please add an offer greater than current or  offer, or delete the current offer and then add')
-        // }
+ 
 
     } else {
          
@@ -242,14 +220,13 @@ exports.deleteoffer = async (req, res) => {
 
     }
     await offerDB.findByIdAndDelete(ID).then(() => console.log('success')).catch((err) => console.log(err))
-    // const cheack=await await productDB.find({existOffer:ID})
-    // res.redirect('/admin/offer')
+ 
     return res.json({success:true})
 
 }
 
 exports.editoffer = async (req, res) => {
-    // console.log('this is for edit offer ')
+   
     const ID = req.params.id
     const currentOffer = await offerDB.findById(ID)
     const category = await categoryDB.findOne({ _id: currentOffer.category })
@@ -267,28 +244,28 @@ exports.posteditoffer = async (req, res) => {
  
     const persent = req.body.persent
     const { startdate, date, name } = req.body
-    // console.log(persent, startdate, date, name)
+    
     const startdates = new Date()
     const expires = new Date(date)
     const currentOffer = await offerDB.findById(ID)
-    // console.log(currentOffer)
+     
     const offeredproduct = await productDB.find({ existOffer: ID })
-    // console.log(offeredproduct)
+  
     const category = req.body.category
-    // console.log(category)
+    
 
     if (persent > 75) {
-        // return res.status(404).send('cannot add more than 75% ');
+        
         req.flash('validation', 'cannot offer bigger tham 75%');
-        // return res.redirect(`/admin/editoffer/${ID}`)
+        
         return res.json({success:false})
 
     }
 
     if (startdates > expires) {
-        // return res.status(404).send('cannot the expire date lesser than start date  ');
+       
         req.flash('validation', 'cannot start date lesser than end date ');
-        // return res.redirect(`/admin/editoffer/${ID}`)
+        
         return res.json({success:false})
 
     }
