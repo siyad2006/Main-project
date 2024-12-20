@@ -75,3 +75,4 @@ exports.viewcoupun= async (req,res)=>{
     res.render('user/coupunview',{coupun})
 }
 
+// edited 
