@@ -466,21 +466,30 @@ const blockcategory = async (req, res) => {
 
         let ID = req.params.id
 
-        const categoryProducts = await product.find({ category: ID })
+        const categoryProducts = await product.find({ category: ID },{_id:1})
 
-        for (let item of categoryProducts) {
+       
+        await cartDB.updateMany(
+            { 'products.productId': { $in: categoryProducts } },
+            {
+                $pull: {
+                    products: {
+                        productId: { $in: categoryProducts },
+                    },
+                },
+            }
+        );
+        
+    
 
-            await cartDB.updateMany(
-                { 'products.productId': item._id },
-                { $pull: { products: { productId: item._id } } }
-            );
-        }
-
-        for (let item of categoryProducts) {
-            await wishlistDB.updateMany({ products: item._id }, {
-                $pull: { products: item._id }
-            })
-        }
+        await wishlistDB.updateMany(
+            { 'products': { $in: categoryProducts } },  
+            {
+                $pull: {
+                    products: { $in: categoryProducts }  
+                }
+            }
+        );
 
         await  product.updateMany({category:ID},{
             isblocked:true
@@ -508,12 +517,10 @@ const blockcategory = async (req, res) => {
 // for unlist category
 const unblockcategory = async (req, res) => {
     const ID = req.params.id
-    const categoryProducts = await product.find({ category: ID })
-    for (let item of categoryProducts) {
-        await product.findByIdAndUpdate(item._id, {
-            isblocked: false
-        })
-    }
+   
+    await product.updateMany({category:ID},{
+        isblocked:false
+    })
     try {
 
         await CategoryDB.findByIdAndUpdate(ID, { isblocked: 'Listed' })
@@ -542,8 +549,7 @@ const editcategory = async (req, res) => {
 
     }
 
-
-
+    
 }
 
 
