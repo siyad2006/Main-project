@@ -68,6 +68,12 @@ router.post('/ordersummary',cheackout.dowloadsummary)
 router.get('/getinvoice',cheackout.invoice)
 router.get('/pendingpayment/:user',cheackout.pendingorder)
 router.post('/repay',cheackout.repay)
+router.get('/forgotpassword',userController.forgetpassword)
+router.post('/otpforpassword',userController.otpforgot)
+router.get('/verifyPasswordOtp',userController.verifyPasswordOtp)
+router.post('/verifyotpForgotPassword',userController.verifyotpForgotPassword)
+router.get('/changePasswordForgot',userController.changePasswordForgot)
+router.post('/createNewPassword',userController.createNewPassword)
 
 
 module.exports = router

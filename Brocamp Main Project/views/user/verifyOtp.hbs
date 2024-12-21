@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>RegistrationForm_v1 by Colorlib</title>
+    <title>Register</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- MATERIAL DESIGN ICONIC FONT -->
@@ -17,14 +17,13 @@
 
     <div class="wrapper" style="background-image: url('/localpictures/bg-registration-form-1.jpg');">
 
+
         <div class="inner">
             <div class="image-holder">
-                {{!-- C:\Users\DELL\Desktop\hosting project\Brocamp Main Project\public\localpictures\loginpic.jpeg --}}
-                <img src="/localpictures/loginpic.jpeg "
-                    alt="" style="border-radius: 5px;">
+                <img src="/localpictures/loginpic.jpeg" alt="" style="border-radius: 5px;">
             </div>
-            <form onsubmit="return userlogin(event)">
-                <h3>Login</h3>
+            <form onsubmit="return validation(event)">
+                <h3>Verify Otp</h3>
                 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
                 {{#if error}}
@@ -40,34 +39,18 @@
                 {{/if}}
 
 
-                {{!-- <div class="form-wrapper">
-                    <input type="text" placeholder="Username" id="Name" name="username" class="form-control">
-                    <i class="zmdi zmdi-account"></i>
-                </div> --}}
-                <div class="form-wrapper" style="margin-top: 80px;">
-                    <input type="Email" placeholder="Email Address" name="Email" id="exampleInputEmail1"
-                        class="form-control">
-                    <i class="zmdi zmdi-email"></i>
-                </div>
 
-                <div class="form-wrapper">
-                    <input type="password" placeholder="Password" id="pass" name="password" class="form-control">
+
+                <div class="form-wrapper" style="margin-top: 120px;">
+                    <input type="text" placeholder="enter 6 digit otp" id="otp" class="form-control">
                     <i class="zmdi zmdi-lock"></i>
                 </div>
-                {{!-- <div class="form-wrapper">
-                    <input type="password" placeholder="Confirm Password" id="repass" class="form-control">
-                    <i class="zmdi zmdi-lock"></i>
-                </div> --}}
-                <button type="submit" onclick="return validation()" style="margin-bottom: 5px;">Login
+                <div id="timer" class="mb-3 text-warning">Time left: 2:00</div>
+                <button>Enter
                     <i class="zmdi zmdi-arrow-right"></i>
                 </button>
-                <a href="/user/register" style="margin-top: 5px;margin-left:55px">Don't you have an accound?</a>
-                <a href="/user/forgotpassword" id="forgotpassword" style="margin-top: 5px;margin-left:55px">
-                forgot password
-                </a>
-
+                {{!-- <a href="/user/login" style="margin-top: 5px;margin-left:55px">Do you have an accound?</a> --}}
             </form>
-            <!-- Google Sign-In Option -->
             <div class="google-signin-wrapper">
                 <button class="google-signin-btn" style="margin-top: 165px;">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png"
@@ -77,9 +60,106 @@
             </div>
 
 
-
         </div>
     </div>
+
+    <script>
+        let countdown = 60;
+        let timerInterval;
+
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(countdown / 60);
+                const seconds = countdown % 60;
+
+
+                document.getElementById('timer').textContent = `Time left: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+
+
+                if (countdown <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timer').textContent = "Time's up!";
+                    document.getElementById('resendOtpBtn').style.display = 'inline-block';
+                    document.getElementById('otpInput').style.display = "none";
+                    document.getElementById('submitotp').style.display = "none";
+                    document.getElementById('verifyname').style.display = "none";
+                } else {
+                    countdown--;
+                }
+            }, 1000);
+        }
+
+
+        window.onload = startTimer;
+
+    </script>
+
+    <script>
+        async function validation(event) {
+            event.preventDefault()
+            let otp = document.getElementById('otp').value.trim();
+
+            if (otp == '') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'warning',
+                    text: 'please enter the otp '
+                })
+                return false
+            }
+
+            const regex = /^\d{6}$/
+
+            if (!regex.test(otp)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'warning',
+                    text: 'otp must be 6 digits '
+                })
+                return false
+            }
+
+            const result = await fetch('/user/verifyotpForgotPassword', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify({
+                    otp: otp
+                })
+            })
+
+            const response = await result.json()
+
+            if (response.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'success',
+                    text: 'verified'
+                    
+
+                }).then(()=>{
+                    window.location.href='/user/changePasswordForgot'
+                })
+                // add window location in it 
+
+            }else{
+                 Swal.fire({
+                    icon: 'warning',
+                    title: 'warning',
+                    text: response.message 
+
+                })
+            }
+
+ 
+            return false
+
+        }
+    </script>
+
+
     <style>
         .google-signin-wrapper {
             margin-top: 10px;
@@ -113,123 +193,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        function userlogin(event) {
-            event.preventDefault()
 
-            let x = document.getElementById('exampleInputEmail1').value.trim();
-            
-            let z = document.getElementById('pass').value;
-
-            if(x==''){
-                Swal.fire({
-                    icon:'warning',
-                    text:'warning',
-                    text:'please fill the email'
-                })
-                return false
-            }
-
-            if(z==''){
-                Swal.fire({
-                    icon:'warning',
-                    text:'warning',
-                    text:'please fill the password ' 
-                })
-                return false
-                
-            }
-
-
-            $.ajax({
-                type: 'POST',
-                url: '/user/userlogin',
-                data: {
-                    Email: x,
-
-                    password: z
-
-                },
-                success: function (response) {
-                    if (response.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'sucessfully loggin',
-                            message: response.message,
-                            showConfirmButton: false,
-                            timer: 1500
-
-                        }).then(() => {
-                            window.location.href = response.redirectUrl
-                        })
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'An Error Occured',
-                            text: response.message
-
-                        })
-                    }
-                }
-            })
-
-
-            return false
-        }
-    </script>
-
-    <script>
-
-        function validation() {
-            let name = document.getElementById('Name').value;
-            let password = document.getElementById('pass').value;
-            let confirmPassword = document.getElementById('repass').value;
-
-
-            let nameRegex = /^[A-Za-z\s]+$/;
-
-
-            if (!nameRegex.test(name.trim())) {
-                { { !--alert('Name must contain only alphabets and spaces'); --} }
-                Swal.fire({
-                    icon: 'error',
-                    title: 'An Error Occured',
-                    text: 'name must be contain only alpabets and spaces'
-
-                })
-                return false;
-            }
-
-
-            if (password.length < 6) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'An Error Occured',
-                    text: 'pasword must me six or more chharactors'
-
-                })
-                return false;
-            }
-
-            if (password !== confirmPassword) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'An Error Occured',
-                    text: 'password does not match'
-
-                })
-                return false
-            }
-
-
-
-            return true;
-        }
-
-
-    </script>
 
     <style>
         @font-face {

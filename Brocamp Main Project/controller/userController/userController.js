@@ -10,6 +10,7 @@ const addressDB = require('../../schema/address')
 const mongoose = require('mongoose')
 const offerDB = require('../../schema/offerSchema')
 const cartDB = require('../../schema/cart')
+// const User = require('../../schema/userModel')
 
 const userRegister = async (req, res) => {
     if (req.session.regestered == true) {
@@ -34,7 +35,7 @@ const postregister = async (req, res) => {
     const mailExists = await UserDB.findOne({ Email: { $regex: `^${Email}$`, $options: 'i' } });
 
 
-    if ( mailExists) {
+    if (mailExists) {
         req.flash('error', "the user is already exists")
 
         return res.redirect('/user/register');
@@ -109,7 +110,7 @@ const otp = async (req, res) => {
 
 
 const otpVerification = async (req, res) => {
-    
+
     const { otp } = req.body;
     if (req.session.userOtp == otp) {
 
@@ -223,7 +224,7 @@ const userlogin = async (req, res) => {
 
 
 const postlogin = async (req, res) => {
- 
+
     try {
         const { Email, password } = req.body
 
@@ -763,6 +764,112 @@ const test = async (req, res) => {
     }
 }
 
+const forgetpassword = async (req, res) => {
+    res.render('user/forgotPassword')
+}
+
+const otpforgot = async (req, res) => {
+    // res.json({success:true,message:'success'})
+    try {
+        const Email = req.body.Email
+
+        const isUser = await UserDB.findOne({ Email: Email })
+
+        if (!isUser) {
+            return res.json({ success: false, message: 'there is no user exist in that email' })
+        }
+        req.session.idforPassword = isUser._id
+        if (isUser.googleId) {
+            return res.json({ success: false, message: 'please login using google id ' })
+
+        }
+
+        const generateNumericOtp = (length = 6) => {
+            let otp = '';
+            for (let i = 0; i < length; i++) {
+                otp += Math.floor(Math.random() * 10);
+            }
+            return otp;
+        };
+
+
+        const otp = generateNumericOtp(6);
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'siyadz4x@gmail.com',
+                pass: 'wlbz xhxj eqyy lvbc'
+            }
+        });
+
+        await transporter.sendMail({
+            from: 'siyadz4x@gmail.com',
+            to: Email,
+
+            subject: 'OTP Verification',
+            text: `Your OTP for verification is: ${otp}`
+        });
+
+        req.session.forgotPassotp = otp
+
+        console.log(otp)
+
+        res.json({ success: true, message: 'otp sended ' })
+
+    } catch (err) {
+        console.log(err)
+    }
+
+
+}
+
+const verifyPasswordOtp = async (req, res) => {
+    res.render('user/verifyOtp')
+}
+
+const verifyotpForgotPassword = async (req, res) => {
+    const otp = req.body.otp
+    if (otp !== req.session.forgotPassotp) {
+        return res.json({ success: false, message: 'invalid otp' })
+    } else {
+        req.session.otpVerified = true
+        return res.json({ success: true })
+    }
+
+}
+
+const changePasswordForgot = async (req, res) => {
+    res.render('user/createNewPassword')
+}
+
+const createNewPassword = async (req, res) => {
+
+    try {
+        const password = req.body.password
+        const newPassword =await  bcrypt.hash(password, 10)
+        if(!req.session.idforPassword){
+            return res.json({success:false,message:'sorry , there is no user exist '})
+        }
+        await UserDB.findByIdAndUpdate(req.session.idforPassword, {
+            password: newPassword
+
+        }).then(() => {
+
+            return res.json({ success: true })
+
+        })
+
+
+
+
+    } catch (err) {
+        console.log(err)
+    }
+
+
+
+}
+
 module.exports = {
     postregister,
     userRegister,
@@ -786,5 +893,11 @@ module.exports = {
     deleteaddress,
     updateaddress,
     updatingAddress,
-    test
+    test,
+    forgetpassword,
+    otpforgot,
+    verifyPasswordOtp,
+    verifyotpForgotPassword,
+    changePasswordForgot,
+    createNewPassword
 };
