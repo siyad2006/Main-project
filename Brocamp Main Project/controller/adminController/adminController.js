@@ -465,7 +465,6 @@ const blockcategory = async (req, res) => {
 
 
         let ID = req.params.id
-     
 
         const categoryProducts = await product.find({ category: ID })
 
@@ -483,14 +482,15 @@ const blockcategory = async (req, res) => {
             })
         }
 
-        for (let item of categoryProducts) {
-            await product.findByIdAndUpdate(item._id, {
-                isblocked: true
-            })
-        }
+        await  product.updateMany({category:ID},{
+            isblocked:true
+        })
+
 
         await CategoryDB.findByIdAndUpdate(ID, { isblocked: 'Unlisted' })
- 
+        
+
+
         return res.json({success:true})
 
 

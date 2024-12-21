@@ -48,20 +48,18 @@ exports.getcart = async (req, res, next) => {
         if (cart && cart.coupun && mongoose.Types.ObjectId.isValid(cart.coupun)) {
             const coupunAmount = await coupunDB.findById(cart.coupun);
             if (coupunAmount) {
-                // console.log('this is existing coupun', coupunAmount);
-                discount += coupunAmount.maximumDiscount
+                  discount += coupunAmount.maximumDiscount
             } else {
-                // console.log('Coupon not found');
+              
             }
-        }
-        // console.log('this is the discount ', discount)
+        } 
         const cartItems = cart.products.map(product => ({
             productId: product.productId,
             qty: product.qty
         }));
-        const products = await productDB.find({ _id: { $in: cartItems.map(item => item.productId) } });
-
-
+        
+        const products = await productDB.find({ _id: { $in: cartItems.map(item => item.productId) },isblocked:false });
+  
         const cartProducts = products.map(product => {
             const cartItem = cartItems.find(item => item.productId.toString() === product._id.toString());
             return {
@@ -70,9 +68,7 @@ exports.getcart = async (req, res, next) => {
             };
         });
 
-        let pricee = 0;
-        // console.log("Mapped Cart Products:", cartProducts);
-
+        let pricee = 0; 
         for (let item of cartProducts) {
             if (item.regularprice && item.qty) {
                 pricee += item.regularprice * item.qty;

@@ -32,9 +32,9 @@ exports.getpage = async (req, res) => {
         const userhave = await wishlistDB.findOne({ user: userid })
 
         if (userhave) {
-            let page = parseInt(req.query.page) || 1; 
-            let limit = 10; 
-            let skip = (page - 1) * limit;  
+            let page = parseInt(req.query.page) || 1;
+            let limit = 10;
+            let skip = (page - 1) * limit;
 
             try {
                 const wishlist = await wishlistDB.findOne({ user: userid }).populate('products');
@@ -44,7 +44,7 @@ exports.getpage = async (req, res) => {
                 if (!wishlist || !wishlist.products || wishlist.products.length === 0) {
                     return res.render('user/emptyWishlist');
                 }
- 
+
                 const sortedProducts = wishlist.products.slice(skip, skip + limit);
                 const cartCount = req.session.cartCount
                 return res.render('user/wishlist', {
@@ -75,9 +75,9 @@ exports.additem = async (req, res) => {
 
         const uid = req.session.userId;
 
-if(!uid){
-    return res.status(401).send('login first ')
-}
+        if (!uid) {
+            return res.status(401).send('login first ')
+        }
         if (!uid) {
             return res.redirect('/user/login');
         }
@@ -117,12 +117,9 @@ if(!uid){
 
         if (userWishlist) {
             const productExists = await wishlistDB.findOne({ user: userid, products: ID });
-            // if (productExists) {
-            //     // console.log('Product already in wishlist');
-            //     return res.json({ success: false, message: 'Product already in wishlist' });
-            // }
-            for(let item of userWishlist.products){
-                if(item.toString()==ID){
+           
+            for (let item of userWishlist.products) {
+                if (item.toString() == ID) {
                     console.log('already in it ')
                     return res.status(400).send('product already in wishlist ')
                 }
@@ -131,8 +128,7 @@ if(!uid){
             await wishlistDB.updateOne(
                 { user: userid },
                 { $addToSet: { products: ID } }
-            );
-            // console.log('Successfully added product to wishlist');
+            ); 
             return res.json({ success: true });
         }
         const newWishlist = new wishlistDB({ user: userid, products: [ID] });

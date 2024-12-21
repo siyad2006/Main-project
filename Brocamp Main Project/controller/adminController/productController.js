@@ -18,7 +18,7 @@ const addproduct = async (req, res) => {
 
 const add = async (req, res) => {
     const val = req.body;
- 
+
 
     const imagePaths = [];
 
@@ -101,7 +101,7 @@ const postEdit = async (req, res) => {
             let discount = offer.discountValue
             let offerId = offer._id
             let offeredValue = val.regularprice - Number(val.regularprice * (discount / 100))
-            
+
 
 
             await productDB.updateOne(
@@ -114,15 +114,15 @@ const postEdit = async (req, res) => {
                     realprice: val.regularprice,
                     name: val.productname.trim(),
                     discription: val.discription.trim(),
-                       
+
                     quantity: val.quantity,
-                   
+
                     image: updatedImages,
                     status: val.status || "available",
-               
+
                 }
             );
-          
+
             return res.redirect('/admin/products')
 
         }
@@ -132,11 +132,11 @@ const postEdit = async (req, res) => {
             {
                 name: val.productname.trim(),
                 discription: val.discription.trim(),
-                 
+
                 // category: val.category,
                 regularprice: val.regularprice,
                 quantity: val.quantity,
-               
+
                 image: updatedImages,
                 status: val.status || "available",
                 realprice: val.regularprice
@@ -179,43 +179,21 @@ const blockproduct = async (req, res) => {
     try {
         const ID = req.params.id
 
-       
-
-
-        const carts = await cartDB.find({ 'products.productId': ID })
-        for (let item of carts) {
-            let total = item.totalAmount
-            let productqty = item.products.find((i) => i.productId.toString() === ID)
-            let qty = 0
-            if (product) {
-                qty += productqty.qty;
-
+        const productid = ID
+        await cartDB.updateMany({ 'products.productId': productid }, {
+            $pull: {
+                products: { productId: productid }
             }
+        })
 
-            if (qty <= 0) {
-                qty = 1
-            }
 
-            const currentproductPrice = await productDB.findById(ID, { regularprice: 1 })
-            const qtyPrice = Number(currentproductPrice.regularprice * qty)
-            const updatedPrice = Number(total - qtyPrice)
-            await cartDB.updateMany({ _id: item._id },
-                { $pull: { products: { 'productId': ID } }, totalAmount: updatedPrice }
-            )
+        await wishlistDB.updateMany({ products: productid }, {
+            $pull: { products: productid }
+        })
 
-        }
-
-        const wishlist = await wishlistDB.find({ products: ID })
-
-        for (let item of wishlist) {
-            await wishlistDB.updateOne({ _id: item._id }, {
-                $pull: { products: ID }
-            })
-        }
-  
         await productDB.findByIdAndUpdate({ _id: ID }, { isblocked: true })
         // res.redirect('/admin/products')
-        res.json({success:true})
+        res.json({ success: true })
     } catch (err) {
         console.log(err)
     }
@@ -226,35 +204,50 @@ const unblockproduct = async (req, res) => {
 
         const ID = req.params.id
 
-        const categoryblock= await productDB.findById(ID).populate('category')
+        const categoryblock = await productDB.findById(ID).populate('category')
 
-        if(categoryblock.category.isblocked=='Unlisted'){
+        if (categoryblock.category.isblocked == 'Unlisted') {
             return res.redirect('/admin/products')
         }
 
         await productDB.findByIdAndUpdate({ _id: ID }, { isblocked: false })
         // res.redirect('/admin/products')
-        return res.json({success:true})
+        return res.json({ success: true })
 
     } catch (error) {
         console.log(error);
 
     }
 }
- 
+
 
 const deleteproduct = async (req, res) => {
     try {
-      const ID = req.params.id;
-      await productDB.findByIdAndDelete(ID);
-      
-      return res.status(200).json({ message: 'Product deleted successfully' });
+        const ID = req.params.id;
+
+        
+        const productid = ID
+        await cartDB.updateMany({ 'products.productId': productid }, {
+            $pull: {
+                products: { productId: productid }
+            }
+        })
+
+
+        await wishlistDB.updateMany({ products: productid }, {
+            $pull: { products: productid }
+        })
+
+
+        await productDB.findByIdAndDelete(ID);
+
+        return res.status(200).json({ message: 'Product deleted successfully' });
     } catch (error) {
-      console.error('An error occurred while deleting the product:', error);
-      return res.status(500).json({ message: 'An error occurred while deleting the product' });
+        console.error('An error occurred while deleting the product:', error);
+        return res.status(500).json({ message: 'An error occurred while deleting the product' });
     }
-  };
-  
+};
+
 
 
 

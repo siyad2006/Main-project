@@ -61,6 +61,9 @@ exports.getcheackout = async (req, res) => {
 
     // }
 
+
+
+
     if (coupun) {
         if (cartTotal + coupun.maximumDiscount <= coupun.minimumPurchase) {
             req.flash('limit', `Please buy items worth more than ${coupun.minimumPurchase}`);
@@ -75,6 +78,22 @@ exports.getcheackout = async (req, res) => {
     }));
 
     const products = await productDB.find({ _id: { $in: cartProducts.map(item => item.productId) } });
+
+    const productPrices = products.reduce((total, ini) => {
+        return total += ini.regularprice
+    }, 0)
+
+    if (req.session.totalAmount !== productPrices) {
+        req.flash('limit', `Sorry admin made changes in the price `);
+        return res.redirect('/user/cart')
+    }
+
+    const blockedProducts = products.filter(product => product.isblocked === true);
+
+
+    if (blockedProducts.length > 0 || products.length === 0) {
+        return res.redirect('/user/cart');
+    }
 
     const cartProductDetails = products.map(product => {
 
@@ -144,7 +163,7 @@ exports.placeorder = async (req, res) => {
         let subtotal = 0;
         let cheaktotal = total + coupunamount;
 
-        // const pro = cart.products.map((item) => {
+
         for (let item of cart.products) {
             const findpro = cheakpro.find(x => x._id.toString() === item.productId.toString());
 
@@ -777,10 +796,6 @@ exports.cancelorder = async (req, res) => {
                 singleItem.quantity += buyedqty;
 
 
-                // puthiya options 
-
-                // singleItem.quantity += buyedqty;
-
 
                 await singleItem.save();
             }
@@ -1258,22 +1273,22 @@ exports.wallet = async (req, res) => {
         }
 
         const wallet = await walletDB.findOne({ user: req.params.id });
-        if(!wallet){
-            return  res.render('user/wallet', {
-                wallet 
+        if (!wallet) {
+            return res.render('user/wallet', {
+                wallet
             })
         }
 
-         
+
         const transactions = wallet.transaction.reverse();
- 
-        const page = parseInt(req.query.page) || 1;   
-        const limit = 5;  
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = 5;
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
- 
+
         const paginatedTransactions = transactions.slice(startIndex, endIndex);
- 
+
         const totalPages = Math.ceil(transactions.length / limit);
 
         res.render('user/wallet', {
@@ -1647,7 +1662,7 @@ exports.repay = async (req, res) => {
             orderID: db._id
         });
     } catch (err) {
-        
+
         res.status(500).json({ error: 'An error occurred while processing the repayment', details: err.message });
     }
 };

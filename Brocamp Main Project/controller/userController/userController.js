@@ -468,8 +468,7 @@ const userprofile = async (req, res) => {
             { $match: { Email: req.session.email_profile } },
             { $project: { _id: 1 } }
         ]);
-
-        // Check if a user was found
+ 
         if (userid.length > 0) {
             const userdata = userid[0]._id;
             const user = await UserDB.findById(userdata);
@@ -686,17 +685,7 @@ const deleteaddress = async (req, res) => {
     } catch (error) {
         console.log(error)
     }
-}
-
-// const updateaddress=async (req,res)=>{
-//     const ID=req.params.id;
-//     const userID=req.params.user
-//     // console.log(ID,userID)
-//     const address = await addressDB.findById(ID);
-//     const User = await UserDB.findById(userID)
-
-//     res.render('user/editAddress',{address,User})
-// }
+} 
 
 const updateaddress = async (req, res) => {
     const ID = req.params.id;
