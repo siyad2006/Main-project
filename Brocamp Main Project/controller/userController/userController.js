@@ -468,7 +468,7 @@ const userprofile = async (req, res) => {
             { $match: { Email: req.session.email_profile } },
             { $project: { _id: 1 } }
         ]);
- 
+
         if (userid.length > 0) {
             const userdata = userid[0]._id;
             const user = await UserDB.findById(userdata);
@@ -642,8 +642,7 @@ const createaddress = async (req, res) => {
         title
     } = req.body
     try {
-        // const user = await UserDB.findById(ID)
-
+        
         const addresssave = new addressDB({
             user: ID,
             name: nam,
@@ -685,7 +684,7 @@ const deleteaddress = async (req, res) => {
     } catch (error) {
         console.log(error)
     }
-} 
+}
 
 const updateaddress = async (req, res) => {
     const ID = req.params.id;
@@ -754,6 +753,9 @@ const test = async (req, res) => {
 }
 
 const forgetpassword = async (req, res) => {
+    if(req.session.userId){
+        res.redirect('/')
+    }
     res.render('user/forgotPassword')
 }
 
@@ -803,6 +805,9 @@ const otpforgot = async (req, res) => {
 
         console.log(otp)
 
+        
+        req.session.authenticationOTP = null
+
         res.json({ success: true, message: 'otp sended ' })
 
     } catch (err) {
@@ -813,14 +818,21 @@ const otpforgot = async (req, res) => {
 }
 
 const verifyPasswordOtp = async (req, res) => {
+    if(req.session.userId){
+        res.redirect('/')
+    }
+    if (req.session.authenticationOTP == true) {
+        return res.redirect('/user/changePasswordForgot')
+    }
     res.render('user/verifyOtp')
 }
 
 const verifyotpForgotPassword = async (req, res) => {
+    
     const otp = req.body.otp
     if (otp !== req.session.forgotPassotp) {
         return res.json({ success: false, message: 'invalid otp' })
-    } else {
+    } else { 
         req.session.otpVerified = true
         return res.json({ success: true })
     }
@@ -828,35 +840,37 @@ const verifyotpForgotPassword = async (req, res) => {
 }
 
 const changePasswordForgot = async (req, res) => {
+    if(req.session.userId){
+        res.redirect('/')
+    }
+   
+    req.session.authenticationOTP = true
     res.render('user/createNewPassword')
 }
 
-const createNewPassword = async (req, res) => {
-
-    try {
+const createNewPassword = async (req, res) => { 
+     try {
+        
         const password = req.body.password
-        const newPassword =await  bcrypt.hash(password, 10)
-        if(!req.session.idforPassword){
-            return res.json({success:false,message:'sorry , there is no user exist '})
+        const newPassword = await bcrypt.hash(password, 10)
+        if (!req.session.idforPassword) {
+            return res.json({ success: false, message: 'sorry , there is no user exist ' })
         }
+
         await UserDB.findByIdAndUpdate(req.session.idforPassword, {
             password: newPassword
 
         }).then(() => {
-
+            req.session.authenticationOTP = false
+            req.session.forgotPassotp=null
             return res.json({ success: true })
 
         })
-
-
-
-
+    
     } catch (err) {
         console.log(err)
     }
-
-
-
+ 
 }
 
 module.exports = {
