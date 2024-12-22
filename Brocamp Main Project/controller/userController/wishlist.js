@@ -51,7 +51,8 @@ exports.getpage = async (req, res) => {
                     products: sortedProducts,
                     currentPage: page,
                     totalPages,
-                    cartCount
+                    cartCount,
+                    userid
                 });
             } catch (error) {
                 console.error(error);
