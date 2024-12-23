@@ -396,12 +396,12 @@
                                 if (quantityInput) {
                                     quantityInput.value = data.updatedQty; // Assuming the updated quantity is sent in `data.updatedQty`
                                 }
-                                const newTotalAmount = data.newTotalAmount
+                                const newTotalAmount = `Rs :${data.newTotalAmount}`
                                 if (newTotalAmount) {
                                     const totalElement = document.getElementById('total-amount');
                                     totalElement.textContent = newTotalAmount
                                 }
-                                Subtotal.textContent = data.subtotal
+                                Subtotal.textContent = `Rs: ${data.subtotal}` 
                             } else {
                                 alert(data.message);
                             }
@@ -609,7 +609,7 @@
                     <div
                         class="total-section d-flex justify-content-between align-items-center p-3 bg-light shadow-sm rounded mt-3">
                         <span class="fw-bold">Total:</span>
-                        <span id="total-amount" class="fw-bold text-success"> {{totalAmount}}</span>
+                        <span id="total-amount" class="fw-bold text-success"> Rs: {{totalAmount}}</span>
                     </div>
 
                     <!-- Buttons -->

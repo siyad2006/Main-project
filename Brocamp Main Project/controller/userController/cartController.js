@@ -261,7 +261,7 @@ exports.updateCart = async (req, res, next) => {
                 subtotal += productDetails.realprice * cartItem.qty;
             }
         }
-
+req.session.realprice=subtotal
         let discount = 0;
         const iscoupun = await cartDB.findOne({ user: userid }, { coupun: 1 }).populate('coupun');
         if (iscoupun && iscoupun.coupun) {
@@ -362,9 +362,7 @@ exports.removecart = async (req, res) => {
         await cartDB.updateOne(
             { user: userid },
             { $pull: { products: { productId: productId } } }
-        ).then(() => console.log('Successfully updated cart'))
-            .catch(err => console.log(err));
-
+        ) 
 
         req.session.totalAmount = cartItem.totalAmount - amountToDeduct;
         // console.log('this is the session details of delet', req.session)
