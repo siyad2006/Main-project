@@ -94,7 +94,7 @@ app.set('view engine', 'hbs');
 
 // mongoConnect
 try {
-    mongoose.connect('mongodb+srv://siyadakd18:KE6aNuvkQvIyH8vd@malefashion.gbfza.mongodb.net/mainproject?retryWrites=true&w=majority&appName=MaleFashion', {
+    mongoose.connect( mongoConnect, {
 
     })
     console.log('mongodb connected successfully');

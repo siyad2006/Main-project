@@ -13,7 +13,7 @@ const offer=require('../../controller/adminController/offerController')
 router.get('/register', userController.userRegister)
 router.post('/postregister', userController.postregister)
 router.get('/otp', userAuth.isRegistered, userController.otp)
-router.get('/login', userController.userlogin)  // , checkLogin , checkLoggedIn
+router.get('/login', userController.userlogin)  
 router.post('/userlogin', userController.postlogin)
 router.post('/verify-otp', userController.otpVerification);
 router.get('/home',userController.lo)
