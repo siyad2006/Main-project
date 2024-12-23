@@ -10,8 +10,6 @@ const offer=require('../../controller/adminController/offerController')
 
 
 
-
-
 router.get('/register', userController.userRegister)
 router.post('/postregister', userController.postregister)
 router.get('/otp', userAuth.isRegistered, userController.otp)
@@ -60,7 +58,7 @@ router.post('/return/:id',cheackout.return)
 router.get('/viewcoupun/:user',coupun.viewcoupun)
 router.get('/wallet/:id',cheackout.wallet)
 router.get('/addoffer',offer.addoffer)
-// router.get('/cart/',cartController.debughome)
+
 router.post('/addcart/:id/',cartController.debughome);
 router.post('/removecoupun',cartController.removecoupun)
 router.get('/test',userController.test)

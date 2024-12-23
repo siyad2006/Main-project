@@ -514,7 +514,6 @@ const blockcategory = async (req, res) => {
 
 
 
-// for unlist category
 const unblockcategory = async (req, res) => {
     const ID = req.params.id
    
@@ -524,7 +523,7 @@ const unblockcategory = async (req, res) => {
     try {
 
         await CategoryDB.findByIdAndUpdate(ID, { isblocked: 'Listed' })
-        // res.redirect('/admin/category')
+        
         return res.json({success:true})
 
     } catch (err) {

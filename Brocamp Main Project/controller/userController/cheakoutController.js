@@ -16,7 +16,7 @@ const PDFDocument = require('pdfkit')
 const fs = require('fs')
 const path = require('path')
 const userDB = require('../../schema/userModel');
-const cheakout = require('../../schema/cheakout');
+// const cheakout = require('../../schema/cheakout');
 const categoryDB = require('../../schema/category')
 
 exports.getcheackout = async (req, res) => {
@@ -54,16 +54,6 @@ exports.getcheackout = async (req, res) => {
 
     const coupun = await coupunDB.findById(cartItem.coupun)
 
-    // if(cartTotal+coupun.maximumDiscount<=coupun.minimumPurchase){
-    //       req.flash('limit',`please buy items more than ${coupun.minimumPurchase}`)
-    //     return res.redirect(`/user/cart/${userId}`)
-
-
-    // }
-
-
-
-
     if (coupun) {
         if (cartTotal + coupun.maximumDiscount <= coupun.minimumPurchase) {
             req.flash('limit', `Please buy items worth more than ${coupun.minimumPurchase}`);
@@ -79,10 +69,18 @@ exports.getcheackout = async (req, res) => {
 
     const products = await productDB.find({ _id: { $in: cartProducts.map(item => item.productId) } });
 
-    const productPrices = products.reduce((total, ini) => {
-        return total += ini.regularprice
-    }, 0)
+    // const productPrices = products.reduce((total, ini) => {
 
+    //     return total += ini.regularprice 
+    // }, 0)
+    const productPrices = products.reduce((total, product) => {
+     
+        const cartProduct = cartProducts.find(item => item.productId.toString() === product._id.toString());
+        const quantity = cartProduct ? cartProduct.qty : 1;  
+        return total + (product.regularprice * quantity);
+    }, 0)
+    
+ 
     if (req.session.totalAmount !== productPrices) {
         req.flash('limit', `Sorry admin made changes in the price `);
         return res.redirect('/user/cart')
@@ -111,8 +109,6 @@ exports.getcheackout = async (req, res) => {
 
 exports.placeorder = async (req, res) => {
     const user = req.params.user;
-    // console.log('this is the user id from checkout', user);
-
     const uid = req.session.userId;
     if (!uid) {
         return res.redirect('/user/login');
@@ -128,13 +124,12 @@ exports.placeorder = async (req, res) => {
 
 
     const { name, phone, street, city, state, postalCode, paymentMethod, products, country } = req.body;
-    // console.log(name, phone, street, city, state, postalCode, paymentMethod, products);
+
 
 
     const cart = await cartDB.findOne({ user: user });
 
-
-
+    
     if (!cart) {
         throw new Error("Cart not found for the user.");
     }
@@ -153,27 +148,27 @@ exports.placeorder = async (req, res) => {
 
         }
     } else {
-
+      
     }
 
-
-    const cheakpro = await productDB.find();
+ 
     if (coupunamount > 0) {
 
         let subtotal = 0;
         let cheaktotal = total + coupunamount;
 
 
-        for (let item of cart.products) {
-            const findpro = cheakpro.find(x => x._id.toString() === item.productId.toString());
-
-            if (findpro) {
-                subtotal += findpro.regularprice * item.qty;
+        for (let item of cart.products) { 
+            // const findproducts = cheakproducts.find(x => x._id.toString() === item.productId.toString());
+    const findproducts= await productDB.findById(item.productId)
+     
+            if (findproducts) {
+                subtotal += findproducts.regularprice * item.qty;
             } else {
 
             }
-            if (item.qty > findpro.quantity) {
-                return res.status(404).send(`this product :${findpro.name} have no qty by for  you selected qty `)
+            if (item.qty > findproducts.quantity) {
+                return res.status(404).send(`this product :${findproducts.name} have no qty by for  you selected qty `)
             }
         }
 
@@ -189,17 +184,18 @@ exports.placeorder = async (req, res) => {
 
 
         for (let item of cart.products) {
-            const findpro = cheakpro.find(x => x._id.toString() === item.productId.toString());
-
-            if (findpro) {
-                subtotal += findpro.regularprice * item.qty;
+            // const findproducts = cheakproducts.find(x => x._id.toString() === item.productId.toString());
+            const findproducts= await productDB.findById(item.productId)
+              
+            if (findproducts) {
+                subtotal += findproducts.regularprice * item.qty;
             } else {
                 cart.products = cart.products.filter(cartItem => cartItem.productId.toString() !== item.productId.toString());
                 continue;
             }
 
-            if (item.qty > findpro.quantity) {
-                return res.status(404).send(`This product: ${findpro.name} does not have enough quantity.`);
+            if (item.qty > findproducts.quantity) {
+                return res.status(404).send(`This product: ${findproducts.name} does not have enough quantity.`);
             }
         }
 
@@ -222,12 +218,7 @@ exports.placeorder = async (req, res) => {
             if (total > 1000) {
                 return res.status(400).send('you cant buy as items Cash On Delivery Above Rs:1000 ')
             }
-            // function generateOrderId() {
-            //     return `ORDER-${uuidv4()}`;
-            // }
-
-            // console.log(generateOrderId());
-
+            
             if (!cart || cart.products.length === 0) {
                 return res.status(400).send("Cart is empty");
             }
@@ -323,6 +314,9 @@ exports.placeorder = async (req, res) => {
             res.status(500).send("Error processing order");
         }
     }
+
+ 
+
     if (paymentMethod == 'wallet') {
         const nowdate = new Date();
         const wallet = await walletDB.findOne({ user: user })
@@ -356,7 +350,7 @@ exports.placeorder = async (req, res) => {
                 return orderId;
             }
             const generateOrderId = generateOrderIds()
-            //  order_Id:generateOrderId
+           
             for (const item of items) {
                 const product = await productDB.findById(item.productId);
 
@@ -437,6 +431,8 @@ exports.placeorder = async (req, res) => {
         }
 
     }
+
+
     if (paymentMethod === 'razorpay') {
 
         function generateOrderIds() {
@@ -625,11 +621,11 @@ exports.cancelorder = async (req, res) => {
 
 
         // console.log(user)
-        const db = await checkoutDB.findById(ID)
+        const order = await checkoutDB.findById(ID)
 
 
 
-        if (db.paymentMethods == 'razorpay' || db.paymentMethods == 'wallet') {
+        if (order.paymentMethods == 'razorpay' || order.paymentMethods == 'wallet') {
 
             await checkoutDB.findByIdAndUpdate(ID, {
                 status: 'canceled'
@@ -653,7 +649,7 @@ exports.cancelorder = async (req, res) => {
                 const existingAmount = existingWallet.amount || 0;
 
 
-                const newAmount = existingAmount + db.totalprice;
+                const newAmount = existingAmount + order.totalprice;
 
                 await walletDB.updateOne(
                     { user: userid },
@@ -662,13 +658,12 @@ exports.cancelorder = async (req, res) => {
                         $push: {
                             transaction: {
                                 typeoftransaction: 'debit',
-                                amountOfTransaction: db.totalprice,
+                                amountOfTransaction: order.totalprice,
                                 dateOfTransaction: nowdate,
                             }
                         }
                     }
-                ).then(() => console.log('Successfully updated the wallet'));
-
+                ) 
                 const canceledproducts = await checkoutDB.findById(ID)
                 const items = canceledproducts.products
                 for (let pro of items) {
@@ -711,11 +706,11 @@ exports.cancelorder = async (req, res) => {
 
                 const newwallet = new walletDB({
                     user: userid,
-                    amount: db.totalprice,
+                    amount: order.totalprice,
                     transaction: [
                         {
                             typeoftransaction: 'debit',
-                            amountOfTransaction: db.totalprice,
+                            amountOfTransaction: order.totalprice,
                             dateOfTransaction: nowdate
 
                         }
@@ -760,7 +755,7 @@ exports.cancelorder = async (req, res) => {
 
 
         }
-        if (db.paymentMethods == 'cod') {
+        if (order.paymentMethods == 'cod') {
 
             await checkoutDB.findByIdAndUpdate({ _id: ID }, {
                 status: 'canceled'
@@ -821,7 +816,7 @@ exports.success = async (req, res) => {
 
 
 
-        const order = await checkoutDB.findByIdAndUpdate(req.params.orderid, {
+        await checkoutDB.findByIdAndUpdate(req.params.orderid, {
             paymentStatus: true,
             status: 'pending'
         })

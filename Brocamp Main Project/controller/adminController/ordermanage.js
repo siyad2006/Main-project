@@ -107,8 +107,8 @@ exports.changestatus = async (req, res) => {
             })
           } else {
 
-            // console.log(`Product with ID ${item.productId} does not exist. Skipping...`);
-            continue; // Skip this iteration and move to the next item
+
+            continue;
 
           }
 
@@ -120,7 +120,7 @@ exports.changestatus = async (req, res) => {
 
 
 
-      } else { 
+      } else {
         const newwallet = new walletDB({
           amount: order.totalprice,
           user: userid,
@@ -202,8 +202,8 @@ exports.changestatus = async (req, res) => {
           })
         } else {
 
-            continue;
-            
+          continue;
+
         }
 
 
@@ -231,7 +231,7 @@ exports.changestatus = async (req, res) => {
 }
 
 
- 
+
 exports.getsalesreport = async (req, res) => {
   try {
     const { filter, startDate, endDate } = req.query;
@@ -432,7 +432,7 @@ exports.downloadpdf = async (req, res) => {
 
 
 
-    
+
     doc.fontSize(28)
       .fillColor('#2C3E50')
       .text('Sales Report', { align: 'center' })

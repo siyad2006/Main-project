@@ -1,26 +1,26 @@
 const coupunDB = require('../../schema/coupunSchama')
-const cartDB= require('../../schema/cart')
+const cartDB = require('../../schema/cart')
 
 exports.getpage = async (req, res) => {
     const coupunname = await coupunDB.find();
 
-    res.render('admin/coupun',{coupunname})
+    res.render('admin/coupun', { coupunname })
 }
 
 exports.addcoupun = async (req, res) => {
 
     const { code, minimum, maximum, coupontitle, expire } = req.body
     // console.log(req.body)
-    const coupunname = await coupunDB.findOne({code:code})
-    const coupuntitles= await coupunDB.findOne({title:coupontitle})
+    const coupunname = await coupunDB.findOne({ code: code })
+    const coupuntitles = await coupunDB.findOne({ title: coupontitle })
     // console.log(coupunname,coupuntitles)
     if (coupunname || coupuntitles) {
 
         res.json({ success: false, message: 'this  is already in use' })
 
-    } else { 
+    } else {
         const expires = new Date(expire)
-      
+
 
         const coupun = new coupunDB({
             code: code,
@@ -33,7 +33,7 @@ exports.addcoupun = async (req, res) => {
         await coupun.save()
 
         res.json({ success: true, message: 'Coupon created successfully!', redirectUrl: '/admin/coupun' });
-       
+
     }
 
 
@@ -41,38 +41,40 @@ exports.addcoupun = async (req, res) => {
 }
 
 
-exports.deletecoupun=async (req,res)=>{
+exports.deletecoupun = async (req, res) => {
 
     try {
-        
-   
 
-    const id=req.params.id
 
-    const carts= await cartDB.find({coupun:id})
 
-    for ( let items of carts){
-        const singleCart= await cartDB.findById(items._id)
+        const id = req.params.id
 
-        singleCart.coupun=null
+        // const carts = await cartDB.find({ coupun: id })
 
-        await singleCart.save()
+        // for (let items of carts) {
+        //     const singleCart = await cartDB.findById(items._id)
+
+        //     singleCart.coupun = null
+
+        //     await singleCart.save()
+        // }
+
+        await cartDB.updateMany({coupun:id},{
+            coupun:null
+        })
+
+        await coupunDB.findByIdAndDelete(id)
+        res.redirect('/admin/coupun')
+    } catch (error) {
+        console.log('an error occured when delete the coupun', error)
     }
-
-    await coupunDB.findByIdAndDelete(id)
-    res.redirect('/admin/coupun')
-} catch (error) {
-    console.log('an error occured when delete the coupun',error )
-}
 }
 
 
-exports.viewcoupun= async (req,res)=>{
-   
-    const user= req.params.user
-    const coupun=await coupunDB.find({user:{$ne:user}})
+exports.viewcoupun = async (req, res) => {
+
+    const user = req.params.user
+    const coupun = await coupunDB.find({ user: { $ne: user } })
     // console.log(coupun)
-    res.render('user/coupunview',{coupun})
-}
-// after edited 
-// edited 
+    res.render('user/coupunview', { coupun })
+} 
