@@ -362,7 +362,9 @@
           <p style="font-size: medium; color:#ff4444; font-weight:600">{{product.brand}}</p>
         </div>
       </div> --}}
-      
+
+      <input type="hidden"  id="hiddencolor" value="{{product.color}}">
+      <input type="hidden" id="hiddenbrand" value="{{product.brand}}">
       <div class="mb-3">
         <label for="brandInput" class="form-label">Brand</label>
         <select class="form-control" id="brandInput" name="brand" required>
@@ -384,6 +386,16 @@
       <button type="submit" class="btn btn-primary">Edit</button>
     </form>
 
+<script>
+  window.onload=function (){
+    const color=document.getElementById('hiddencolor').value;
+    const brand=document.getElementById('hiddenbrand').value;
+
+    document.getElementById('brandInput').value=brand
+    document.getElementById('exampleInputPassword1').value=color
+
+  }
+</script>
 
     <script>
       function validateForm() {

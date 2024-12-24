@@ -268,7 +268,7 @@ exports.placeorder = async (req, res) => {
                 if (product) {
 
                     if (product.quantity < item.qty) {
-                        return res.status(400).send(`Not enough stock for product: ${product.name}`);
+                        return res.status(400).send(`Not enough stock for product: ${product.name} . it has only ${product.quantity} stocks left `);
                     }
                     product.sold = Number(product.sold || 0) + Number(item.qty);
 
