@@ -841,8 +841,8 @@ exports.details = async (req, res) => {
 
 
 
-        const order = req.params.id
-        const db = await checkoutDB.findById(order)
+        const orderid = req.params.id
+        const  order= await checkoutDB.findById(orderid)
 
         const uid = req.session.userId;
         if (!uid) {
@@ -859,7 +859,7 @@ exports.details = async (req, res) => {
 
 
 
-        const items = db.products.map((item) => ({
+        const items = order.products.map((item) => ({
 
             id: item.productId,
             qty: item.qty,
@@ -868,9 +868,9 @@ exports.details = async (req, res) => {
         }));
 
 
-        const creat = db.createdAt
+        const creat = order.createdAt
         const date = creat.toLocaleDateString('en-GB')
-        // console.log(date)
+
         const a = items.map((x) => new ObjectId(x.id));
 
 
@@ -880,29 +880,53 @@ exports.details = async (req, res) => {
         });
 
         //   console.log(products);
-        const productsWithQty = products.map(product => {
+        // const productsWithQty = products.map(product => {
 
-            const productQty = items.find(item => item.id.toString() === product._id.toString()).qty;
-            const solds = items.find(item => item.id.toString() === product._id.toString()).soldprice;
-            return {
-                ...product.toObject(),
-                qty: productQty,
-                solds: solds
+        //     const productQty = items.find(item => item.id.toString() === product._id.toString()).qty;
+        //     const solds = items.find(item => item.id.toString() === product._id.toString()).soldprice;
+        //     return {
+        //         ...product.toObject(),
+        //         qty: productQty,
+        //         solds: solds
 
-            };
+        //     };
+        // });
+
+        const productsWithQty = items.map(item => {
+            const product = products.find(product => product._id.toString() === item.id.toString());
+        
+            if (product) {
+               
+                return {
+                    ...product.toObject(),
+                    qty: item.qty,
+                    solds: item.soldprice
+                };
+            } else {
+               
+                return {
+                    qty: item.qty,
+                    solds: item.soldprice
+                };
+            }
         });
+        
         // console.log(productsWithQty)
-        const coupun = db.applayedcoupun
-        let offer = db.discount
-        const realprice = Number(db.totalprice + coupun + db.discount)
+ 
+        const coupun = order.applayedcoupun
+        let offer = order.discount
+        const realprice = Number(order.totalprice + coupun + order.discount)
         //   res.json(db)
         // console.log(realprice)
-        res.render('user/orderdetails', { products: productsWithQty, order: db, date: date, coupun, realprice, offer, expire: req.flash('expired') })
+        res.render('user/orderdetails', { products: productsWithQty, order: order, date: date, coupun, realprice, offer, expire: req.flash('expired') })
     } catch (error) {
         console.log(error)
     }
 
 }
+
+
+  
 
 exports.return = async (req, res) => {
 
