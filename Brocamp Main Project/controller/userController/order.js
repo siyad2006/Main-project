@@ -173,7 +173,7 @@ exports.placeorder = async (req, res) => {
 
             }
             if (item.qty > findproducts.quantity) {
-                return res.status(404).send(`this product :${findproducts.name} have no qty by for  you selected qty `)
+                return res.status(404).send(`this product :${findproducts.name} have no qty by  r  you selected qty , it has only ${findproducts.quantity} left `)
             }
         }
 
@@ -200,7 +200,7 @@ exports.placeorder = async (req, res) => {
             }
 
             if (item.qty > findproducts.quantity) {
-                return res.status(404).send(`This product: ${findproducts.name} does not have enough quantity.`);
+                return res.status(404).send(`This product: ${findproducts.name} does not have enough quantity it has only ${findproducts.quantity}.`);
             }
         }
 
