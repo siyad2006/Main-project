@@ -3,7 +3,7 @@ const userAuth = require('../../middleware/userAuth')
 const userController = require('../../controller/userController/userController');
 const router = express.Router()
 const cartController = require('../../controller/userController/cartController')
-const cheackout = require('../../controller/userController/cheakoutController')
+const order = require('../../controller/userController/order')
 const wishlist = require('../../controller/userController/wishlist')
 const coupun=require('../../controller/adminController/coupun')
 const offer=require('../../controller/adminController/offerController')
@@ -44,28 +44,28 @@ router.get('/cart', userAuth.loginuser, cartController.getcart);
 router.post('/addcart/:id/:user', cartController.addcart);
 router.post('/cart/update', cartController.updateCart);
 router.post('/cart/remove', cartController.removecart);
-router.post('/checkout/:cart', cheackout.getcheackout);
-router.post('/placeorder/:user', cheackout.placeorder);
-router.get('/myorders/:user', userAuth.loginuser,cheackout.myorders);
-router.post('/cancelorder/:id', cheackout.cancelorder);
-router.get('/success/:orderid', cheackout.success);
+router.post('/checkout/:cart', order.getcheackout);
+router.post('/placeorder/:user', order.placeorder);
+router.get('/myorders/:user', userAuth.loginuser,order.myorders);
+router.post('/cancelorder/:id', order.cancelorder);
+router.get('/success/:orderid', order.success);
 router.get('/wishlist', userAuth.loginuser,wishlist.getpage);
 router.post('/addtowishlist', wishlist.additem)
 router.post('/wishlist/delete/:id',wishlist.delete)
 router.post('/applycoupun',cartController.addcoupun)
-router.get('/orderdetails/:id',cheackout.details)
-router.post('/return/:id',cheackout.return)
+router.get('/orderdetails/:id',order.details)
+router.post('/return/:id',order.return)
 router.get('/viewcoupun/:user',coupun.viewcoupun)
-router.get('/wallet/:id',cheackout.wallet)
+router.get('/wallet/:id',order.wallet)
 router.get('/addoffer',offer.addoffer)
 
 router.post('/addcart/:id/',cartController.debughome);
 router.post('/removecoupun',cartController.removecoupun)
 router.get('/test',userController.test)
-router.post('/ordersummary',cheackout.dowloadsummary)
-router.get('/getinvoice',cheackout.invoice)
-router.get('/pendingpayment/:user',cheackout.pendingorder)
-router.post('/repay',cheackout.repay)
+router.post('/ordersummary',order.dowloadsummary)
+router.get('/getinvoice',order.invoice)
+router.get('/pendingpayment/:user',order.pendingorder)
+router.post('/repay',order.repay)
 
 router.get('/forgotpassword',  userController.forgetpassword)
 router.post('/otpforpassword', userController.otpforgot)

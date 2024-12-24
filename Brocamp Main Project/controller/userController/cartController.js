@@ -2,7 +2,7 @@ const userDB = require('../../schema/userModel')
 const cartDB = require('../../schema/cart')
 const productDB = require('../../schema/productschema')
 const coupunDB = require('../../schema/coupunSchama');
-const { success } = require('./cheakoutController');
+const { success } = require('./order');
 const mongoose = require('mongoose')
 
 exports.debughome = async (req, res) => {
