@@ -20,7 +20,7 @@ exports.createoffer = async (req, res) => {
     const persent = req.body.persent
     const Expire = req.body.date
     const date = new Date(Expire)
-    // const startdate = new Date(req.body.startdate)
+    
     const startdate = new Date()
 
 
@@ -109,7 +109,7 @@ exports.createoffer = async (req, res) => {
 
             })
         } 
-        // return  res.redirect('/admin/addoffer')
+       
 
         return res.json({ success: true })
 
@@ -149,10 +149,9 @@ exports.createoffer = async (req, res) => {
                 offerPersent: persent,
                 existOffer: findoffer._id
             }, { new: true });
-            // console.log(products)
+           
         }
-        // res.redirect('/admin/addoffer')
-
+        
         res.json({ success: true })
         
     }
@@ -219,11 +218,12 @@ exports.deleteoffer = async (req, res) => {
         })
 
     }
-    await offerDB.findByIdAndDelete(ID).then(() => console.log('success')).catch((err) => console.log(err))
- 
+    await offerDB.findByIdAndDelete(ID) 
     return res.json({success:true})
 
 }
+
+
 
 exports.editoffer = async (req, res) => {
    

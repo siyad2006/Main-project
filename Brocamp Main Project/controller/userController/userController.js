@@ -348,7 +348,7 @@ const homepage = async (req, res) => {
         req.session.cartCount = cartCount
 
         const userid = req.session.userId
-        const products = await productDB.find({ isblocked: false }).limit(8).populate('category')
+        const products = await productDB.find({ isblocked: false ,quantity:{$gt:0}}).limit(8).populate('category')
         res.render('user/index', { products, userid, cartCount });
     } catch (error) {
         console.error('Error fetching products:', error);
@@ -386,7 +386,7 @@ const shoping = async (req, res) => {
         const categories = await category.find({ isblocked: "Listed" });
         const categorys = req.query.category
 
-        let productsQuery = productDB.find({ isblocked: false }).populate('category').skip(skip).limit(limit);
+        let productsQuery = productDB.find({ isblocked: false ,quantity:{$gt:0} }).populate('category').skip(skip).limit(limit);
         if (search !== undefined) {
 
             const regex = new RegExp(`^${search}`, 'i');
