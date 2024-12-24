@@ -16,7 +16,7 @@ router.get('/otp', userAuth.isRegistered, userController.otp)
 router.get('/login', userController.userlogin)  
 router.post('/userlogin', userController.postlogin)
 router.post('/verify-otp', userController.otpVerification);
-router.get('/home',userController.lo)
+router.get('/home',userController.homepage)
 router.post('/resentotp', userController.resentotp)
 router.get('/details/:id', userController.productDetails)
 router.get('/shop', userController.shoping)

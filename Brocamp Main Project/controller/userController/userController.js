@@ -284,7 +284,7 @@ const postlogin = async (req, res) => {
 
 
 
-const lo = async (req, res) => {
+const homepage = async (req, res) => {
 
 
 
@@ -929,7 +929,7 @@ module.exports = {
     resentotp,
     userlogin,
     postlogin,
-    lo,
+    homepage,
     productDetails,
     shoping,
     demo,
