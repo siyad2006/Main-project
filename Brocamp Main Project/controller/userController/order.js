@@ -676,13 +676,9 @@ exports.cancelorder = async (req, res) => {
                     const singleItem = await productDB.findById(id);
                     const buyedqty = pro.qty;
 
-
-
                     if (!singleItem) {
                         continue
                     }
-
-
                     const category = await categoryDB.findById(singleItem.category)
 
                     if (category) {
@@ -691,15 +687,9 @@ exports.cancelorder = async (req, res) => {
                         category.sold = categorysold
                         await category.save()
                     }
-
-
-
                     singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
 
                     singleItem.quantity += buyedqty;
-
-
-
                     await singleItem.save();
                 }
 
@@ -812,12 +802,18 @@ exports.cancelorder = async (req, res) => {
 
 }
 
+
+
 exports.success = async (req, res) => {
 
     try {
 
 
         const user = req.session.userId
+
+        if(!user){
+            return res.redirect('/')
+        }
 
 
 
@@ -834,6 +830,8 @@ exports.success = async (req, res) => {
         console.log(error)
     }
 }
+
+
 
 exports.details = async (req, res) => {
 
@@ -950,13 +948,13 @@ exports.return = async (req, res) => {
 
 
         const ID = req.params.id
-        const db = await checkoutDB.findById(ID)
+        const order = await checkoutDB.findById(ID)
         const userid = req.session.userId
 
 
 
         const currentDate = new Date();
-        const orderDate = new Date(db.createdAt);
+        const orderDate = new Date(order.createdAt);
         const currentDay = currentDate.getDate();
         const orderDay = orderDate.getDate();
         currentDate.setDate(currentDay - 7);
@@ -969,7 +967,7 @@ exports.return = async (req, res) => {
 
 
 
-        if (db.paymentMethods == 'razorpay' || db.paymentMethods == 'wallet') {
+        if (order.paymentMethods == 'razorpay' || order.paymentMethods == 'wallet') {
 
             await checkoutDB.findByIdAndUpdate(ID, {
                 status: 'return'
@@ -991,7 +989,7 @@ exports.return = async (req, res) => {
                 const existingAmount = existingWallet.amount || 0;
 
 
-                const newAmount = existingAmount + db.totalprice;
+                const newAmount = existingAmount + order.totalprice;
 
                 await walletDB.updateOne(
                     { user: userid },
@@ -1000,13 +998,12 @@ exports.return = async (req, res) => {
                         $push: {
                             transaction: {
                                 typeoftransaction: 'debit',
-                                amountOfTransaction: db.totalprice,
+                                amountOfTransaction: order.totalprice,
                                 dateOfTransaction: nowdate,
                             }
                         }
                     }
-                ).then(() => console.log('Successfully updated the wallet'));
-
+                ) 
 
                 const canceledproducts = await checkoutDB.findById(ID)
                 const items = canceledproducts.products
@@ -1057,11 +1054,11 @@ exports.return = async (req, res) => {
                 // console.log('user dont have wallet ')
                 const newwallet = new walletDB({
                     user: userid,
-                    amount: db.totalprice,
+                    amount: order.totalprice,
                     transaction: [
                         {
                             typeoftransaction: 'debit',
-                            amountOfTransaction: db.totalprice,
+                            amountOfTransaction: order.totalprice,
                             dateOfTransaction: nowdate
 
                         }
@@ -1143,7 +1140,7 @@ exports.return = async (req, res) => {
                 const existingAmount = existingWallet.amount || 0;
                 // console.log(existingAmount);
 
-                const newAmount = existingAmount + db.totalprice;
+                const newAmount = existingAmount + order.totalprice;
 
                 await walletDB.updateOne(
                     { user: userid },
@@ -1152,13 +1149,12 @@ exports.return = async (req, res) => {
                         $push: {
                             transaction: {
                                 typeoftransaction: 'debit',
-                                amountOfTransaction: db.totalprice,
+                                amountOfTransaction: order.totalprice,
                                 dateOfTransaction: nowdate,
                             }
                         }
                     }
-                ).then(() => console.log('Successfully updated the wallet'));
-
+                ) 
 
                 const canceledproducts = await checkoutDB.findById(ID)
                 const items = canceledproducts.products
@@ -1207,11 +1203,11 @@ exports.return = async (req, res) => {
                 // console.log('user dont have wallet ')
                 const newwallet = new walletDB({
                     user: userid,
-                    amount: db.totalprice,
+                    amount: order.totalprice,
                     transaction: [
                         {
                             typeoftransaction: 'debit',
-                            amountOfTransaction: db.totalprice,
+                            amountOfTransaction: order.totalprice,
                             dateOfTransaction: nowdate
 
                         }
@@ -1548,7 +1544,6 @@ exports.pendingorder = async (req, res) => {
 
 
 
-
 exports.repay = async (req, res) => {
     try {
 
@@ -1572,8 +1567,8 @@ exports.repay = async (req, res) => {
             return res.status(400).json({ error: 'Order ID is required' });
         }
 
-        const db = await checkoutDB.findById(req.body.orderid);
-        if (!db) {
+        const orderdetails = await checkoutDB.findById(req.body.orderid);
+        if (!orderdetails) {
             return res.status(404).json({ error: 'Order not found' });
         }
 
@@ -1624,16 +1619,9 @@ exports.repay = async (req, res) => {
 
             if (!product) {
                 flag1 = true
-                // console.log(`Product with ID ${item.productId} does not exist.`);
-                continue;
+                     continue;
             }
-
-            // if (product.quantity < item.qty) {
-            //     console.log(
-            //         `Insufficient quantity for product ${product.name}. Available: ${product.quantity}, Requested: ${item.qty}`
-            //     );
-            //     continue;  
-            // }
+ 
 
             const price = product.offerprice || product.regularprice;
             totalprice += price * item.qty;
@@ -1654,13 +1642,8 @@ exports.repay = async (req, res) => {
         if (flag1 == true || flag2 == true) {
             return res.redirect(`/user/myorders/${uid}`)
         }
-
-        // end
-
-
-
-
-        const total = db.totalprice;
+ 
+        const total = orderdetails.totalprice;
         // console.log('Successfully entered the repay function');
 
         const razorpay = new Razorpay({
@@ -1683,7 +1666,7 @@ exports.repay = async (req, res) => {
             order_id: order.id,
             currency: order.currency,
             amount: order.amount,
-            orderID: db._id
+            orderID: orderdetails._id
         });
     } catch (err) {
 
