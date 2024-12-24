@@ -348,7 +348,7 @@ const homepage = async (req, res) => {
         req.session.cartCount = cartCount
 
         const userid = req.session.userId
-        const products = await productDB.find({ isblocked: false ,quantity:{$gt:0}}).limit(8).populate('category')
+        const products = await productDB.find({ isblocked: false, quantity: { $gt: 0 } }).limit(8).populate('category')
         res.render('user/index', { products, userid, cartCount });
     } catch (error) {
         console.error('Error fetching products:', error);
@@ -386,7 +386,7 @@ const shoping = async (req, res) => {
         const categories = await category.find({ isblocked: "Listed" });
         const categorys = req.query.category
 
-        let productsQuery = productDB.find({ isblocked: false ,quantity:{$gt:0} }).populate('category').skip(skip).limit(limit);
+        let productsQuery = productDB.find({ isblocked: false, quantity: { $gt: 0 } }).populate('category').skip(skip).limit(limit);
         if (search !== undefined) {
 
             const regex = new RegExp(`^${search}`, 'i');
@@ -497,6 +497,7 @@ const logout = async (req, res) => {
         req.session.totalAmount = null
         req.session.realprice = null
         req.session.discount = null
+
 
         res.redirect('/user/login')
     } catch (err) {
@@ -642,7 +643,7 @@ const createaddress = async (req, res) => {
         title
     } = req.body
     try {
-        
+
         const addresssave = new addressDB({
             user: ID,
             name: nam,
@@ -753,7 +754,7 @@ const test = async (req, res) => {
 }
 
 const forgetpassword = async (req, res) => {
-    if(req.session.userId){
+    if (req.session.userId) {
         res.redirect('/')
     }
     res.render('user/forgotPassword')
@@ -763,7 +764,7 @@ const otpforgot = async (req, res) => {
     // res.json({success:true,message:'success'})
     try {
         const Email = req.body.Email
-        req.session.emailforResendOtp=Email
+        req.session.emailforResendOtp = Email
         const isUser = await UserDB.findOne({ Email: Email })
 
         if (!isUser) {
@@ -805,7 +806,7 @@ const otpforgot = async (req, res) => {
 
         console.log(otp)
 
-        
+
         req.session.authenticationOTP = null
 
         res.json({ success: true, message: 'otp sended ' })
@@ -818,8 +819,11 @@ const otpforgot = async (req, res) => {
 }
 
 const verifyPasswordOtp = async (req, res) => {
-    if(req.session.userId){
+    if (req.session.userId) {
         res.redirect('/')
+    }
+    if (!req.session.emailforResendOtp) {
+        return res.redirect('/user/login')
     }
     if (req.session.authenticationOTP == true) {
         return res.redirect('/user/changePasswordForgot')
@@ -828,29 +832,36 @@ const verifyPasswordOtp = async (req, res) => {
 }
 
 const verifyotpForgotPassword = async (req, res) => {
-    
+
     const otp = req.body.otp
     if (otp !== req.session.forgotPassotp) {
         return res.json({ success: false, message: 'invalid otp' })
-    } else { 
+    } else {
         req.session.otpVerified = true
         return res.json({ success: true })
     }
 
 }
 
+// req.session.emailforResendOtp
+// req.session.authenticationOTP
+//  req.session.idforPassword
+
 const changePasswordForgot = async (req, res) => {
-    if(req.session.userId){
+    if (req.session.userId) {
         res.redirect('/')
     }
-   
+    if (!req.session.emailforResendOtp) {
+        return res.redirect('/user/login')
+    }
+
     req.session.authenticationOTP = true
     res.render('user/createNewPassword')
 }
 
-const createNewPassword = async (req, res) => { 
-     try {
-        
+const createNewPassword = async (req, res) => {
+    try {
+
         const password = req.body.password
         const newPassword = await bcrypt.hash(password, 10)
         if (!req.session.idforPassword) {
@@ -862,63 +873,70 @@ const createNewPassword = async (req, res) => {
 
         }).then(() => {
             req.session.authenticationOTP = false
-            req.session.forgotPassotp=null
+            req.session.forgotPassotp = null
+
+            req.session.emailforResendOtp = null
+
+            req.session.idforPassword - null
             return res.json({ success: true })
 
         })
-    
+
     } catch (err) {
         console.log(err)
     }
- 
+
 }
 
 
-const resendOtpforgotpassword = async (req,res)=>{
-   Email = req.session.emailforResendOtp
-   const isUser = await UserDB.findOne({ Email: Email })
+const resendOtpforgotpassword = async (req, res) => {
+    if (!req.session.emailforResendOtp) {
+        return res.redirect('/user/login')
+    }
+    Email = req.session.emailforResendOtp
+    const isUser = await UserDB.findOne({ Email: Email })
 
-        if (!isUser) {
-            return res.json({ success: false, message: 'there is no user exist in that email' })
+    if (!isUser) {
+        return res.json({ success: false, message: 'there is no user exist in that email' })
+    }
+    req.session.idforPassword = isUser._id
+    if (isUser.googleId) {
+        return res.json({ success: false, message: 'please login using google id ' })
+
+    }
+
+    const generateNumericOtp = (length = 6) => {
+        let otp = '';
+        for (let i = 0; i < length; i++) {
+            otp += Math.floor(Math.random() * 10);
         }
-        req.session.idforPassword = isUser._id
-        if (isUser.googleId) {
-            return res.json({ success: false, message: 'please login using google id ' })
+        return otp;
+    };
 
+
+    const otp = generateNumericOtp(6);
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'siyadz4x@gmail.com',
+            pass: 'wlbz xhxj eqyy lvbc'
         }
+    });
 
-        const generateNumericOtp = (length = 6) => {
-            let otp = '';
-            for (let i = 0; i < length; i++) {
-                otp += Math.floor(Math.random() * 10);
-            }
-            return otp;
-        };
+    await transporter.sendMail({
+        from: 'siyadz4x@gmail.com',
+        to: Email,
 
+        subject: 'OTP Verification',
+        text: `Your OTP for verification is: ${otp}`
+    });
 
-        const otp = generateNumericOtp(6);
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: 'siyadz4x@gmail.com',
-                pass: 'wlbz xhxj eqyy lvbc'
-            }
-        });
+    req.session.forgotPassotp = otp
 
-        await transporter.sendMail({
-            from: 'siyadz4x@gmail.com',
-            to: Email,
+    console.log(otp)
 
-            subject: 'OTP Verification',
-            text: `Your OTP for verification is: ${otp}`
-        });
+    return res.redirect('/user/verifyPasswordOtp')
 
-        req.session.forgotPassotp = otp
-
-        console.log(otp)
-
-        return res.redirect('/user/verifyPasswordOtp')
-        
 }
 
 module.exports = {
