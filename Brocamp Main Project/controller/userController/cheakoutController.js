@@ -40,6 +40,11 @@ exports.getcheackout = async (req, res) => {
 
     const cartItem = await cartDB.findById(cartId);
 
+    if(req.session.totalAmount<=0){
+        req.flash('limit', `please buy items more than 0 rupees`);
+        return res.redirect('/user/cart')
+    }
+
     if (req.session.discount > 0) {
         if (cartItem.coupun == null) {
 
@@ -53,8 +58,9 @@ exports.getcheackout = async (req, res) => {
     const cartTotal = req.session.totalAmount
 
     const coupun = await coupunDB.findById(cartItem.coupun)
-
+    
     if (coupun) {
+        console.log('sasd',cartTotal + coupun.maximumDiscount <= coupun.minimumPurchase)
         if (cartTotal + coupun.maximumDiscount <= coupun.minimumPurchase) {
             req.flash('limit', `Please buy items worth more than ${coupun.minimumPurchase}`);
             return res.redirect(`/user/cart`);
@@ -79,9 +85,8 @@ exports.getcheackout = async (req, res) => {
         const quantity = cartProduct ? cartProduct.qty : 1;  
         return total + (product.regularprice * quantity);
     }, 0)
-    
- 
-    if (req.session.totalAmount !== productPrices) {
+     
+    if (req.session.realprice !== productPrices) {
         req.flash('limit', `Sorry admin made changes in the price `);
         return res.redirect('/user/cart')
     }
@@ -175,7 +180,7 @@ exports.placeorder = async (req, res) => {
 
         if (cheaktotal !== subtotal) {
 
-            return res.status(404).send('you cant add it because of the admin make changes in the products peice  ')
+            return res.status(404).send('you cant add it because of the admin make changes in the products price so go bacck to cart and retry   ')
         }
     } else {
         let subtotal = 0;

@@ -13,12 +13,16 @@ exports.addcoupun = async (req, res) => {
     // console.log(req.body)
     const coupunname = await coupunDB.findOne({ code: code })
     const coupuntitles = await coupunDB.findOne({ title: coupontitle })
+
     // console.log(coupunname,coupuntitles)
     if (coupunname || coupuntitles) {
 
-        res.json({ success: false, message: 'this  is already in use' })
+          res.json({ success: false, message: 'this  is already in use' })
 
     } else {
+
+        
+
         const expires = new Date(expire)
 
 
@@ -49,16 +53,7 @@ exports.deletecoupun = async (req, res) => {
 
         const id = req.params.id
 
-        // const carts = await cartDB.find({ coupun: id })
-
-        // for (let items of carts) {
-        //     const singleCart = await cartDB.findById(items._id)
-
-        //     singleCart.coupun = null
-
-        //     await singleCart.save()
-        // }
-
+       
         await cartDB.updateMany({coupun:id},{
             coupun:null
         })

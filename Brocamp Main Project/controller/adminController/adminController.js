@@ -578,103 +578,7 @@ const editing = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 };
-
-
-// const addbrand = async (req, res) => {
-
-//     try {
-//         const brands = await BrandModel.find();
-
-
-
-//         const brandsWithImages = brands.map(brand => ({
-//             ...brand.toObject(),
-//             logo: `data:${brand.logo.contentType};base64,${brand.logo.data.toString('base64')}`
-//         }));
-
-//         res.render('admin/brand', { brands: brandsWithImages });
-//     } catch (error) {
-//         console.error('Error fetching brands:', error);
-//         res.status(500).send('Error fetching brands');
-//     }
-
-
-
-
-
-// }
-
-
-
-
-
-// const uploadsDir = path.join(__dirname, '..', 'uploads');
-// if (!fs.existsSync(uploadsDir)) {
-//     fs.mkdirSync(uploadsDir);
-// }
-
-// const storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, uploadsDir);
-//     },
-//     filename: (req, file, cb) => {
-//         cb(null, file.originalname);
-//     }
-// });
-
-// const upload = multer({ storage: storage }).single('image');
-
-
-// const postbrand = async (req, res) => {
-//     upload(req, res, async (err) => {
-//         if (err) {
-//             console.error('Upload error:', err);
-//             return res.status(500).send('Error uploading file.');
-//         }
-
-
-//         if (!req.file) {
-//             return res.status(400).send('No file uploaded.');
-//         }
-
-
-//         const logoPath = path.join(uploadsDir, req.file.filename);
-//         console.log('Logo path:', logoPath);
-
-
-//         let logoData;
-//         try {
-//             logoData = await fs.promises.readFile(logoPath);
-//         } catch (error) {
-//             console.error('Error reading file:', error);
-//             return res.status(500).send('Error reading file.');
-//         }
-
-//         const brandname = req.body.brandname;
-//         console.log('Brand name:', brandname);
-
-
-//         const brand = new BrandModel({
-//             brandname: brandname,
-//             logo: {
-//                 data: logoData,
-//                 contentType: req.file.mimetype,
-//             },
-//         });
-
-
-//         try {
-//             await brand.save();
-//             console.log('Successfully saved brand');
-//             res.redirect('/admin/brand')
-//             // return res.status(201).send('Brand created successfully.');
-//         } catch (error) {
-//             console.error('Error saving brand:', error);
-//             return res.status(500).send('Error saving brand.');
-//         }
-//     });
-// };
-
+ 
 
 
 const logout = async (req, res) => {
@@ -697,7 +601,6 @@ module.exports = {
     unblockcategory,
     editcategory,
     editing,
- 
     logout
 
 }

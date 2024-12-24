@@ -17,7 +17,7 @@ exports.getcart = async (req, res, next) => {
     try {
 
 
- 
+
 
 
         const uid = req.session.userId;
@@ -44,22 +44,36 @@ exports.getcart = async (req, res, next) => {
         }
 
 
-        let discount = 0
-        if (cart && cart.coupun && mongoose.Types.ObjectId.isValid(cart.coupun)) {
-            const coupunAmount = await coupunDB.findById(cart.coupun);
-            if (coupunAmount) {
-                  discount += coupunAmount.maximumDiscount
-            } else {
-              
-            }
-        } 
+        // let discount = 0
+        // if (cart && cart.coupun && mongoose.Types.ObjectId.isValid(cart.coupun)) {
+        //     const coupunAmount = await coupunDB.findById(cart.coupun);
+        //     console.log(coupunAmount)
+        //     let flag = true
+        //     if (req.session.totalAmount < coupunAmount.minimumPurchase) {
+        //        console.log('entered ')
+        //         cart.coupun = null
+        //         let userindex = coupunAmount.user.indexOf(req.session.userId)
+        //         coupunAmount.user.splice(userindex, 1)
+        //         await coupunAmount.save()
+        //         await cart.save()
+        //         flag = false
+        //     }
+        //     if (flag == true) {
+        //         if (coupunAmount) {
+        //             discount += coupunAmount.maximumDiscount
+        //         } else {
+
+        //         }
+        //     }
+
+        // }
         const cartItems = cart.products.map(product => ({
             productId: product.productId,
             qty: product.qty
         }));
-        
-        const products = await productDB.find({ _id: { $in: cartItems.map(item => item.productId) },isblocked:false });
-  
+
+        const products = await productDB.find({ _id: { $in: cartItems.map(item => item.productId) }, isblocked: false });
+
         const cartProducts = products.map(product => {
             const cartItem = cartItems.find(item => item.productId.toString() === product._id.toString());
             return {
@@ -68,7 +82,7 @@ exports.getcart = async (req, res, next) => {
             };
         });
 
-        let pricee = 0; 
+        let pricee = 0;
         for (let item of cartProducts) {
             if (item.regularprice && item.qty) {
                 pricee += item.regularprice * item.qty;
@@ -88,18 +102,50 @@ exports.getcart = async (req, res, next) => {
             }
         }
 
- 
+        let discount = 0
+        if (cart && cart.coupun && mongoose.Types.ObjectId.isValid(cart.coupun)) {
+            const coupunAmount = await coupunDB.findById(cart.coupun);
+            console.log(coupunAmount)
+
+
+
+            if (coupunAmount) {
+                discount += coupunAmount.maximumDiscount
+            } else {
+
+            }
+
+
+        }
+
         req.session.totalAmount = pricee - discount
-        req.session.realprice=realprice
-        req.session.discount=discount
+        if (cart && cart.coupun && mongoose.Types.ObjectId.isValid(cart.coupun)) {
+            const coupunAmount = await coupunDB.findById(cart.coupun);
+     
+            if (req.session.totalAmount<=0) {
+                discount=0
+                req.session.totalAmount=pricee
+                console.log('entered ')
+                cart.coupun = null
+                let userindex = coupunAmount.user.indexOf(req.session.userId)
+                coupunAmount.user.splice(userindex, 1)
+                await coupunAmount.save()
+                await cart.save()
+                flag = false
+            }
+        }
+
+
+        req.session.realprice = realprice
+        req.session.discount = discount
 
         // console.log(req.session)
         const totalAmount = req.session.totalAmount
         const cartCount = req.session.cartCount || 0
-        res.render('user/cart', { userid, cart, products: cartProducts, limit: req.flash('limit'), coupuns: coupuns, totalAmount, discount: discount, realprice,cartCount });
+        res.render('user/cart', { userid, cart, products: cartProducts, limit: req.flash('limit'), coupuns: coupuns, totalAmount, discount: discount, realprice, cartCount });
     } catch (err) {
-         
-        res.redirect('/user/logout')
+console.log(err)
+        // res.redirect('/user/logout')
     }
 
 };
@@ -261,7 +307,7 @@ exports.updateCart = async (req, res, next) => {
                 subtotal += productDetails.realprice * cartItem.qty;
             }
         }
-req.session.realprice=subtotal
+        req.session.realprice = subtotal
         let discount = 0;
         const iscoupun = await cartDB.findOne({ user: userid }, { coupun: 1 }).populate('coupun');
         if (iscoupun && iscoupun.coupun) {
@@ -362,7 +408,7 @@ exports.removecart = async (req, res) => {
         await cartDB.updateOne(
             { user: userid },
             { $pull: { products: { productId: productId } } }
-        ) 
+        )
 
         req.session.totalAmount = cartItem.totalAmount - amountToDeduct;
         // console.log('this is the session details of delet', req.session)
@@ -399,7 +445,7 @@ exports.addcoupun = async (req, res) => {
 
 
 
- 
+
         const coupunid = req.body.coupunId;
         const userid = req.session.userId;
         const coupun = await coupunDB.findOne({ code: coupunid });
@@ -413,10 +459,10 @@ exports.addcoupun = async (req, res) => {
             return res.json({ success: false, message: 'There is no coupon with this code' });
         }
         const coupunId = coupun._id
-       
+
 
         if (String(coupun.user) === String(userid)) {
- 
+
             return res.json({ success: false, message: 'This coupon is already used' });
         }
 
@@ -427,29 +473,29 @@ exports.addcoupun = async (req, res) => {
         couponExpiryDate.setHours(0, 0, 0, 0);
 
         if (couponExpiryDate > currentDate) {
-       
+
 
             const cart = await cartDB.find({ user: userid }, { totalAmount: 1, _id: 0 });
             if (cart.length === 0) {
                 return res.json({ success: false, message: 'Cart is empty' });
             }
 
-            if (cart[0].totalAmount <= coupun.minimumPurchase) {
+            if (req.session.totalAmount <= coupun.minimumPurchase) {
                 return res.json({ success: false, message: `You must buy items with a minimum value of RS: ${coupun.minimumPurchase}` });
             }
 
             const offeramount = cart[0].totalAmount - coupun.maximumDiscount;
-          
+
             req.session.totalAmount = offeramount
             req.flash('coupun', coupun.maximumDiscount)
             await cartDB.updateOne(
                 { user: userid },
                 { coupun: coupunId }
-            ); 
+            );
             await coupunDB.updateOne({ code: coupunid }, { user: userid });
             return res.json({ success: true });
         } else {
-         
+
             return res.json({ success: false, message: 'This coupon is expired' });
         }
     } catch (error) {
@@ -480,7 +526,7 @@ exports.removecoupun = async (req, res) => {
             return res.redirect('/user/logout');
         }
 
- 
+
         const userid = req.body.user
         const cart = await cartDB.findOne({ user: userid })
         let total = cart.totalAmount
@@ -489,13 +535,13 @@ exports.removecoupun = async (req, res) => {
 
         const coupun = cart.coupun
         const isactive = await coupunDB.findById(coupun)
-     
+
         if (!isactive) {
             return res.json({ success: false })
         }
         let down = isactive.maximumDiscount
         const coupunuser = isactive.user
-  
+
         let count = 0
         for (let use of coupunuser) {
             if (userid == use) {

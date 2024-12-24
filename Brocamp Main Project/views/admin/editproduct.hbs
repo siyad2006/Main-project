@@ -201,9 +201,9 @@
         <input type="text" class="form-control" id="description" value="{{product.discription}}" name="discription"
           required>
       </div>
-       
 
-       
+
+
       <div class="mb-3">
         <label for="regularPrice" class="form-label">Price</label>
         <input type="text" class="form-control" id="regularPrice" value="{{product.realprice}}" name="regularprice"
@@ -214,11 +214,23 @@
         <input type="text" class="form-control" id="color" value="{{product.color}}" name="color" required>
       </div> --}}
 
-         {{!-- <div class="mb-3">
+      {{!-- <div class="mb-3">
         <label for="exampleInputPassword1" class="form-label">Color</label>
-       
+
         <p style="color: #ff4444;">{{product.color}}</p>
       </div> --}}
+
+      <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Color</label>
+        <select class="form-control" id="exampleInputPassword1" name="color" required>
+          <option value="" disabled selected>Select a color</option>
+          <option value="red">Red</option>
+          <option value="blue">Blue</option>
+          <option value="green">Green</option>
+          <option value="yellow">Yellow</option>
+          <option value="purple">Purple</option>
+        </select>
+      </div>
 
       <div class="mb-3">
         <label for="quantity" class="form-label">Stock</label>
@@ -226,110 +238,110 @@
           min="1">
       </div>
 
-      
-    
 
-<div class="mb-3">
-  <label for="imageUpload1" class="form-label">Add Image 1</label>
-  <input type="file" class="form-control" id="imageUpload1" accept="image/*" name="image1"
-    onchange="openCropper(event, 0)">
-  <canvas id="canvas1" style="display:none; max-width: 100%;"></canvas>
-</div>
 
-<div class="mb-3">
-  <label for="imageUpload2" class="form-label">Add Image 2</label>
-  <input type="file" class="form-control" id="imageUpload2" accept="image/*" name="image2"
-    onchange="openCropper(event, 1)">
-  <canvas id="canvas2" style="display:none; max-width: 100%;"></canvas>
-</div>
 
-<div class="mb-3">
-  <label for="imageUpload3" class="form-label">Add Image 3</label>
-  <input type="file" class="form-control" id="imageUpload3" accept="image/*" name="image3"
-    onchange="openCropper(event, 2)">
-  <canvas id="canvas3" style="display:none; max-width: 100%;"></canvas>
-</div>
+      <div class="mb-3">
+        <label for="imageUpload1" class="form-label">Add Image 1</label>
+        <input type="file" class="form-control" id="imageUpload1" accept="image/*" name="image1"
+          onchange="openCropper(event, 0)">
+        <canvas id="canvas1" style="display:none; max-width: 100%;"></canvas>
+      </div>
 
-<link href="https://unpkg.com/cropperjs/dist/cropper.min.css" rel="stylesheet">
-<script src="https://unpkg.com/cropperjs"></script>
+      <div class="mb-3">
+        <label for="imageUpload2" class="form-label">Add Image 2</label>
+        <input type="file" class="form-control" id="imageUpload2" accept="image/*" name="image2"
+          onchange="openCropper(event, 1)">
+        <canvas id="canvas2" style="display:none; max-width: 100%;"></canvas>
+      </div>
 
-<script>
-  const imagesData = [null, null, null]; // Array to store image blobs for each index
+      <div class="mb-3">
+        <label for="imageUpload3" class="form-label">Add Image 3</label>
+        <input type="file" class="form-control" id="imageUpload3" accept="image/*" name="image3"
+          onchange="openCropper(event, 2)">
+        <canvas id="canvas3" style="display:none; max-width: 100%;"></canvas>
+      </div>
 
-  function openCropper(event, index) {
-    const file = event.target.files[0];
-    const canvasId = `canvas${index + 1}`;
-    const inputId = `imageUpload${index + 1}`;
-    const canvas = document.getElementById(canvasId);
-    const ctx = canvas.getContext('2d');
+      <link href="https://unpkg.com/cropperjs/dist/cropper.min.css" rel="stylesheet">
+      <script src="https://unpkg.com/cropperjs"></script>
 
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      const img = new Image();
-      img.src = imageUrl;
+      <script>
+        const imagesData = [null, null, null]; // Array to store image blobs for each index
 
-      img.onload = () => {
-        canvas.style.display = 'block';
-        canvas.width = 300; // Set desired crop width
-        canvas.height = 300; // Set desired crop height
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        function openCropper(event, index) {
+          const file = event.target.files[0];
+          const canvasId = `canvas${index + 1}`;
+          const inputId = `imageUpload${index + 1}`;
+          const canvas = document.getElementById(canvasId);
+          const ctx = canvas.getContext('2d');
 
-        const cropper = new Cropper(canvas, {
-          aspectRatio: 1,
-          viewMode: 1,
-        });
+          if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            const img = new Image();
+            img.src = imageUrl;
 
-        const confirmButton = document.createElement('button');
-        confirmButton.textContent = 'Crop and Replace';
-        confirmButton.className = 'btn btn-primary mt-2';
+            img.onload = () => {
+              canvas.style.display = 'block';
+              canvas.width = 300; // Set desired crop width
+              canvas.height = 300; // Set desired crop height
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-        confirmButton.onclick = () => {
-          const croppedCanvas = cropper.getCroppedCanvas({
-            width: 300,
-            height: 300,
-          });
+              const cropper = new Cropper(canvas, {
+                aspectRatio: 1,
+                viewMode: 1,
+              });
 
-          croppedCanvas.toBlob((blob) => {
-            const croppedFile = new File([blob], `cropped-image-${index + 1}.jpg`, { type: 'image/jpeg' });
-            
-            imagesData[index] = croppedFile; // Update only the current image in the array
+              const confirmButton = document.createElement('button');
+              confirmButton.textContent = 'Crop and Replace';
+              confirmButton.className = 'btn btn-primary mt-2';
 
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(croppedFile);
+              confirmButton.onclick = () => {
+                const croppedCanvas = cropper.getCroppedCanvas({
+                  width: 300,
+                  height: 300,
+                });
 
-            const input = document.getElementById(inputId);
-            input.files = dataTransfer.files;
+                croppedCanvas.toBlob((blob) => {
+                  const croppedFile = new File([blob], `cropped-image-${index + 1}.jpg`, { type: 'image/jpeg' });
 
-            alert(`Cropped image ${index + 1} is now ready to be saved!`);
-            cropper.destroy();
-          }, 'image/jpeg');
-        };
+                  imagesData[index] = croppedFile; // Update only the current image in the array
 
-        const skipCropButton = document.createElement('button');
-        skipCropButton.textContent = 'Save Without Cropping';
-        skipCropButton.className = 'btn btn-secondary mt-2';
+                  const dataTransfer = new DataTransfer();
+                  dataTransfer.items.add(croppedFile);
 
-        skipCropButton.onclick = () => {
-          imagesData[index] = file;  
-          const input = document.getElementById(inputId);
-          const dataTransfer = new DataTransfer();
-          dataTransfer.items.add(file);
-          input.files = dataTransfer.files;
+                  const input = document.getElementById(inputId);
+                  input.files = dataTransfer.files;
 
-          alert(`Image ${index + 1} saved without cropping!`);
-          cropper.destroy();
-          canvas.style.display = 'none';
-          confirmButton.remove();
-          skipCropButton.remove();
-        };
+                  alert(`Cropped image ${index + 1} is now ready to be saved!`);
+                  cropper.destroy();
+                }, 'image/jpeg');
+              };
 
-        canvas.parentElement.appendChild(confirmButton);
-        canvas.parentElement.appendChild(skipCropButton);
-      };
-    }
-  }
-</script>
+              const skipCropButton = document.createElement('button');
+              skipCropButton.textContent = 'Save Without Cropping';
+              skipCropButton.className = 'btn btn-secondary mt-2';
+
+              skipCropButton.onclick = () => {
+                imagesData[index] = file;
+                const input = document.getElementById(inputId);
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                input.files = dataTransfer.files;
+
+                alert(`Image ${index + 1} saved without cropping!`);
+                cropper.destroy();
+                canvas.style.display = 'none';
+                confirmButton.remove();
+                skipCropButton.remove();
+              };
+
+              canvas.parentElement.appendChild(confirmButton);
+              canvas.parentElement.appendChild(skipCropButton);
+            };
+          }
+        }
+      </script>
 
 
       <div style="display:inline;">
@@ -343,14 +355,32 @@
       </div>
 
 
-       <div class="mb-3">
+      {{!-- <div class="mb-3">
         <label for="brandInput" class="form-label">Brand</label>
-        {{!-- <input type="text" class="form-control" id="brandInput" name="brand" value="{{product.brand}}" required> --}}
+      
         <div>
           <p style="font-size: medium; color:#ff4444; font-weight:600">{{product.brand}}</p>
         </div>
-      </div>  
- 
+      </div> --}}
+      
+      <div class="mb-3">
+        <label for="brandInput" class="form-label">Brand</label>
+        <select class="form-control" id="brandInput" name="brand" required>
+          <option value="" disabled selected>Select a brand</option>
+          <option value="Rolex">Rolex</option>
+          <option value="Omega">Omega</option>
+          <option value="Casio">Casio</option>
+          <option value="Seiko">Seiko</option>
+          <option value="Tag Heuer">Tag Heuer</option>
+          <option value="Patek Philippe">Patek Philippe</option>
+          <option value="Audemars Piguet">Audemars Piguet</option>
+          <option value="Tissot">Tissot</option>
+          <option value="Citizen">Citizen</option>
+          <option value="Fossil">Fossil</option>
+        </select>
+      </div>
+
+
       <button type="submit" class="btn btn-primary">Edit</button>
     </form>
 

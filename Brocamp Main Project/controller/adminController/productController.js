@@ -114,9 +114,9 @@ const postEdit = async (req, res) => {
                     realprice: val.regularprice,
                     name: val.productname.trim(),
                     discription: val.discription.trim(),
-
+                    color:val.color,
                     quantity: val.quantity,
-
+                    brand:val.brand,
                     image: updatedImages,
                     status: val.status || "available",
 
@@ -132,11 +132,11 @@ const postEdit = async (req, res) => {
             {
                 name: val.productname.trim(),
                 discription: val.discription.trim(),
-
+                brand:val.brand,
                 // category: val.category,
                 regularprice: val.regularprice,
                 quantity: val.quantity,
-
+                color:val.color,
                 image: updatedImages,
                 status: val.status || "available",
                 realprice: val.regularprice
