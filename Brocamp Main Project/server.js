@@ -77,24 +77,15 @@ hbs.registerHelper('formatDate', function (date) {
 hbs.registerHelper('neq', function (a, b) {
     return a !== b;
 });
-// hbs.registerHelper('times', function (n, block) {
-//     let result = '';
-//     for (let i = 0; i < n; i++) {
-//         result += block.fn(i);
-//     }
-//     return result;
-// });
-
-// Register the subtract helper
 
 
 // Set up 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
-// mongoConnect
+
 try {
-    mongoose.connect( mongoConnect, {
+    mongoose.connect(mongoConnect, {
 
     })
     console.log('mongodb connected successfully');
@@ -104,13 +95,6 @@ try {
     console.log(err);
 
 }
-
-// mongoose.connect(mongoConnect, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-// })
-// .then(() => console.log('MongoDB connected successfully'))
-// .catch(err => console.error('Connection error:', err));
 
 
 
