@@ -51,51 +51,19 @@
                 </button>
                 {{!-- <a href="/user/login" style="margin-top: 5px;margin-left:55px">Do you have an accound?</a> --}}
             </form>
-            <div class="google-signin-wrapper">
+           <div class="google-signin-wrapper">
                 <button class="google-signin-btn" style="margin-top: 165px;">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png"
                         alt="Google Logo" class="google-logo">
-                    <a href="/auth/google" style="text-decoration: none;">login in with Google</a>
+                    {{!-- <a href=" " style="text-decoration: none;">login in with Google</a> --}}
+                    <p>MaleFashion</p>
                 </button>
             </div>
 
 
         </div>
     </div>
-
-    {{!-- <script>
-        let countdown = 60;
-        let timerInterval;
-
-
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                const minutes = Math.floor(countdown / 60);
-                const seconds = countdown % 60;
-
-
-                document.getElementById('timer').textContent = `Time left: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
-
-
-                if (countdown <= 0) {
-                    clearInterval(timerInterval);
-                    document.getElementById('timer').textContent = "Time's up!";
-                    document.getElementById('resendOtpBtn').style.display = 'inline-block';
-                    document.getElementById('otp').style.display = "none";
-                    document.getElementById('enterButton').style.display = "none";
-                    document.getElementById('verifyname').style.display = "none";
-                } else {
-                    countdown--;
-                }
-            }, 1000);
-        }
-
-
-        window.onload = startTimer;
-
-    </script> --}}
-
-    
+ 
 <script>
     let countdown = 60;
     let timerInterval;
