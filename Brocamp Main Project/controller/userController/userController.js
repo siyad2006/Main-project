@@ -730,8 +730,7 @@ const updatingAddress = async (req, res) => {
             pincode: pincode,
             country: country,
             title: title
-        }).then((data) => console.log('changed successfully')).catch(err => console.log(err))
-
+        }) 
         // res.redirect(`/user/address/${userid}`)
         return res.json({ success: true })
     } catch (err) {
@@ -753,14 +752,14 @@ const test = async (req, res) => {
     }
 }
 
-const forgetpassword = async (req, res) => {
+const forgetpasswordgetEmail = async (req, res) => {
     if (req.session.userId) {
         res.redirect('/')
     }
     res.render('user/forgotPassword')
 }
 
-const otpforgot = async (req, res) => {
+const otpforForgotPassword = async (req, res) => {
     // res.json({success:true,message:'success'})
     try {
         const Email = req.body.Email
@@ -847,7 +846,7 @@ const verifyotpForgotPassword = async (req, res) => {
 // req.session.authenticationOTP
 //  req.session.idforPassword
 
-const changePasswordForgot = async (req, res) => {
+const changeForgotPassword = async (req, res) => {
     if (req.session.userId) {
         res.redirect('/')
     }
@@ -963,11 +962,11 @@ module.exports = {
     updateaddress,
     updatingAddress,
     test,
-    forgetpassword,
-    otpforgot,
+    forgetpasswordgetEmail,
+    otpforForgotPassword,
     verifyPasswordOtp,
     verifyotpForgotPassword,
-    changePasswordForgot,
+    changeForgotPassword,
     createNewPassword,
     resendOtpforgotpassword
 };

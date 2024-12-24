@@ -9,7 +9,7 @@ const product = require('../../schema/productschema');
 const dotenv = require('dotenv').config()
 const cartDB = require('../../schema/cart')
 const wishlistDB = require('../../schema/wishlistSchema')
-const checkoutDB = require('../../schema/cheakout')
+const checkoutDB = require('../../schema/orderSchema')
 
 // admin login
 const login = async (req, res) => {

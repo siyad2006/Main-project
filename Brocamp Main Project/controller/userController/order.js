@@ -1,5 +1,5 @@
 const cartDB = require('../../schema/cart')
-const checkoutDB = require('../../schema/cheakout')
+const checkoutDB = require('../../schema/orderSchema')
 const productDB = require('../../schema/productschema')
 const AddressDB = require('../../schema/address')
 const { v4: uuidv4 } = require('uuid');

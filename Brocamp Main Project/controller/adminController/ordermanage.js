@@ -1,4 +1,4 @@
-const cheackoutDB = require('../../schema/cheakout');
+const cheackoutDB = require('../../schema/orderSchema');
 const product = require('../../schema/productschema');
 const address = require('../../schema/address')
 const offerDB = require('../../schema/offerSchema')
