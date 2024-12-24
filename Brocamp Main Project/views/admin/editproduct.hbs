@@ -219,6 +219,19 @@
 
         <p style="color: #ff4444;">{{product.color}}</p>
       </div> --}}
+      <input type="hidden"  id="hiddenCategory" value="{{product.category}}">
+     <div class="mb-3">
+        <label for="categorySelect" class="form-label">Category</label>
+        <select class="form-select" id="categorySelect" name="category" required>
+          <option value="">Select a category</option>
+          {{#each categoris}}
+          
+          <option value="{{this._id}}">{{this.categoryname}}</option>
+          
+          {{/each}}
+
+        </select>
+      </div>  
 
       <div class="mb-3">
         <label for="exampleInputPassword1" class="form-label">Color</label>
@@ -390,9 +403,12 @@
   window.onload=function (){
     const color=document.getElementById('hiddencolor').value;
     const brand=document.getElementById('hiddenbrand').value;
+    const category=document.getElementById('hiddenCategory').value
+
 
     document.getElementById('brandInput').value=brand
     document.getElementById('exampleInputPassword1').value=color
+    document.getElementById('categorySelect').value=category
 
   }
 </script>
