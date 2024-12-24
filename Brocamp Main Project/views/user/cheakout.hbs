@@ -129,7 +129,7 @@
                             }
                         }
                     </style>
-                    {{#each cartProducts}}
+                    {{!-- {{#each cartProducts}}
                     <div class="list-group-item d-flex justify-content-between">
                         <input type="hidden" class="product-id" value="{{this._id}}">
                         <input type="hidden" class="product-qty" value="{{this.qty}}">
@@ -151,13 +151,60 @@
                             </div>
                         </div>
                     </div>
-                    {{/each}}
+                    {{/each}} --}}
 
+{{#each cartProducts}}
+<div class="list-group-item product-card mb-2 p-3 rounded shadow-sm">
+    <input type="hidden" class="product-id" value="{{this._id}}">
+    <input type="hidden" class="product-qty" value="{{this.qty}}">
+    
+    <div class="d-flex align-items-center gap-3">
+        <!-- Product Image -->
+        <div class="product-image flex-shrink-0">
+            <img src="/{{this.image.[0]}}" 
+                 class="rounded object-fit-cover" 
+                 width="120" 
+                 height="120" 
+                 alt="{{this.name}}">
+        </div>
+
+        <!-- Product Details -->
+        <div class="product-item flex-grow-1" data-product-id="{{this._id}}" data-qty="{{this.qty}}">
+            <div class="d-flex justify-content-between align-items-start">
+                <!-- Product Info -->
+                <div class="product-info">
+                    <h5 class="mb-1 fw-bold">{{this.name}}</h5>
+                    <p class="text-muted mb-2 small">{{this.description}}</p>
+                    
+                    <!-- Pricing Section -->
+                    <div class="d-flex gap-3 align-items-center">
+                        <div class="quantity">
+                            <span class="text-muted small">Qty:</span>
+                            <span class="fw-semibold ms-1">{{this.qty}}</span>
+                        </div>
+                        
+                        <div class="pricing">
+                            <span class="text-muted small">Price:</span>
+                            <span class="fw-semibold ms-1"> ₹{{this.realprice}}</span>
+                            
+                            {{#if (gt this.offerprice 0)}}
+                            <span class="badge bg-success-subtle text-success ms-2">
+                                 ₹{{this.offerprice}}
+                            </span>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{/each}}
 
 
                 </div>
                 {{!-- <h5 class="text-end" style="color: rgb(196, 58, 58);">Total : {{cartTotal}}</h5> --}}
-                <div class="card p-3"
+                {{!-- <div class="card p-3"
                     style="border: 1px solid #ccc; border-radius: 10px; max-width: 400px;margin-top:40px;margin-left:152px">
                     <h5 class="text-end" style="color: rgb(196, 58, 58); ">Checkout Summary</h5>
                     <hr>
@@ -175,7 +222,27 @@
                         <p>Total:</p>
                         <p>Rs :{{cartTotal}}</p>
                     </div>
+                </div> --}}
+
+                <div class="card shadow p-4"
+                    style="border: none; border-radius: 12px; max-width: 400px; margin: 40px auto; background-color: #f9f9f9;">
+                    <h5 class="text-end" style="color: #c43a3a; font-weight: 600;">Checkout Summary</h5>
+                    <hr class="my-3" style="border-top: 2px solid #ccc;">
+                    <div class="d-flex justify-content-between" style="font-size: 1rem;">
+                        <p class="mb-1" style="color: #333;">Subtotal:</p>
+                        <p class="mb-1" style="color: #000; font-weight: 500;">{{realprice}}</p>
+                    </div>
+                    <div class="d-flex justify-content-between" style="font-size: 1rem;">
+                        <p class="mb-1" style="color: #333;">Coupon Discount:</p>
+                        <p class="mb-1" style="color: #c43a3a; font-weight: 500;">- {{discount}}</p>
+                    </div>
+                    <hr class="my-3" style="border-top: 2px dashed #ccc;">
+                    <div class="d-flex justify-content-between fw-bold" style="font-size: 1.1rem;">
+                        <p class="mb-0" style="color: #333;">Total:</p>
+                        <p class="mb-0" style="color: #000; font-weight: 600;">Rs :{{cartTotal}}</p>
+                    </div>
                 </div>
+
 
             </div>
 
@@ -255,7 +322,8 @@
                     </div>
 
                     <div class="d-flex justify-content-center mt-4 mb-4">
-                        <button type="submit" class="btn btn-custom btn-lg" style="background-color:beige;">Place Order</button>
+                        <button type="submit" class="btn btn-custom btn-lg" style="background-color:beige;">Place
+                            Order</button>
                     </div>
                 </form>
             </div>

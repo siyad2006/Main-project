@@ -73,6 +73,6 @@ router.get('/verifyPasswordOtp' ,userController.verifyPasswordOtp)
 router.post('/verifyotpForgotPassword',userController.verifyotpForgotPassword)
 router.get('/changePasswordForgot',  userController.changePasswordForgot)
 router.post('/createNewPassword',userController.createNewPassword)
-
+router.get('/resendOtpforgotpassword',userController.resendOtpforgotpassword)
 
 module.exports = router

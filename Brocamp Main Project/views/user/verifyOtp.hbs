@@ -41,12 +41,12 @@
 
 
 
-                <div class="form-wrapper" style="margin-top: 120px;">
-                    <input type="text" placeholder="enter 6 digit otp" id="otp" class="form-control">
+                <div class="form-wrapper" style="margin-top: 120px;" >
+                    <input type="text" placeholder="enter 6 digit otp"  id="otp" class="form-control">
                     <i class="zmdi zmdi-lock"></i>
                 </div>
                 <div id="timer" class="mb-3 text-warning">Time left: 2:00</div>
-                <button>Enter
+                <button id="enterButton">Enter
                     <i class="zmdi zmdi-arrow-right"></i>
                 </button>
                 {{!-- <a href="/user/login" style="margin-top: 5px;margin-left:55px">Do you have an accound?</a> --}}
@@ -63,7 +63,7 @@
         </div>
     </div>
 
-    <script>
+    {{!-- <script>
         let countdown = 60;
         let timerInterval;
 
@@ -81,8 +81,8 @@
                     clearInterval(timerInterval);
                     document.getElementById('timer').textContent = "Time's up!";
                     document.getElementById('resendOtpBtn').style.display = 'inline-block';
-                    document.getElementById('otpInput').style.display = "none";
-                    document.getElementById('submitotp').style.display = "none";
+                    document.getElementById('otp').style.display = "none";
+                    document.getElementById('enterButton').style.display = "none";
                     document.getElementById('verifyname').style.display = "none";
                 } else {
                     countdown--;
@@ -93,7 +93,66 @@
 
         window.onload = startTimer;
 
-    </script>
+    </script> --}}
+
+    
+<script>
+    let countdown = 60;
+    let timerInterval;
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            const minutes = Math.floor(countdown / 60);
+            const seconds = countdown % 60;
+
+            document.getElementById('timer').textContent = `Time left: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+
+            if (countdown <= 0) {
+                clearInterval(timerInterval);
+
+                // Update the UI when time expires
+                document.getElementById('timer').textContent = "Time's up!";
+                document.getElementById('otp').style.display = "none";
+                document.getElementById('enterButton').disabled = true;
+                document.getElementById('enterButton').textContent = "Expired";
+
+                // Create and show the Resend OTP button
+                const resendOtpBtn = document.createElement('button');
+                resendOtpBtn.textContent = "Resend OTP";
+                resendOtpBtn.id = "resendOtpBtn";
+                resendOtpBtn.className = "btn btn-warning mt-3";
+                resendOtpBtn.onclick = resendOtp;
+
+                const parentForm = document.querySelector('form');
+                parentForm.appendChild(resendOtpBtn);
+            } else {
+                countdown--;
+            }
+        }, 1000);
+    }
+
+    function resendOtp() {
+     
+        alert('Resend OTP functionality triggered.');
+        countdown = 60; 
+        document.getElementById('timer').textContent = "Time left: 1:00";
+        document.getElementById('enterButton').disabled = false;
+        document.getElementById('enterButton').textContent = "Enter";
+        document.getElementById('otp').style.display = "block";
+
+
+        const resendOtpBtn = document.getElementById('resendOtpBtn');
+        if (resendOtpBtn) {
+            resendOtpBtn.remove();
+        }
+
+
+        startTimer();
+        window.location.href='/user/resendOtpforgotpassword'
+    }
+
+    window.onload = startTimer;
+</script>
 
     <script>
         async function validation(event) {
@@ -142,8 +201,7 @@
                 }).then(()=>{
                     window.location.href='/user/changePasswordForgot'
                 })
-                // add window location in it 
-
+                
             }else{
                  Swal.fire({
                     icon: 'warning',
