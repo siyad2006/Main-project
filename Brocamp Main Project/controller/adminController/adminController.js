@@ -63,7 +63,7 @@ const dashboard = async (req, res) => {
     try {
 
         const totalUsers = await UserDB.countDocuments();
-
+        const totalCategories= await CategoryDB.countDocuments()
  
         let pendingCount = 0
         const totalsaless = await checkoutDB.aggregate([
@@ -81,31 +81,31 @@ const dashboard = async (req, res) => {
 
         const topProducts = await product.find().sort({ sold: -1 }).limit(10)
 
-        const categories = await CategoryDB.find()
+        // const categories = await CategoryDB.find()
 
 
-        const topCategories = [];
+        // const topCategories = [];
 
-        for (let item of categories) {
-            let sold = 0;
+        // for (let item of categories) {
+        //     let sold = 0;
 
-            const categoryProducts = await product.find({ category: item._id });
+        //     const categoryProducts = await product.find({ category: item._id });
 
-            categoryProducts.map((i) => {
-                const itemsold = Number(i.sold || 0); 
-                if (!isNaN(itemsold)) {
-                    sold += itemsold; 
-                } else {
-                    console.warn(`Invalid sold value for product: ${i.sold}`);
-                }
-            });
+        //     categoryProducts.map((i) => {
+        //         const itemsold = Number(i.sold || 0); 
+        //         if (!isNaN(itemsold)) {
+        //             sold += itemsold; 
+        //         } else {
+        //             console.warn(`Invalid sold value for product: ${i.sold}`);
+        //         }
+        //     });
 
-            const obj = {
-                categoryName: item.categoryname,
-                sold: Number(sold),
-            };
-            topCategories.push(obj);
-        }
+        //     const obj = {
+        //         categoryName: item.categoryname,
+        //         sold: Number(sold),
+        //     };
+        //     topCategories.push(obj);
+        // }
  
  
         const sortedAnswer = await CategoryDB.find({}).sort({ sold: -1 }).limit(10)
@@ -205,7 +205,7 @@ const dashboard = async (req, res) => {
                     }
                 };
 
-                res.render('admin/dashboard', { totalUsers, topProducts, categories: sortedAnswer, formattedData: JSON.stringify(formattedData), brands, totalsales, pendingCount })
+                res.render('admin/dashboard', { totalUsers, topProducts, categories: sortedAnswer, formattedData: JSON.stringify(formattedData), brands, totalsales, totalCategories })
 
                 break;
 
@@ -261,7 +261,7 @@ const dashboard = async (req, res) => {
                         formattedData: JSON.stringify(formattedData),
                         brands,
                         totalsales,
-                        pendingCount
+                        totalCategories
                     });
                 }
 
@@ -328,7 +328,7 @@ const dashboard = async (req, res) => {
                         formattedData: JSON.stringify(formattedData),
                         brands,
                         totalsales,
-                        pendingCount
+                        totalCategories
                       });
                     }
                     break;

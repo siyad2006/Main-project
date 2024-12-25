@@ -357,7 +357,7 @@
         }
       </script>
 
-      <nav aria-label="Page navigation example justify-content-center">
+      {{!-- <nav aria-label="Page navigation example justify-content-center">
         <ul class="pagination">
           {{#if (gt page 1)}}
           <li class="page-item">
@@ -377,7 +377,28 @@
           </li>
           {{/if}}
         </ul>
-      </nav>
+      </nav> --}}
+<nav aria-label="Page navigation example">
+  <ul class="pagination d-flex justify-content-center">
+    {{#if (gt page 1)}}
+    <li class="page-item">
+      <a class="page-link" href="?page={{subtract page 1}}">Previous</a>
+    </li>
+    {{/if}}
+
+    {{#each (range 1 totalPages) as |i|}}
+    <li class="page-item {{#if (eq i page)}}active{{/if}}">
+      <a class="page-link" href="?page={{i}}">{{i}}</a>
+    </li>
+    {{/each}}
+
+    {{#if (lt page totalPages)}}
+    <li class="page-item">
+      <a class="page-link" href="?page={{add page 1}}">Next</a>
+    </li>
+    {{/if}}
+  </ul>
+</nav>
 
       <script>
         const sidebar = document.getElementById('sidebar');

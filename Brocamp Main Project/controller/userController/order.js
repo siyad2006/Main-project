@@ -83,7 +83,7 @@ exports.getcheackout = async (req, res) => {
      
         const cartProduct = cartProducts.find(item => item.productId.toString() === product._id.toString());
         const quantity = cartProduct ? cartProduct.qty : 1;  
-        return total + (product.regularprice * quantity);
+        return total + (product.realprice * quantity);
     }, 0)
      
     if (req.session.realprice !== productPrices) {
